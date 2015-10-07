@@ -1,6 +1,6 @@
 README
 
-Hi Welcome to our project folder
+Hi Welcome to our project folder!
 
 Deliverable 1
 
@@ -8,7 +8,8 @@ This is available on our website.
 
 Deliverable 2
 
-This can be found in our Deliverable 2 folder
+A pdf file containing our documents and our planning game video.
+This can be found in our Deliverable 2 folder/
 
 WEBSITE
 
