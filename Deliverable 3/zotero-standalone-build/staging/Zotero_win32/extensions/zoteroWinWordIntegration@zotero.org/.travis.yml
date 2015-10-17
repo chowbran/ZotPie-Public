@@ -1,4 +1,0 @@
-language: generic
-notifications:
-    email: false
-script: build/template/unpack_templates.sh && build/template/check_template_src.sh
