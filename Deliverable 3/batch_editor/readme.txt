@@ -17,3 +17,6 @@ Installation:
  * changes are applied to all items in your zotero library *
 
 5) re-sync your library to see the changes.
+
+
+** if you dont like the command line you can also manually add parameters in the batchEditor file and then run it in your IDE of choice or on the command line without parameters **
