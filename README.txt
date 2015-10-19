@@ -1,15 +1,6 @@
 README
 
-Hi Welcome to our project folder!
-
-Deliverable 1
-
-This is available on our website.
-
-Deliverable 2
-
-A pdf file containing our documents and our planning game video.
-This can be found in our Deliverable 2 folder/
+This branch covers the progress for Story ID4, creating custom record fields.
 
 WEBSITE
 
