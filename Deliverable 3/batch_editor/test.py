@@ -1,5 +1,5 @@
 from pyzotero import zotero
-zot = zotero.Zotero('2704725', 'user', 'Zt1Q6xrcy28OOc4zRNszKbZL')
+zot = zotero.Zotero('2710002', 'user', 'jxIEnHTfXW5guwz6X8q5upsv')
 items = zot.top(limit=100)
 # we've retrieved the latest five top-level items in our library
 # we can print each item's item type and ID
