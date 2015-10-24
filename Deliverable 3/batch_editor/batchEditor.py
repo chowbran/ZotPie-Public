@@ -3,6 +3,7 @@
 #or see https://github.com/urschrei/pyzotero for instructions
 
 import sys
+import time
 from pyzotero import zotero
 
 #create a zotero instance with params user-id, user-type, API Key
@@ -21,11 +22,15 @@ def batch_editor(old_tag, new_tag):
 			#replace old tag with new tagname with new_tag if applicable
 			if tag['tag'] == old_tag:
 				tag['tag'] = new_tag
+				start = time.time()
 				zot.update_item(item)
+				end = time.time()
+				# print end - start
 
 
 def batch_edit_collection(collection, old_tag, new_tag):
-	''' replaces all tags with value old_tag with value new_tag in specified
+	''' (str, str, str) -> void
+		replaces all tags with value old_tag with value new_tag in specified
 		collection and updates the library
 	'''
 
