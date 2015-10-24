@@ -5,8 +5,16 @@
 import sys
 from pyzotero import zotero
 
-#create a zotero instance with params user-id, user-type, API Key
-zot = zotero.Zotero('2704725', 'user', 'Zt1Q6xrcy28OOc4zRNszKbZL')
+user_id = '2704725';
+user_type = 'user';
+api_key = 'Zt1Q6xrcy28OOc4zRNszKbZL';
+
+def config():
+	''' sets the user_id, user_type, and API Key so that program can
+		access the user's zotero library.
+    '''
+	pass
+
 
 def batch_editor(old_tag, new_tag):
 	''' this takes all items with tag, old_tag and updates it so
@@ -32,11 +40,15 @@ def batch_edit_collection(collection, old_tag, new_tag):
 
 def backup_library(): #optional
 	''' backup entire library before making changes '''
+	#will need write permissions?
 	pass
 
 def restore_library(): #optional
 	''' restore entire library to its state before changes were made'''
 	pass
+
+#create a zotero instance with params user-id, user-type, API Key
+zot = zotero.Zotero(user_id, user_type, api_key)
 
 #takes command line args as inputs or you can just change the parameters in
 #the else statement see @batch_editor method for usage
@@ -45,3 +57,5 @@ if (len(sys.argv) == 3):
 	batch_editor(sys.argv[1], sys.argv[2])
 else:
 	batch_editor('test', '__test')
+
+#implement using argparse
