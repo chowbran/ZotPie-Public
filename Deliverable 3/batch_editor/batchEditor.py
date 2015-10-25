@@ -12,7 +12,7 @@ class BatchConfig:
 		pass
 
 
-	def config(uid, key, utype='user'):
+	def config(self, uid, key, utype='user'):
 		''' sets the user_id, user_type, and API Key so that program can
 			access the user's zotero library.
 	    '''
@@ -20,7 +20,7 @@ class BatchConfig:
 
 
 
-	def batch_editor(old_tag, new_tag):
+	def batch_editor(self, old_tag, new_tag):
 		''' this takes all items with tag, old_tag and updates it so
 		    that old_tag is replaced by new_tag
 		'''
@@ -35,7 +35,7 @@ class BatchConfig:
 					tag['tag'] = new_tag
 					self.zot.update_item(item)
 
-	def batch_edit_collection(collection, old_tag, new_tag):
+	def batch_edit_collection(self, collection, old_tag, new_tag):
 		''' replaces all tags with value old_tag with value new_tag in specified
 			collection and updates the library
 		'''
@@ -56,12 +56,12 @@ class BatchConfig:
 					tag['tag'] = new_tag
 					self.zot.update_item(item)
 
-	def backup_library(): #optional
+	def backup_library(self): #optional
 		''' backup entire library before making changes '''
 		#will need write permissions?
 		pass
 
-	def restore_library(): #optional
+	def restore_library(self): #optional
 		''' restore entire library to its state before changes were made'''
 		pass
 
