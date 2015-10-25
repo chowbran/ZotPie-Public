@@ -54,7 +54,7 @@ class BEditor:
 		except Exception, err:
 			raise
 
-	def batch_editor(self, old_tag, new_tag):
+	def batch_edit(self, old_tag, new_tag):
 		''' this takes all items with tag, old_tag and updates it so
 		    that old_tag is replaced by new_tag
 		'''
