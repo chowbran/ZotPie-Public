@@ -8,14 +8,14 @@ api_key = 'jxIEnHTfXW5guwz6X8q5upsv';
 
 class BatchConfig:
 	def __init__(self):
-		pass
+		self.config(user_id, api_key, user_type)
 
 
 	def config(self, uid, key, utype='user'):
 		''' sets the user_id, user_type, and API Key so that program can
 			access the user's zotero library.
 	    '''
-		self.zot = zotero.Zotero(uid, utype, key)
+		self.zot = zotero.Zotero(user_id, utype, key)
 
 
 

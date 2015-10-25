@@ -4,6 +4,6 @@ from citationEditorWin import CitationEditorWin
 
 if __name__ == '__main__':
     app = QtGui.QApplication([])
-    window = CitationEditorWin()
+    window = BatchEditorWin()
     window.show()
     app.exec_()
