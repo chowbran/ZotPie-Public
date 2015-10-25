@@ -78,6 +78,11 @@ class CitationEditorWin(QtGui.QMainWindow, Ui_CitationEditorWindow):
 
         for field in self.fItems:
             if (field == self.selected):
+                self.selected = None
+                if (counter + 1 < len(self.fItems)):
+                    #print(self.fItems.count)
+                    self.selectField(self.fItems[counter+1])
+
                 self.fItems.remove(field)
                 field.setParent(None)
                 break;
@@ -95,8 +100,6 @@ class CitationEditorWin(QtGui.QMainWindow, Ui_CitationEditorWindow):
                 self.fieldY-=35
             else:
                 self.fieldX-=85
-
-            
 
 
 
