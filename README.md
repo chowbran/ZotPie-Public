@@ -17,6 +17,10 @@ Our task board for sprint #1 can be found here: [Sprint #1 Task Board](https://t
 
 On the task board, please read the information on "How to use this board" card under the "INSTRUCTIONS" list.
 
+## Sprint #1 Backlog
+
+Our sprint backlog can be found here: [Sprint #1 Backlog](https://docs.google.com/spreadsheets/d/1x4ZO0lsaXktc8lxdIhvAAT5QEFSecOz8eK0PieLRWok/edit?pli=1#gid=0)
+
 ## WEBSITE
 
 Visit our website at [here](http://precision-dev.com/).
