@@ -48,27 +48,31 @@ class CitationEditorWin(QtGui.QMainWindow, Ui_CitationEditorWindow):
     This function will add a button to the "label". The button's text will be the given field.
     '''
     def addField(self):
-        entry = QtGui.QPushButton(self)
-        entry.setText(str(self.fselected))
-        entry.setFixedSize(80, 30)
-        entry.setStyleSheet("font-size:15px;background-color:#00CCFF;border: 2px solid #222222")
-        entry.clicked.connect(lambda: self.selectField(entry))
-        #entry.setAutoFillBackground(True)
-        entry.move(self.fieldX, self.fieldY)
-        self.fieldX += 85
+        if (self.fieldY > 140):
+            return
+        else:
+            entry = QtGui.QPushButton(self)
+            entry.setText(str(self.fselected))
+            entry.setFixedSize(80, 30)
+            entry.setStyleSheet("font-size:15px;background-color:#00CCFF;border: 2px solid #222222")
+            entry.clicked.connect(lambda: self.selectField(entry))
+            #entry.setAutoFillBackground(True)
+            entry.move(self.fieldX, self.fieldY)
+            self.fieldX += 85
         
-        if (self.fieldX > 600):
-            self.fieldX = 140
-            self.fieldY += 20
+            if (self.fieldX > 600):
+                self.fieldX = 140
+                self.fieldY += 35
 
-        entry.show()
+            entry.show()
 
-        self.fItems.append(entry)
+            self.fItems.append(entry)
     
     '''
     This function will remove the selected button on the label.
     '''
     def removeField(self):
+        counter = 0
         if (self.selected == None):
             return
 
@@ -76,16 +80,31 @@ class CitationEditorWin(QtGui.QMainWindow, Ui_CitationEditorWindow):
             if (field == self.selected):
                 self.fItems.remove(field)
                 field.setParent(None)
+                break;
+            counter+=1
+
+        for field in range(counter,len(self.fItems)):
+            if ((self.fItems[field].pos().x() -85) <140):
+                    self.fItems[field].move(565,self.fItems[field].pos().y()-35)
+            else:
+                    self.fItems[field].move((self.fItems[field].pos().x() -85),self.fItems[field].pos().y())
+
+        if (counter >= 0):
+            if (self.fieldX-85 < 140):
+                self.fieldX = 565
+                self.fieldY-=35
+            else:
+                self.fieldX-=85
+
+            
+
+
+
+
     '''
     This function will show us what the citation style will look like with default values.
     '''
     def preview(self):
-        pass
-    '''
-    This function will indicate when a new record is selected. This will create a new collection of fields depending on
-    the type of record.
-    '''
-    def record_change(self):
         pass
 
     '''
