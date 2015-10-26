@@ -6,28 +6,41 @@ import os
 import sys
 import argparse
 from pyzotero import zotero
-from pickler import Pickler
 
 user_id = '2710002';
 user_type = 'user';
 api_key = 'jxIEnHTfXW5guwz6X8q5upsv';
 
 class BEditor:
-	""" class used for batch editing"""
 
 	def __init__(self, user_id='', user_type='', api_key=''):
-		''' intialize a new batch editor '''
-		#this is the file used to save user data
-		self._pickle_save = 'user_data'
+
+		path = 'data/user_data'
 
 		#data for accessing zotero library
-		self._userData = {"user_id": user_id, "user_type": user_type, "api_key": api_key}
+		self._user_id = user_id;
+		self._user_type = user_type;
+		self._api_key = api_key;
 
-		#check if we have a pickle that already contains user info
-		#if so load that data from pickle
-		if (self.chksave()):
-			self._pickle = Pickler(self._pickle_save)
-			self._userData = pickle.load()
+		if os.path.exists(path):
+			#get the user's library data from file
+			user_data = [line.rstrip('\n') for line in open(path)]
+		if len(user_data) == 3:
+			self._user_key = user_data[0];
+			self._user_type = user_data[1];
+			self._api_key = user_data[2]; 
+
+		else:
+			if (len(user_id) and len(user_type) and len(api_key)):
+				#no data exists, create file and directory to store user's data
+				if not os.path.exists(os.path.dirname(path)):
+					os.makedirs(os.path.dirname(path))
+
+				f = open(path, 'w')
+				f.write(user_id + '\n');
+				f.write(user_type + '\n');
+				f.write(api_key + '\n');
+				f.close()
 
 		#initialize a connection to library and validate connection
 		try:
@@ -35,24 +48,6 @@ class BEditor:
 		except Exception, err:
 			raise
 		self.test_config()
-
-	def chksave(self):
-		'''BEditor -> int
-			checks for saved user data, returns 1 if data exists 0 otherwise
-		'''
-		pickle = Pickler(self._pickle_save)
-		try:
-			#if this succeeds then a save file exists
-			pickle.load()
-			return 1
-		except:
-			return 0
-
-	def save_data():
-		'''
-			saves user data to pickle
-		'''
-		self._pickle.save(self._userData)
 
 	def test_config(self):
 		''' Attempts to access Zotero library with user's ID & TYPE & APIKEY
@@ -63,11 +58,11 @@ class BEditor:
 		except Exception, err:
 			raise
 
-	def batch_edit_tag(self, old_tag, new_tag):
+	def batch_edit(self, old_tag, new_tag):
 		''' this takes all items with tag, old_tag and updates it so
 		    that old_tag is replaced by new_tag
 		'''
-		items = self._zot.items()
+		items = self._zot.items();
 
 		#for each item in the library access the list containing all of its tag information
 		#in item['data']['tags'] which is a list of dicts of form {tag: tagname, type: value}
@@ -77,24 +72,6 @@ class BEditor:
 				if tag['tag'] == old_tag:
 					tag['tag'] = new_tag
 					self._zot.update_item(item)
-
-	def library_raw(self):
-		''' return entire library's raw data '''
-		return self._zot.items();
-
-	def delete_tag(self, del_tag):
-		''' (BEditor, str) -> None
-			this takes all items with del_tag and deletes them.
-		'''
-		items = self._zot.items();
-
-
-
-		#for each item in the library access the list containing all of its tag information
-		#in item['data']['tags'] which is a list of dicts of form {tag: tagname, type: value}
-		for item in items:
-			tags = item['data']['tags']
-			tags[:] = [d for d in tags if d.get('tags') != del_tag]
 
 	def batch_edit_collection(self, collection, old_tag, new_tag):
 		''' replaces all tags with value old_tag with value new_tag in specified
@@ -116,25 +93,35 @@ class BEditor:
 					tag['tag'] = new_tag
 					self.zot.update_item(item)
 
-	def backup_library(self): #untested
-		''' backup entire library, this overwrites any previous backup'''
-		#initialize a pickle and save @lib_backup.p
-		picklesave = 'lib_backup'
-		pickle = Pickler(picklesave)
-		pickle.save(self._zot.items())
-
-	def restore_library(self): #untested
-		''' restore entire library to its state before changes were made 
-			this process can be slow
+	def delete_tag(self, del_tag):
+		''' (self, str) -> None
+			this takes all items with del_tag and deletes them.
 		'''
-		#get data from pickle @lib_backup
-		picklesave = 'lib_backup'
-		pickle = Pickler(picklesave)
-		data = pickle.load()
+		items = self._zot.items();
 
-		#update each item
-		for item in data:
+		#for each item in the library access the list containing all of its tag information
+		#in item['data']['tags'] which is a list of dicts of form {tag: tagname, type: value}
+		for item in items:
+			tags = item['data']['tags']
+			tags[:] = [tag for tag in tags if tag.get('tag') != del_tag]
+			item['data']['tags'] = tags
 			self._zot.update_item(item)
+
+	def get_collections(self):
+		''' (self) -> [str]
+			Returns a list of collections
+		'''
+		return [{coll['key']: coll['data']['name']} for coll in self._zot.collections()]
+
+
+	def backup_library(self): #optional
+		''' backup entire library before making changes '''
+		#will need write permissions?
+		pass
+
+	def restore_library(self): #optional
+		''' restore entire library to its state before changes were made'''
+		pass
 
 
 #create a zotero instance with params user-id, user-type, API Key
