@@ -25,7 +25,6 @@ class CitationEditorWin(QtGui.QMainWindow, Ui_CitationEditorWindow):
         self.btn_Add.clicked.connect(self.addField)
         self.btn_Remove.clicked.connect(self.removeField)
         self.btn_Generate.clicked.connect(self.generate)
-        self.btn_Preview.clicked.connect(self.preview)
         self.combo_Record.currentIndexChanged.connect(self.populateFields)
         self.combo_Fields.currentIndexChanged.connect(self.field_change)
     
