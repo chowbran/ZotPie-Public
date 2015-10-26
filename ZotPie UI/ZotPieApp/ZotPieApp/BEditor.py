@@ -13,7 +13,7 @@ api_key = 'jxIEnHTfXW5guwz6X8q5upsv';
 
 class BEditor:
 
-	def __init__(self, user_id=user_id, user_type=user_type, api_key=api_key):
+	def __init__(self, user_id='', user_type='', api_key=''):
 
 		path = 'data/user_data'
 
@@ -21,8 +21,6 @@ class BEditor:
 		self._user_id = user_id;
 		self._user_type = user_type;
 		self._api_key = api_key;
-
-		return
 
 		if os.path.exists(path):
 			#get the user's library data from file
@@ -61,11 +59,9 @@ class BEditor:
 			raise
 
 	def batch_edit(self, old_tag, new_tag):
-		''' (BEditor, str, str) -> None
-		 	this takes all items with tag, old_tag and updates it so
+		''' this takes all items with tag, old_tag and updates it so
 		    that old_tag is replaced by new_tag
 		'''
-
 		items = self._zot.items();
 
 		#for each item in the library access the list containing all of its tag information
@@ -76,21 +72,6 @@ class BEditor:
 				if tag['tag'] == old_tag:
 					tag['tag'] = new_tag
 					self._zot.update_item(item)
-
-
-	def delete_tag(self, del_tag):
-		''' (BEditor, str) -> None
-			this takes all items with del_tag and deletes them.
-		'''
-		items = self._zot.items();
-
-
-
-		#for each item in the library access the list containing all of its tag information
-		#in item['data']['tags'] which is a list of dicts of form {tag: tagname, type: value}
-		for item in items:
-			tags = item['data']['tags']
-			tags[:] = [d for d in tags if d.get('tags') != del_tag]
 
 	def batch_edit_collection(self, collection, old_tag, new_tag):
 		''' replaces all tags with value old_tag with value new_tag in specified
@@ -111,6 +92,27 @@ class BEditor:
 				if tag['tag'] == old_tag:
 					tag['tag'] = new_tag
 					self.zot.update_item(item)
+
+	def delete_tag(self, del_tag):
+		''' (self, str) -> None
+			this takes all items with del_tag and deletes them.
+		'''
+		items = self._zot.items();
+
+		#for each item in the library access the list containing all of its tag information
+		#in item['data']['tags'] which is a list of dicts of form {tag: tagname, type: value}
+		for item in items:
+			tags = item['data']['tags']
+			tags[:] = [tag for tag in tags if tag.get('tag') != del_tag]
+			item['data']['tags'] = tags
+			self._zot.update_item(item)
+
+	def get_collections(self):
+		''' (self) -> [str]
+			Returns a list of collections
+		'''
+		return [{coll['key']: coll['data']['name']} for coll in self._zot.collections()]
+
 
 	def backup_library(self): #optional
 		''' backup entire library before making changes '''
