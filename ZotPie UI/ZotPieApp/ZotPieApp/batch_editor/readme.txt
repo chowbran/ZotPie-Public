@@ -1,30 +1,4 @@
-README
-
-
-*** UPDATE for Deliverable 3 *************
-
-DO NOT DELETE __init__.py it is used to tell python that it's ok to import files in this directory to other files
-in this directory.
-
-pickler.py will be used to save files to pickle files which will be more secure and will make for a better design.
-
-see pickler_example.py for an example of how to call and use the pickler class or simply look at the pickler.py source code,
-however I didn't comment it too much so see @daniel for more info.
-
-see batchEditor_example.py for example of how to initialize and use the batch editor backend
-
-see sektch.png for a sketch of the GUI component that is now located in /team15-course-project/ZotPie
-
-it's probably safe to ignore .pyc files, however I included it just incase, .gitignore them if you can confirm
-
-opttest.py is a test for a removed feature, ignore for now - will be removed when linking GUI component 
-
-save.p should be removed, but I am including for test purposes
-*****************************************
-
-
-
-
+REAME
 
 This folder contains a python Batch tag Editor for Zotero
 
