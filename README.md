@@ -10,9 +10,9 @@ This is available on our website.
 
 A pdf file containing our documents and our planning game video.
 This can be found in our Deliverable 2 folder
-          ** new system design can be found in team15-course-project/sys_design.pdf**
+
 ## Deliverable 3
-  system design will now be in team15-course-project/sys_design.pdf
+  system design will now be in team15-course-project/sys_design.pdf (current as of 10-26-2015)
 
 ## Task Board (Sprint #1)
 
