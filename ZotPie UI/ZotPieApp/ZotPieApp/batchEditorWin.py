@@ -5,7 +5,8 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
     def __init__(self, parent=None):
         super(BatchEditorWin, self).__init__(parent)
         self.setupUi(self)
-    def create_child(self):
-        print("f")
+        self.eventHandlerSetup()
+    
+    def eventHandlerSetup(self):
+        self.btn_Apply.clicked.connect(self.test)
 
-#etc.
