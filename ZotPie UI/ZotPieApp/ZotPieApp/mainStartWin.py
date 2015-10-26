@@ -15,7 +15,6 @@ class MainStartWin(QtGui.QMainWindow, Ui_StartWindow):
         self.eventHandlerSetup()
         self.userData = UserData()
         self.userData.setKeyValue("GENERAL", 'apikey2', '1111222221122')
-        print(self.userData.getValue("GENERAL", "apikey"))
 
     def eventHandlerSetup(self):
         self.btn_OpenBatchEditor.clicked.connect(lambda: self.openWindow(BatchEditorWin(self)))
