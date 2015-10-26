@@ -7,6 +7,7 @@ import sys
 import argparse
 from pyzotero import zotero
 from pickler import Pickler
+
 class BEditor:
 	""" class used for batch editing"""
 
@@ -62,7 +63,7 @@ class BEditor:
 		''' this takes all items with tag, old_tag and updates it so
 		    that old_tag is replaced by new_tag
 		'''
-		items = self._zot.items();
+		items = self._zot.items()
 
 		#for each item in the library access the list containing all of its tag information
 		#in item['data']['tags'] which is a list of dicts of form {tag: tagname, type: value}
@@ -83,11 +84,23 @@ class BEditor:
 		'''
 		pass
 
-	def backup_library(self): #optional
-		''' backup entire library before making changes '''
-		#will need write permissions?
-		pass
+	def backup_library(self): #untested
+		''' backup entire library, this overwrites any previous backup'''
+		#initialize a pickle and save @lib_backup.p
+		picklesave = 'lib_backup'
+		pickle = Pickler(picklesave)
+		pickle.save(self._zot.items())
 
-	def restore_library(self): #optional
-		''' restore entire library to its state before changes were made'''
-		pass
+	def restore_library(self): #untested
+		''' restore entire library to its state before changes were made 
+			this process can be slow
+		'''
+		#get data from pickle @lib_backup
+		picklesave = 'lib_backup'
+		pickle = Pickler(picklesave)
+		data = pickle.load()
+
+		#update each item
+		for item in data:
+			self._zot.update_item(item)
+
