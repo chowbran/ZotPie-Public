@@ -6,37 +6,23 @@ import os
 import sys
 import argparse
 from pyzotero import zotero
-
+from pickler import Pickler
 class BEditor:
+	""" class used for batch editing"""
 
 	def __init__(self, user_id='', user_type='', api_key=''):
-
-		path = 'data/user_data'
+		''' intialize a new batch editor '''
+		#this is the file used to save user data
+		self._pickle_save = 'user_data'
 
 		#data for accessing zotero library
-		self._user_id = user_id;
-		self._user_type = user_type;
-		self._api_key = api_key;
+		self._userData = {"user_id": user_id, "user_type": user_type, "api_key": api_key}
 
-		if os.path.exists(path):
-			#get the user's library data from file
-			user_data = [line.rstrip('\n') for line in open(path)]
-		if len(user_data) == 3:
-			self._user_key = user_data[0];
-			self._user_type = user_data[1];
-			self._api_key = user_data[2]; 
-
-		else:
-			if (len(user_id) and len(user_type) and len(api_key)):
-				#no data exists, create file and directory to store user's data
-				if not os.path.exists(os.path.dirname(path)):
-					os.makedirs(os.path.dirname(path))
-
-				f = open(path, 'w')
-				f.write(user_id + '\n');
-				f.write(user_type + '\n');
-				f.write(api_key + '\n');
-				f.close()
+		#check if we have a pickle that already contains user info
+		#if so load that data from pickle
+		if (self.chksave()):
+			self._pickle = Pickler(self._pickle_save)
+			self._userData = pickle.load()
 
 		#initialize a connection to library and validate connection
 		try:
@@ -44,6 +30,24 @@ class BEditor:
 		except Exception, err:
 			raise
 		self.test_config()
+
+	def chksave(self):
+		'''BEditor -> int
+			checks for saved user data, returns 1 if data exists 0 otherwise
+		'''
+		pickle = Pickler(self._pickle_save)
+		try:
+			#if this succeeds then a save file exists
+			pickle.load()
+			return 1
+		except:
+			return 0
+
+	def save_data():
+		'''
+			saves user data to pickle
+		'''
+		self._pickle.save(self._userData)
 
 	def test_config(self):
 		''' Attempts to access Zotero library with user's ID & TYPE & APIKEY
@@ -54,7 +58,7 @@ class BEditor:
 		except Exception, err:
 			raise
 
-	def batch_edit(self, old_tag, new_tag):
+	def batch_edit_tag(self, old_tag, new_tag):
 		''' this takes all items with tag, old_tag and updates it so
 		    that old_tag is replaced by new_tag
 		'''
@@ -69,6 +73,9 @@ class BEditor:
 					tag['tag'] = new_tag
 					self._zot.update_item(item)
 
+	def library_raw(self):
+		''' return entire library's raw data '''
+		return self._zot.items();
 
 	def batch_edit_collection(self, collection, old_tag, new_tag):
 		''' replaces all tags with value old_tag with value new_tag in specified

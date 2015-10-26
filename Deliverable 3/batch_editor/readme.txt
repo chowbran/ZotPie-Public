@@ -1,4 +1,20 @@
-REAME
+README
+
+
+*** UPDATE ******
+
+DO NOT DELETE __init__.py it is used to tell python that it's ok to import files in this directory to other files
+in this directory.
+
+pickler.py will be used to save files to pickle files which will be more secure and will make for a better design.
+
+see pickler_example.py for an example of how to call and use the pickler class or simply look at the pickler.py source code,
+however I didn't comment it too much so see @daniel for more info.
+****************************
+
+
+
+
 
 This folder contains a python Batch tag Editor for Zotero
 
