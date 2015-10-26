@@ -9,8 +9,8 @@ This is available on our website.
 ## Deliverable 2
 
 A pdf file containing our documents and our planning game video.
-This can be found in our Deliverable 2 folder/
-   **updated system design can be found in team15-course-project/sys_design.pdf**
+This can be found in our Deliverable 2 folder
+</n>** new system design can be found in team15-course-project/sys_design.pdf**
 ## Deliverable 3
   system design will now be in team15-course-project/sys_design.pdf
 
