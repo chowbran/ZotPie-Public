@@ -1,30 +1,29 @@
-import sys
+﻿import sys
 import os.path
 import json
 from pyzotero import zotero
+from userData import UserData
 
-uid = '2662347'
+uid = ''
 utype = 'user'
-key = 'DBKmDBQRaQXSMwGB9UMroGJ3'
+key = ''
 
 uidGroup = ''
 utypeGroup = ''
 keyGroup = ''
 
 class CoupleDocuments:
-
-
 	def __init__(self):
-		pass
+	    self.userData = UserData()
 
-
-	def config(self, uid, key, utype='user'):
+	def config(self):
 		''' sets the user_id, user_type, and API Key so that program can
 			access the user's zotero library. Gives the groupid to access
 			the different groupids this user bleongs to
 	    '''
-		self.uid = uid
-		self.key = key
+		self.uid = self.userData.getValue('GENERAL', 'libraryid')
+		self.key = self.userData.getValue('GENERAL', 'apikey')
+
 		self.zot = zotero.Zotero(uid, utype, key)
 		if utype == 'user':
 			self.zotgroup = zotero.Zotero(uid, 'group', key)
@@ -133,10 +132,3 @@ class CoupleDocuments:
 				rejects.append(copy[0]['title'])
 
 		return rejects
-
-if __name__ == "__main__":
-
-	test = CoupleDocuments()
-	test.config('2662347',  'DBKmDBQRaQXSMwGB9UMroGJ3')
-	test.populateGroupCollections()
-	test.jsonFileUpdater('key', [{'group1':'key1'}, {'group2':'key2'}])
