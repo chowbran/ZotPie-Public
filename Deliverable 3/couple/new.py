@@ -1,0 +1,1 @@
+y = product(a,b)

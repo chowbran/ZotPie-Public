@@ -11,28 +11,55 @@ uidGroup = ''
 utypeGroup = ''
 keyGroup = ''
 
-
 class CoupleDocuments:
+
+
 	def __init__(self):
 		pass
 
 
 	def config(self, uid, key, utype='user'):
 		''' sets the user_id, user_type, and API Key so that program can
-			access the user's zotero library.
+			access the user's zotero library. Gives the groupid to access
+			the different groupids this user bleongs to
 	    '''
+		self.uid = uid
+		self.key = key
 		self.zot = zotero.Zotero(uid, utype, key)
-		self.zotgroup = zotero.Zotero(uidGroup, utypeGroup, keyGroup)
+
+
+	def populateGroupCollections(self):
+		'''populates all of groups associated with the user
+		'''
+		listofGroups = self.zot.groups()
+		groupAccessName = []
+
+		for group in listofGroups:
+			groupAccessName.append(group['data']['name'] + ";" + group['data']['id'])
+
+		return groupAccessName
+
+	def populateGroupRecords(self, groupName):
+		'''given a group, we return all record names that are associated
+		   with that group
+		'''
+		groupAccess = zotero.Zotero(self.uid, 'group', self.key)
+		recordNames = []
+
+		for record in groupAccess.items():
+			recordNames.append(record['data']['title'])
+
+		return recordNames
 
 
 	def jsonFileUpdater(self, key, documentList):
 		'''takes in a key of an original document and a list of all documents
 		   in groups to be coupled. Creates a json file if it doesn't exist
 		   otherwise, searches through json to find the key to grab the list.
-		   updates the list with new coupled documents if necessary. Returns 
+		   updates the list with new coupled documents if necessary. Returns
 		   a list with the key.
 		'''
-		
+
 		if (os.path.isfile('keys.json')):
 			json_file = open('keys.json', 'r')
 			json_str = json.read()
@@ -47,9 +74,9 @@ class CoupleDocuments:
 			json_file = open('keys.json', 'w')
 			json_dic = {key: documentList}
 
-			
+
 		json.dump(json_dic, json_file)
-		
+
 
 		return json_dic
 
@@ -58,7 +85,7 @@ class CoupleDocuments:
 			list of keys
 		'''
 
-		
+
 		json_file = open('keys.json', 'r')
 
 		json_str = json.read()
@@ -73,15 +100,15 @@ class CoupleDocuments:
 
 
 	def updateCoupledDocuments(self, key):
-		'''Given a key, and a dictionary of changes accesses the json file and updates the 
-		   coupled documents corresponding to the original in the zotero database. Returns 
+		'''Given a key, and a dictionary of changes accesses the json file and updates the
+		   coupled documents corresponding to the original in the zotero database. Returns
 		   list of documents that don't have the right itemType
 		'''
 
 		rejects = []
 		coupledDocuments = self.jsonFileGetter(key)
 
-		#find the original document 
+		#find the original document
 		original = zot.item(key)
 
 		#go through every document in coupleDocuments
@@ -102,8 +129,8 @@ class CoupleDocuments:
 
 		return rejects
 
+if __name__ == "__main__":
 
-
-	
-
-		
+	test = CoupleDocuments()
+	test.config('2662347',  'DBKmDBQRaQXSMwGB9UMroGJ3')
+	test.populateGroupCollections()
