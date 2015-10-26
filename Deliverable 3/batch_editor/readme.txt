@@ -18,6 +18,8 @@ see sektch.png for a sketch of the GUI component that is now located in /team15-
 it's probably safe to ignore .pyc files, however I included it just incase, .gitignore them if you can confirm
 
 opttest.py is a test for a removed feature, ignore for now - will be removed when linking GUI component 
+
+save.p should be removed, but I am including for test purposes
 *****************************************
 
 
