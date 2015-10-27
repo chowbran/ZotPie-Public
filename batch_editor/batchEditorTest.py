@@ -47,11 +47,8 @@ class TestBatchEdit(unittest.TestCase):
 		newTag = self.tags[k]
 
 		for i in range(0, k):
-<<<<<<< Updated upstream
 			self.editor.batch_edit_tag(self.tags[i], self.tags[i+1])
-=======
-			self.editor.batch_editor(self.tags[i], self.tags[i+1])
->>>>>>> Stashed changes
+
 		# self.currentTag = self.tags[1]
 
 		for itemID in self.items.values():
@@ -68,11 +65,8 @@ class TestBatchEdit(unittest.TestCase):
 		newTag = self.tags[k]
 
 		for i in range(0, k):
-<<<<<<< Updated upstream
 			self.editor.batch_edit_tag(self.tags[i], self.tags[i+1])
-=======
-			self.editor.batch_editor(self.tags[i], self.tags[i+1])
->>>>>>> Stashed changes
+
 		# self.currentTag = self.tags[1]
 
 		for itemID in self.items.values():
@@ -89,11 +83,8 @@ class TestBatchEdit(unittest.TestCase):
 		newTag = self.tags[k]
 
 		for i in range(0, k):
-<<<<<<< Updated upstream
 			self.editor.batch_edit_tag(self.tags[i], self.tags[i+1])
-=======
-			self.editor.batch_editor(self.tags[i], self.tags[i+1])
->>>>>>> Stashed changes
+
 		# self.currentTag = self.tags[1]
 
 		for itemID in self.items.values():
@@ -148,11 +139,8 @@ class TestBatchCollectionEdit(unittest.TestCase):
 		newTag = self.tags[k]
 
 		for i in range(0, k):
-<<<<<<< Updated upstream
 			self.editor.batch_edit_tag(self.tags[i], self.tags[i+1])
-=======
-			self.editor.batch_edit(self.tags[i], self.tags[i+1])
->>>>>>> Stashed changes
+
 		# self.currentTag = self.tags[1]
 
 		for itemID in self.items.values():
@@ -187,11 +175,8 @@ class TestBatchCollectionEdit(unittest.TestCase):
 		newTag = self.tags[k]
 
 		for i in range(0, k):
-<<<<<<< Updated upstream
 			self.editor.batch_edit_tag(self.tags[i], self.tags[i+1])
-=======
-			self.editor.batch_editor(self.tags[i], self.tags[i+1])
->>>>>>> Stashed changes
+
 		# self.currentTag = self.tags[1]
 
 		for itemID in self.items.values():
