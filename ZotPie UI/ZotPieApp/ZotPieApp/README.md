@@ -19,7 +19,7 @@ Python 2.7.10: google and install
 
 ## How To RUN:
 Double click ZotPieApp or run from command line using "python ZotPieApp".
-If this is tour first time using the app, you will need to fill in your Zotero Library ID and API Key under "Preferences".
+If this is your first time using the app, you will need to fill in your Zotero Library ID and API Key under "Preferences".
 
 ## Suggested Links:
 
