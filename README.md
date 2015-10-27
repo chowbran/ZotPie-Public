@@ -12,7 +12,8 @@ A pdf file containing our documents and our planning game video.
 This can be found in our Deliverable 2 folder
 
 ## Deliverable 3
-  system design will now be in team15-course-project/sys_design.pdf (current as of 10-26-2015)
+
+Everything is contained in the Deliverable 3 folder (including the updated system diagram).
 
 ## Task Board (Sprint #1)
 
