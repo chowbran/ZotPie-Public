@@ -1,0 +1,3 @@
+userID=''
+usertype='user'
+APIKey=''

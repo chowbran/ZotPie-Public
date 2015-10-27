@@ -34,14 +34,16 @@ class CitationEditorWin(QtGui.QMainWindow, Ui_CitationEditorWindow):
         recordFields = zot.item_fields()
 
     def populateRecords(self):
+        self.combo_Record.addItem("--Select Record--")
         for item in zot.item_types():
             self.combo_Record.addItem(item['localized'])
             records.append(item['itemType'])
 
     def populateFields(self):
         self.combo_Fields.clear()
-        for item in zot.item_type_fields(records[self.combo_Record.currentIndex()]):
-            self.combo_Fields.addItem(item['localized'])
+        if (len(records) > 0):
+            for item in zot.item_type_fields(records[self.combo_Record.currentIndex() - 1]):
+                self.combo_Fields.addItem(item['localized'])
 
     '''
     This function will add a button to the "label". The button's text will be the given field.

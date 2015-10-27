@@ -1,4 +1,4 @@
-from PyQt4 import QtCore, QtGui
+﻿from PyQt4 import QtCore, QtGui
 from batchEditor import Ui_BatchEditorWindow
 from BEditor import BEditor
 
@@ -41,7 +41,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
 
         if action == "Modify":
         	if scope == "All":
-        		self.editor.batch_edit(str(old_value), str(new_value))
+        		self.editor.batch_edit_tag(str(old_value), str(new_value))
         		print "modified"
         elif action == "Remove":
             if scope == "All":
