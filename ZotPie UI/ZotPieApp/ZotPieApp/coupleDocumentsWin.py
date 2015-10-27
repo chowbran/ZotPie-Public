@@ -4,7 +4,7 @@ from couple import CoupleDocuments
 
 class CoupleDocumentsWin(QtGui.QMainWindow, Ui_CoupleDocumentsWindow):
     def __init__(self, parent=None):
-        super(CitationEditorWin, self).__init__(parent)
+        super(CoupleDocumentsWin, self).__init__(parent)
         self.setupUi(self)
         self.cDoc = CoupleDocuments()
         self.cDoc.config()
