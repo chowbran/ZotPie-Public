@@ -15,8 +15,11 @@ class MainStartWin(QtGui.QMainWindow, Ui_StartWindow):
         self.eventHandlerSetup()
         self.userData = UserData()
         
-        if (self.userData.getValue('GENERAL', 'apikey')):
-            QtGui.QMessageBox.warning("Please enter your API/Library key under preferences")
+        if (self.userData.getValue('GENERAL', 'apikey') == ''):
+            QtGui.QMessageBox.warning(self, "Missing API Key", "Please enter your API/Library key under preferences")
+            #self.btn_OpenBatchEditor.setEnabled(False)
+            #self.btn_OpenCitationEditor.setEnabled(False)
+            #self.btn_OpenCoupleDocuments.setEnabled(False)
 
     def eventHandlerSetup(self):
         self.btn_OpenBatchEditor.clicked.connect(lambda: self.openWindow(BatchEditorWin(self)))
