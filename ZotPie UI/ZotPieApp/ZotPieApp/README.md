@@ -1,7 +1,7 @@
 ## Required Packages:
-PyQt4
-PyZotero
-Python 2.7.10
+1. PyQt4
+2. PyZotero
+3. Python 2.7.10
 
 ## Other Requirements:
 Windows 7/8/8.1/10 (should work on others, but we've only tested on these)
