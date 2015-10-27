@@ -8,10 +8,6 @@ import argparse
 from pyzotero import zotero
 from pickler import Pickler
 
-user_id = '2710002';
-user_type = 'user';
-api_key = 'jxIEnHTfXW5guwz6X8q5upsv';
-
 class BEditor:
 	""" class used for batch editing"""
 
