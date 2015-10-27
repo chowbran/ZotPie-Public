@@ -14,7 +14,7 @@ This can be found in our Deliverable 2 folder
 ## Deliverable 3
 
 All the documentation is contained in the Deliverable 3 folder (including the updated system diagram).
-The build files are located [here.](./ZotPie UI/ZotPieApp/ZotPieApp)
+The build files (with README instructions) are located [here.](./ZotPie UI/ZotPieApp/ZotPieApp)
 
 ## Task Board (Sprint #1)
 
