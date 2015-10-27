@@ -14,13 +14,16 @@ class MainStartWin(QtGui.QMainWindow, Ui_StartWindow):
         self.setupUi(self)
         self.eventHandlerSetup()
         self.userData = UserData()
-        self.userData.setKeyValue("GENERAL", 'apikey2', '1111222221122')
+        
+        if (self.userData.getValue('GENERAL', 'apikey')):
+            QtGui.QMessageBox.warning("Please enter your API/Library key under preferences")
 
     def eventHandlerSetup(self):
         self.btn_OpenBatchEditor.clicked.connect(lambda: self.openWindow(BatchEditorWin(self)))
         self.btn_OpenCitationEditor.clicked.connect(lambda: self.openWindow(CitationEditorWin(self)))
         #self.btn_OpenCoupleDocuments.clicked.connect(lambda: self.openWindow(CoupleDocumentsWin()))
         #self.btn_OpenCoupleDocuments.clicked.connect(lambda: self.testuserdata())
+        self.actionPreferences.triggered.connect(lambda: self.openWindow(PreferencesWin(self)))
         self.btn_Prefs.clicked.connect(lambda: self.openWindow(PreferencesWin(self)))
         self.btn_Quit.clicked.connect(lambda: sys.exit(0))
 

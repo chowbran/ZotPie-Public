@@ -15,6 +15,8 @@ class UserData(object):
         
     def createConfigFile(self):
         self.addSection('GENERAL')
+        self.setKeyValue('GENERAL', 'apikey', '')
+        self.setKeyValue('GENERAL', 'libraryid', '')
 
     def configExists(self):
         return os.path.exists(fileName)
