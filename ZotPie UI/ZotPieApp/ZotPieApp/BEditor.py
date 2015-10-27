@@ -7,7 +7,6 @@ import sys
 import argparse
 from pyzotero import zotero
 from pickler import Pickler
-from userData import UserData
 
 class BEditor:
 	""" class used for batch editing"""
@@ -18,7 +17,7 @@ class BEditor:
 		self._pickle_save = 'user_data'
 
 		#data for accessing zotero library
-		#self._userData = {"user_id": user_id, "user_type": user_type, "api_key": api_key}
+		self._userData = {"user_id": user_id, "user_type": user_type, "api_key": api_key}
 
 		#check if we have a pickle that already contains user info
 		#if so load that data from pickle
@@ -26,8 +25,6 @@ class BEditor:
 		#	self._pickle = Pickler(self._pickle_save)
 		#	self._userData = pickle.load()
 
-
-        self.userData = UserData()
 		#initialize a connection to library and validate connection
 		try:
 			self._zot = zotero.Zotero(user_id, user_type, api_key)
