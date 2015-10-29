@@ -87,7 +87,7 @@ class Ui_BatchEditorWindow(object):
         self.lbl_Collection.setObjectName(_fromUtf8("lbl_Collection"))
         self.verticalLayout_4.addWidget(self.lbl_Collection)
         self.combo_Collection = QtGui.QComboBox(self.grp_Parameters)
-        self.combo_Collection.setEnabled(True)
+        self.combo_Collection.setEnabled(False) # Chow - Initiate this as false
         self.combo_Collection.setObjectName(_fromUtf8("combo_Collection"))
         self.verticalLayout_4.addWidget(self.combo_Collection)
         self.horizontalLayout.addLayout(self.verticalLayout_4)

@@ -12,10 +12,13 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
     
     def eventHandlerSetup(self):
         self.btn_Apply.clicked.connect(self.btnApplyHandler)
+
+        self.combo_Scope.currentIndexChanged.connect(lambda x: 
+            self.combo_Collection.setEnabled(x != 0))
+
         self.combo_Modify.currentIndexChanged.connect(self._hideNewFields)
         collections = self.editor.get_collections()
         names = [coll.values()[0] for coll in collections]
-        self.combo_Collection.addItem("All")
         self.combo_Collection.addItems(names)
 
     def _hideNewFields(self, selIndex):
