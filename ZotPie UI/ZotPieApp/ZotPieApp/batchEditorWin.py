@@ -9,6 +9,8 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         self.setupUi(self)
         self.editor = BEditor('2710002', 'user', 'jxIEnHTfXW5guwz6X8q5upsv')
         self.eventHandlerSetup()
+        self.quagganIn = QtGui.QPixmap('Images/Box_quaggan_icon.png')
+        self.quagganOut = QtGui.QPixmap('Images/120px-Box_quaggan_icon_2.png')
     
     def eventHandlerSetup(self):
         self.btn_Apply.clicked.connect(self.btnApplyHandler)
@@ -54,6 +56,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         if reply == QtGui.QMessageBox.No:
             return
 
+        self.lbl_Quaggan.setPixmap(self.quagganIn)
         coll = self.combo_Collection.itemText(
                     self.combo_Collection.currentIndex())
 
@@ -86,5 +89,6 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         else:
             actionStr = "Removed"
             modStr = "{0} tag(s): {1} from {3}.".format(actionStr, str(old_value), str(new_value), modifiedCollection)
-
+           
+        self.lbl_Quaggan.setPixmap(self.quagganOut);
         QtGui.QMessageBox.information(self, actionStr, modStr)
