@@ -31,57 +31,60 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
 
     def btnApplyHandler(self):
         self.progressBar.setValue(0)
-
+        
         # Get the index of the selected modify option
         type_index = self.combo_Type.currentIndex()
-        modify_index = self.combo_Modify.currentIndex()
+        action_index = self.combo_Modify.currentIndex()
         scope_index = self.combo_Scope.currentIndex()
-
-        coll = self.combo_Collection.itemText(self.combo_Collection.currentIndex())
 
         old_value = self.txt_OldValue.text()
         new_value = self.txt_NewValue.text()
 
-        self.progressBar.setValue(0)
-        self.progressBar.value += 10
-
         record_type = self.combo_Type.itemText(type_index)
-        action = self.combo_Modify.itemText(modify_index)
+        action = self.combo_Modify.itemText(action_index)
         scope = self.combo_Scope.itemText(scope_index)
 
-        self.progressBar.value += 20
-        
+        coll = self.combo_Collection.itemText(self.combo_Collection.currentIndex())
         reply = QtGui.QMessageBox.question(self, 'Confirmation',
             "Are you sure you want to " + action.toLower() + " these tags from " + ("all collections" if scope=="All" else coll) + "?", QtGui.QMessageBox.Yes | 
             QtGui.QMessageBox.No)
 
+        self.progressBar.setValue(10)
+
         if reply == QtGui.QMessageBox.No:
             return
+
+        coll = self.combo_Collection.itemText(
+                    self.combo_Collection.currentIndex())
 
         if action == "Modify":
             if scope == "All":
                 self.editor.batch_edit_tag(str(old_value), str(new_value))
-                QtGui.QMessageBox.information(self, "Modified", "Modified tag: " + str(old_value) + " to " + str(new_value) + " from all collections.")
             elif scope == "Collection":
-                coll = self.combo_Collection.itemText(
-                    self.combo_Collection.currentIndex())
                 self.editor.batch_edit_tag_collection(str(coll), str(old_value), str(new_value))
-                QtGui.QMessageBox.information(self, "Modified", "Modified tag: " + str(old_value) + " to " + str(new_value) + " from " + str(coll) + ".")
         elif action == "Remove":
             if scope == "All":
                 self.editor.delete_tag(str(old_value))
-                QtGui.QMessageBox.information(self, "Removed", "Removed tag: " + str(old_value) + " from all collections.")
             elif scope == "Collection":
-                coll = self.combo_Collection.itemText(
-                    self.combo_Collection.currentIndex())
                 self.editor.delete_tag_collection(str(coll), str(old_value))
-                QtGui.QMessageBox.information(self, "Removed", "Removed tag: " + str(old_value) + " from " + str(coll) + ".")
 
 
         for i in range(0,6):
-            self.progressBar.setValue(self.progressBar.value + 10);
-            time.sleep(.5)
+            self.progressBar.setValue(self.progressBar.value() + 10)
+            time.sleep(.2)
 
-        time.sleep(.5)
+        self.progressBar.setValue(100)
 
-        self.progressBar.setValue(100);
+        if scope == "Collection":
+            modifiedCollection = coll
+        else:
+            modifiedCollection = "all collections"
+
+        if action == "Modify":
+            actionStr = "Modified"
+            modStr = "{0} tag(s): {1} to {2} from {3}.".format(actionStr, str(old_value), str(new_value), modifiedCollection)
+        else:
+            actionStr = "Removed"
+            modStr = "{0} tag(s): {1} from {3}.".format(actionStr, str(old_value), str(new_value), modifiedCollection)
+
+        QtGui.QMessageBox.information(self, actionStr, modStr)
