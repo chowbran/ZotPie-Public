@@ -1,7 +1,7 @@
 ﻿import ConfigParser
 import os
 
-fileName = "userdata.cfg"
+fileName = "./Data/userdata.cfg"
 
 class UserData(object):
     """User data object that stores user settings"""
@@ -14,6 +14,9 @@ class UserData(object):
             self.config.read(fileName)
         
     def createConfigFile(self):
+        if not os.path.exists(os.path.dirname(fileName)):
+            os.makedirs(os.path.dirname(fileName))
+
         self.addSection('GENERAL')
 
     def configExists(self):
