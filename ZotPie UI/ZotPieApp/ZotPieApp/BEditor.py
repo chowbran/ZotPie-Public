@@ -62,6 +62,26 @@ class BEditor:
         except Exception, err:
             raise
 
+    # def editBatchTags(self, old_tag={}, new_tag):
+    #     ''' this takes all items with tag, old_tag and updates it so
+    #         that old_tag is replaced by new_tag
+    #     '''
+
+    #     searchTags = old_tag
+
+    #     allItems = self._zot.items()
+
+    #     items = filter(lambda x: 
+    #         return old_tag.isdisjoint([tag['tag'] for tag in x['data']['tags']]), allItems)
+
+    #     #for each item in the library access the list containing all of its tag information
+    #     #in item['data']['tags'] which is a list of dicts of form {tag: tagname, type: value}
+    #     for item in items:
+    #         for tag in item['data']['tags']:
+    #             #replace old tag with new tagname with new_tag if applicable
+    #             tag['tag'] = new_tag
+    #             self._zot.update_item(item)
+
     def batch_edit_tag(self, old_tag, new_tag):
         ''' this takes all items with tag, old_tag and updates it so
             that old_tag is replaced by new_tag
@@ -87,7 +107,21 @@ class BEditor:
             tags = item['data']['tags']
             tags[:] = [tag for tag in tags if tag.get('tag') != del_tag]
             item['data']['tags'] = tags
-            self._zot.update_item(item)             
+            self._zot.update_item(item)   
+
+    def getTags(self):
+        ''' (self) -> set
+            this takes all items with del_tag and deletes them.
+        '''
+        items = self._zot.items();
+        tagSet = set()
+        # Delete the tags old_tag in the collection identified by collectionID
+        for item in items:
+            tagDict = item['data']['tags']
+            tags = [tag['tag'] for tag in tagDict]
+            tagSet = tagSet.union(set(tags))
+
+        return tagSet
 
     def delete_tag_collection(self, collection, del_tag):
         ''' (self, str) -> None
