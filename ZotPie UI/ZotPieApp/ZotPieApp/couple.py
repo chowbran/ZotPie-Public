@@ -32,24 +32,47 @@ class CoupleDocuments:
 		if utype !=	 'user':
 			self.zotgroup = zotero.Zotero(self.uid, 'group', self.key)
 			
-	def populateUserRecords(self):
-		'''populates all of the records of the user
+	def getCollections(self, groupId=''):
+		'''returns the collections of the user in a dictionary, or the group corresponding
+		   to the Id of given one. 
+		'''
+		if  not (groupId == ''):
+			accessKey = zotero.Zotero(groupId, 'group', self.key)
+		else:
+			accessKey = self.zot
+		
+		returnCollections = []
+		
+		for collection in accessKey.collections():
+			returnCollections.append([collection['data']['name']], [collection['key']])
+				
+		return returnCollections 
+	
+			
+	def getRecords(self, key, groupId=''):
+		''' gets the records of a chosen collection, or the group corresponding 
+			to the Id of the given one.
 		'''
 		
-		listofRecords = self.zot.items()
+		if not (groupId == ''):
+			accessKey = zotero.Zotero(groupId, 'group', self.key)
+		else:
+			accessKey = self.zot
+		
+		listofRecords = self.zot.collection_items(key)
 		namesofRecords = []
 		
 		
 		
 		for record in listofRecords:
-			json_file = open('tester.json', 'w')
-			json.dump(record, json_file)			
+			# json_file = open('tester.json', 'w')
+			# json.dump(record, json_file)			
 			namesofRecords.append([record['data']['title'], record['data']['key']])
 			
 		return namesofRecords	
 
-	def populateGroupCollections(self):
-		'''populates all of groups associated with the user
+	def getGroups(self):
+		'''gives all of groups associated with the user
 		'''
 		listofGroups = self.zot.groups()
 		groupAccessName = []
@@ -59,18 +82,6 @@ class CoupleDocuments:
 
 		return groupAccessName
 
-	def populateGroupRecords(self, groupId):
-		'''given a group, we return all record names that are associated
-		   with that group
-		'''
-
-		recordNames = []
-		groupAccess = zotero.Zotero(groupId, 'group', self.key)
-
-		for record in groupAccess.items():
-			recordNames.append(record['data']['title'])
-
-		return recordNames
 
 
 	def jsonFileUpdater(self, key, documentList):
@@ -94,7 +105,10 @@ class CoupleDocuments:
 					value = documentList
 
 			json_file = open('keys.json', 'w')
-		
+		else:
+			json_file = json_file = open('keys.json', 'w')
+			json_dic = {key: documentList}
+			
 
 
 		json.dump(json_dic, json_file)
@@ -127,8 +141,6 @@ class CoupleDocuments:
 		   list of documents that don't have the right itemType
 		'''
 		
-		jsonFileUpdater( key, documentsToChange)
-		rejects = []
 		coupledDocuments = self.jsonKeyGetter(key)
 
 		#find the original document
@@ -151,6 +163,9 @@ class CoupleDocuments:
 			#if type is not equal, add it to a list to be sent back
 				rejects.append(copy[0]['title'])
 
+		jsonFileUpdater( key, documentsToChange)
+		rejects = []
+		
 		return rejects
 
 if __name__ == "__main__":
