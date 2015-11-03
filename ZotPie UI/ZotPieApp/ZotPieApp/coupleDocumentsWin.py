@@ -9,20 +9,25 @@ class CoupleDocumentsWin(QtGui.QMainWindow, Ui_CoupleDocumentsWindow):
         self.cDoc = CoupleDocuments()
         self.cDoc.config()
         self.userCollections = self.cDoc.getCollections()
-        self.groupCollections = self.cDoc.getGroups()
+        self.groups = self.cDoc.getGroups()
+        self.groupCollections = None
+
         self.populateUserCollections()
         self.populateUserGroup()
         #self.cDoc.populateGroupCollections()
         self.eventHandlerSetup()
+
+        self.curGroupId = ''
 
 
     def eventHandlerSetup(self):
 
         self.combo_Original.currentIndexChanged.connect(self.populateUserRecords)
         self.combo_Group.currentIndexChanged.connect(self.populateGroupCollections)
+        self.combo_Copy.currentIndexChanged.connect(self.populateGroupRecords)
 
     def populateUserRecords(self):
-
+        self.list_Original.clear()
         index = self.combo_Original.currentIndex()
         collectionName = (self.combo_Original.itemText(index))
         collection = self.userCollections
@@ -33,32 +38,51 @@ class CoupleDocumentsWin(QtGui.QMainWindow, Ui_CoupleDocumentsWindow):
                 collectionKey = key
 
         recordsDic = self.cDoc.getRecords(collectionKey)
-        recordTitles = []
+        
+        for value in recordsDic.values():
+            self.list_Original.addItem(value)
+    
+    def populateGroupRecords(self):
+        self.list_Copy.clear()
+        index = self.combo_Copy.currentIndex()
+        collectionName = self.combo_Copy.itemText(index)
+        collectionKey = ''
 
-        for key in recordsDic.keys():
-            recordTitles += [recordsDic[key]]
+        for key, value in self.groupCollections.iteritems():
+            if (value == collectionName):
+                collectionKey = key
+                break
+        
+        if (collectionKey == ''):
+            return
 
+        #print(self.curGroupId)
+        #print(collectionKey)
+        recordsDic = self.cDoc.getRecords(collectionKey, self.curGroupId)
 
-        model = QtGui.QStandardItemModel(self.list_Original)
+        for value in recordsDic.values():
+            self.list_Copy.addItem(value)
 
-        for record in recordTitles:
-            item = QtGui.QStandardItem(record)
-            model.appendRow(item)
-
-        self.list_Original.setModel(model)
 
     def populateGroupCollections(self):
-
-        index = self.combo_Original.currentIndex()
+        self.combo_Copy.clear()
+        index = self.combo_Group.currentIndex()
         groupName = self.combo_Group.itemText(index)
-        #groupId 
 
-        #for
+        for key, value in self.groups.iteritems():
+            if (value == groupName):
+                self.curGroupId = key
+                break
+
+        self.groupCollections = self.cDoc.getCollections(self.curGroupId)
+
+        for value in self.groupCollections.values():
+            self.combo_Copy.addItem(value)
 
     def populateUserGroup(self):
 
-        for key in self.groupCollections.keys():
-            self.combo_Group.addItem(self.groupCollections[key])
+        for key in self.groups.keys():
+            self.combo_Group.addItem(self.groups[key])
 
     def populateUserCollections(self):
 

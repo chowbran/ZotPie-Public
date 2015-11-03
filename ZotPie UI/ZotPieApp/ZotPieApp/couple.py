@@ -60,7 +60,7 @@ class CoupleDocuments:
         else:
             accessKey = self.zot
 
-        listofRecords = self.zot.collection_items(key)
+        listofRecords = accessKey.collection_items(key)
         namesofRecords = {}
 
         for record in listofRecords:
