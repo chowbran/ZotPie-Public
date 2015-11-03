@@ -82,6 +82,27 @@ class BEditor:
 		'''
 		items = self._zot.items(tag=del_tag);
 
+		# Delete the tags old_tag in the collection identified by collectionID
+		for item in items:
+			tags = item['data']['tags']
+			tags[:] = [tag for tag in tags if tag.get('tag') != del_tag]
+			item['data']['tags'] = tags
+			self._zot.update_item(item)				
+
+	def delete_tag_collection(self, collection, del_tag):
+		''' (self, str) -> None
+			this takes all items with del_tag and deletes them.
+		'''
+		collections = self._zot.collections(tag=del_tag);
+		collectionID = collections[0]['data']['key']
+
+		# Find the collectionID of collection collection
+		for coll in collections:
+			if coll['data']['name'] == collection:
+				collectionID = coll['data']['key']
+
+		items = self._zot.collection_items(collectionID);
+
 		#for each item in the library access the list containing all of its tag information
 		#in item['data']['tags'] which is a list of dicts of form {tag: tagname, type: value}
 		for item in items:
@@ -100,7 +121,7 @@ class BEditor:
 		''' return entire library's raw data '''
 		return self._zot.items();
 
-	def batch_edit_collection(self, collection, old_tag, new_tag):
+	def batch_edit_tag_collection(self, collection, old_tag, new_tag):
 		''' replaces all tags with value old_tag with value new_tag in specified
 			collection and updates the library
 		''' #UNTESTED
