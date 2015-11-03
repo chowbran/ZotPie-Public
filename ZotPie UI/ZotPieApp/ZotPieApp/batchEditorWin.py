@@ -11,6 +11,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         self.eventHandlerSetup()
         self.quagganIn = QtGui.QPixmap('Images/Box_quaggan_icon.png')
         self.quagganOut = QtGui.QPixmap('Images/120px-Box_quaggan_icon_2.png')
+        self.combo_Collection.setEnabled(False)
     
     def eventHandlerSetup(self):
         self.btn_Apply.clicked.connect(self.btnApplyHandler)
@@ -31,6 +32,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         self.lbl_New.setEnabled(selIndex != 1)
         self.txt_NewValue.setEnabled(selIndex != 1)
 
+
     def btnApplyHandler(self):
         self.progressBar.setValue(0)
         
@@ -39,8 +41,12 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         action_index = self.combo_Modify.currentIndex()
         scope_index = self.combo_Scope.currentIndex()
 
-        old_value = self.txt_OldValue.text()
-        new_value = self.txt_NewValue.text()
+        old_value = self.txt_OldValue.text().trimmed()
+        new_value = self.txt_NewValue.text().trimmed()
+
+        if (old_value == '' or new_value == ''):
+            QtGui.QMessageBox.warning(self, "Error", "Values cannot be empty.")
+            return
 
         record_type = self.combo_Type.itemText(type_index)
         action = self.combo_Modify.itemText(action_index)
@@ -51,11 +57,10 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
             "Are you sure you want to " + action.toLower() + " these tags from " + ("all collections" if scope=="All" else coll) + "?", QtGui.QMessageBox.Yes | 
             QtGui.QMessageBox.No)
 
-        self.progressBar.setValue(10)
-
-        if reply == QtGui.QMessageBox.No:
+        if (reply == QtGui.QMessageBox.No):
             return
 
+        self.progressBar.setValue(10)
         self.lbl_Quaggan.setPixmap(self.quagganIn)
         coll = self.combo_Collection.itemText(
                     self.combo_Collection.currentIndex())
