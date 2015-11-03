@@ -1,7 +1,7 @@
-﻿from PyQt4 import QtCore, QtGui
+﻿import time
+from PyQt4 import QtCore, QtGui
 from batchEditor import Ui_BatchEditorWindow
 from BEditor import BEditor
-
 
 class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*class it is
     def __init__(self, parent=None):
@@ -30,7 +30,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         self.txt_NewValue.setEnabled(selIndex != 1)
 
     def btnApplyHandler(self):
-        self.progressBar.value = 0;
+        self.progressBar.setValue(0)
 
         # Get the index of the selected modify option
         type_index = self.combo_Type.currentIndex()
@@ -55,20 +55,21 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
                 self.editor.batch_edit_tag(str(old_value), str(new_value))
             elif scope == "Collection":
                 coll = self.combo_Collection.itemText(
-                    self.combo_Scope.currentIndex())
+                    self.combo_Collection.currentIndex())
                 self.editor.batch_edit_tag_collection(str(coll), str(old_value), str(new_value))
         elif action == "Remove":
             if scope == "All":
                 self.editor.delete_tag(str(old_value))
             elif scope == "Collection":
                 coll = self.combo_Collection.itemText(
-                    self.combo_Scope.currentIndex())
+                    self.combo_Collection.currentIndex())
                 self.editor.delete_tag_collection(str(coll), str(old_value))
 
 
+        for i in range(0,6):
+            self.progressBar.setValue(self.progressBar.value + 10);
+            time.sleep(.5)
+
+        time.sleep(.5)
 
         self.progressBar.setValue(100);
-
-        print action + "(" + str(old_value) + ", " + str(new_value) + ")"
-        print coll
-
