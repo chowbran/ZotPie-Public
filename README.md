@@ -9,7 +9,12 @@ This is available on our website.
 ## Deliverable 2
 
 A pdf file containing our documents and our planning game video.
-This can be found in our Deliverable 2 folder/
+This can be found in our Deliverable 2 folder
+
+## Deliverable 3
+
+All the documentation (including the updated system diagram) is contained in the Deliverable 3 folder [here](./Deliverable 3).
+The build files (with README instructions) are located [here.](./ZotPie UI/ZotPieApp/ZotPieApp)
 
 ## Task Board (Sprint #1)
 
