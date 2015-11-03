@@ -51,9 +51,9 @@ class CoupleDocumentsWin(QtGui.QMainWindow, Ui_CoupleDocumentsWindow):
 
         index = self.combo_Original.currentIndex()
         groupName = self.combo_Group.itemText(index)
-        groupId 
+        #groupId 
 
-        for
+        #for
 
     def populateUserGroup(self):
 
