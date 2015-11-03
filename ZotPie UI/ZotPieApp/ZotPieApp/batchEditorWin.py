@@ -37,7 +37,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         modify_index = self.combo_Modify.currentIndex()
         scope_index = self.combo_Scope.currentIndex()
 
-        coll = ''
+        coll = self.combo_Collection.itemText(self.combo_Collection.currentIndex())
 
         old_value = self.txt_OldValue.text()
         new_value = self.txt_NewValue.text()
@@ -50,13 +50,19 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         scope = self.combo_Scope.itemText(scope_index)
 
         self.progressBar.value += 20
+        
+        reply = QtGui.QMessageBox.question(self, 'Confirmation',
+            "Are you sure you want to " + action.toLower() + " these tags from " + ("all collections" if scope=="All" else coll) + "?", QtGui.QMessageBox.Yes | 
+            QtGui.QMessageBox.No)
+
+        if reply == QtGui.QMessageBox.No:
+            return
 
         if action == "Modify":
             if scope == "All":
                 self.editor.batch_edit_tag(str(old_value), str(new_value))
                 QtGui.QMessageBox.information(self, "Modified", "Modified tag: " + str(old_value) + " to " + str(new_value) + " from all collections.")
             elif scope == "Collection":
-                coll = self.combo_Collection.itemText(self.combo_Collection.currentIndex())
                 self.editor.batch_edit_tag_collection(str(coll), str(old_value), str(new_value))
                 QtGui.QMessageBox.information(self, "Modified", "Modified tag: " + str(old_value) + " to " + str(new_value) + " from " + str(coll) + ".")
         elif action == "Remove":
@@ -64,7 +70,6 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
                 self.editor.delete_tag(str(old_value))
                 QtGui.QMessageBox.information(self, "Removed", "Removed tag: " + str(old_value) + " from all collections.")
             elif scope == "Collection":
-                coll = self.combo_Collection.itemText(self.combo_Collection.currentIndex())
                 self.editor.delete_tag_collection(str(coll), str(old_value))
                 QtGui.QMessageBox.information(self, "Removed", "Removed tag: " + str(old_value) + " from " + str(coll) + ".")
 
