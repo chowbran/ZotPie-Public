@@ -101,7 +101,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         tagList[:] = [tag for tag in tagList if tag not in self.changeSet]
 
         if str(search).strip() == '':
-            result = tagList
+            result = [] #{tagList}
         else:
             result = filter(lambda x: self.fuzzy_match(str(search), str(x)), tagList)
 
@@ -125,10 +125,11 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         action_index = self.combo_Modify.currentIndex()
         scope_index = self.combo_Scope.currentIndex()
 
-        old_value = self.txt_OldValue.text().trimmed()
-        new_value = self.txt_NewValue.text().trimmed()
+        # old_value = self.txt_OldValue.text().trimmed()
+        new_value = self.txt_Replace.text().trimmed()
 
-        if (old_value == '' or new_value == ''):
+        if (new_value == ''):
+        # if (old_value == '' or new_value == ''):
             QtGui.QMessageBox.warning(self, "Error", "Values cannot be empty.")
             return
 
@@ -149,9 +150,20 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         coll = self.combo_Collection.itemText(
                     self.combo_Collection.currentIndex())
 
+        # if action == "Modify":
+        #     if scope == "All":
+        #         self.editor.batch_edit_tag(str(old_value), str(new_value))
+        #     elif scope == "Collection":
+        #         self.editor.batch_edit_tag_collection(str(coll), str(old_value), str(new_value))
+        # elif action == "Remove":
+        #     if scope == "All":
+        #         self.editor.delete_tag(str(old_value))
+        #     elif scope == "Collection":
+        #         self.editor.delete_tag_collection(str(coll), str(old_value))
+
         if action == "Modify":
             if scope == "All":
-                self.editor.batch_edit_tag(str(old_value), str(new_value))
+                self.editor.editBatchTags(self.changeSet, str(new_value))
             elif scope == "Collection":
                 self.editor.batch_edit_tag_collection(str(coll), str(old_value), str(new_value))
         elif action == "Remove":
@@ -174,7 +186,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
 
         if action == "Modify":
             actionStr = "Modified"
-            modStr = "{0} tag(s): {1} to {2} from {3}.".format(actionStr, str(old_value), str(new_value), modifiedCollection)
+            modStr = "{0} tag(s): {1} to {2} from {3}.".format(actionStr, str(self.changeSet), str(new_value), modifiedCollection)
         else:
             actionStr = "Removed"
             modStr = "{0} tag(s): {1} from {3}.".format(actionStr, str(old_value), str(new_value), modifiedCollection)
