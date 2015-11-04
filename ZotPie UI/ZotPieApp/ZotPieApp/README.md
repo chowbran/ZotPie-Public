@@ -15,6 +15,8 @@ We recommend: PyQt4 v4.8.7 (Python 2.7)
 
 PyZotero: pip install pyzotero
 
+Natural Language Tool Kit (NLTK): pip install nltk
+
 Python 2.7.10: google and install
 
 ## How To RUN:
@@ -30,3 +32,4 @@ Python 2.7.10: https://www.python.org/downloads/release/python-2710/ (includes P
 PIP Standalone: https://pip.pypa.io/en/latest/installing/ (Instructions for installing PIP)
 
 Zotero PyZotero API: pip install PyZotero (from command-line)
+NLTK: pip install nltk (from command-line)
