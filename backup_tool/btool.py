@@ -2,6 +2,7 @@ import os
 import sys
 from pyzotero import zotero
 from pickler import pickler
+import time
 
 class BTool:
 	''' A tool for backing up and restoring a zotero library 
@@ -63,7 +64,11 @@ class BTool:
 			returns the current list of backups on local machine, raises
 			an exception if no saves exist
 		'''
-		pass
+		p = Pickler("savelog")
+		try:
+			return p.load()
+		except Exception, err:
+			raise
 
 	def update_savelog(self, mode, item):
 		'''(BTool, string, string)-> NoneType
@@ -72,19 +77,60 @@ class BTool:
 			*** should only be used my backup() and restore() methods in this 
 			class to ensure save corruption doesn't occur. ***
 		'''
-		pass
+		p = Pickler("savelog")
+
+		try: 
+			#add/remove item from the list of items
+			data = p.load()
+			if mode == "add":
+				data.append(item)
+			else:
+				data.remove(item)
+			p.save(data)
+		except:
+			#in this case there is no savelog, so make one containing item
+			data = []
+			data.append(item)
+			p.save(data) 
 
 	def backup(self):
 		'''(BTool) -> NoneType
 			saves the entire library to pickle
 		'''
-		#see the code in batch-editors backup feature
-		#save to path/user_id_version(from zot.data)
-		#this allows multiple users to use without conflict
-		pass
+		#initialize connection
+		zot = zotero.Zotero(self._userData['user_id'],
+							self._userData['user_type'],
+							self._userData['api_key'])
 
-	def restore(self, version=''):
+		#get the data to backup and name the save file
+		#library_id + current (24 hour) time to allow for easy backing up
+		data = zot.items()
+		version = user_id + time.strftime("%H:%M:%S")
+		p = Pickler(version)
+
+		#save the data and update savelog
+		p.save(data)
+		p.update_savelog(data)
+
+
+	def restore(self, version):
 		'''(BTool, str)-> NoneType
 		'''
-		#see the code in batch-editors restore feature
-		pass
+		#backup current library
+		self.backup()
+
+		#delete all library data
+		zot = zotero.Zotero(self._userData['user_id'],
+							self._userData['user_type'],
+							self._userData['api_key'])
+
+		items = zot.items()
+
+		for item in items:
+			zot.delete(item)
+
+		#add old library data
+		p = Pickler(version)
+		items = p.load()
+		for item in items:
+			zot.create_items(item)
