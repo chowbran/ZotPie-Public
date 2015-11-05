@@ -27,9 +27,8 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         self.editor = BEditor('2710002', 'user', 'jxIEnHTfXW5guwz6X8q5upsv')
 
         # store tags in a list
-        self.tags = self.editor.getTags()
-        self.changeSet = set() #self.tags
-        self.list_Tags.addItems(list(self.tags))
+        self.tagSet = self.editor.getTags()
+        self.changeSet = set() 
 
         # Populate the collection drop down menu
         tags = self.editor.getTags()
@@ -61,49 +60,86 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
 
     def addChange(self):
         toChange = []
+        toChangeStr = []
 
         selected = self.list_Tags.selectedItems()
-        selectdRows = [self.list_Tags.row(selectedItem) for selectedItem in selected]
+        # selectdRows = [self.list_Tags.row(selectedItem) for selectedItem in selected]
 
-        for row in selectdRows:
-            toChange += [self.list_Tags.takeItem(row)]
+        # for row in selectdRows:
+        #     toChange += [self.list_Tags.takeItem(row)]
 
-        toChangeStr = [str(row.text()) for row in toChange]
+        # toChangeStr = [str(row.text()) for row in toChange]
+
+        for selectedItem in selected:
+            self.list_Tags.removeItemWidget(selectedItem)
+            self.list_ChangeTags.addItem(selectedItem)
+
+        toChangeStr = [str(row.text()) for row in selected]
 
         self.changeSet = self.changeSet.union(set(toChangeStr))
 
-        self.list_ChangeTags.addItems(toChangeStr)
+        # self.list_ChangeTags.addItems(toChangeStr)
+        # self.list_Tags.clearSelection()
+        self.refreshListWidgets()
 
     def removeChange(self):
         toNoChange = []
+        toNoChangeStr = []
 
         selected = self.list_ChangeTags.selectedItems()
-        selectdRows = [self.list_ChangeTags.row(selectedItem) for selectedItem in selected]
 
-        for row in selectdRows:
-            toNoChange += [self.list_ChangeTags.takeItem(row)]
+        # selectdRows = [self.list_ChangeTags.row(selectedItem) for selectedItem in selected]
 
-        toNoChangeStr = [str(row.text()) for row in toNoChange]
+        # for row in selectdRows:
+        #     toNoChange += [self.list_ChangeTags.takeItem(row)]
+
+        # print toNoChange
+
+        for selectedItem in selected:
+            self.list_ChangeTags.removeItemWidget(selectedItem)
+            self.list_Tags.addItem(selectedItem)
+
+        toNoChangeStr = [str(row.text()) for row in selected]
+        # toNoChangeStr = [str(row.text()) for row in toNoChange]
 
         self.changeSet = self.changeSet.difference(set(toNoChangeStr))
 
-        print str(self.changeSet)
+        # print self.changeSet
+        # print self.list_ChangeTags
 
+        # self.list_ChangeTags.repaint()
+        # self.list_Tags.repaint()
 
-        self.list_Tags.addItems(toNoChangeStr)
+        # QtGui.QApplication.processEvents()
+
+        # self.list_Tags.addItems(toNoChangeStr)
+        # self.list_ChangeTags.clearSelection()
+        self.refreshListWidgets()
+
+    def refreshListWidgets(self):
+        # self.list_Tags.clear()
+        self.list_ChangeTags.clear()
+        # self.list_Tags.addItems(list(self.tagSet.difference(self.changeSet)))
+        self.list_ChangeTags.addItems(list(self.changeSet))
+
+        self.textFilterEditedHandler()
+
 
     def textFilterEditedHandler(self):
         search = self.txt_Filter.text()
 
-        tagList = list(self.tags)
+        tagList = list(self.tagSet)
         
         # Remove the ones already selected
         tagList[:] = [tag for tag in tagList if tag not in self.changeSet]
+
+        print search
 
         if str(search).strip() == '':
             result = [] #{tagList}
         else:
             result = filter(lambda x: self.fuzzy_match(str(search), str(x)), tagList)
+
 
         self.list_Tags.clear()
         self.list_Tags.addItems(result)
