@@ -1,6 +1,7 @@
 ﻿from PyQt4 import QtCore, QtGui
 from citationEditor import Ui_CitationEditorWindow
 from pyzotero import zotero
+from xmleditor import xmlpython
 
 zot = zotero.Zotero('2720485', 'user', 'amxUEQbOcgQShX0Xd0zuQDvR')
 records = []
@@ -23,6 +24,7 @@ class CitationEditorWin(QtGui.QMainWindow, Ui_CitationEditorWindow):
 
     def eventHandlerSetup(self):
         self.btn_Add.clicked.connect(self.addField)
+        self.btn_Load.clicked.connect(self.LoadField)
         self.btn_Remove.clicked.connect(self.removeField)
         self.btn_Generate.clicked.connect(self.generate)
         self.combo_Record.currentIndexChanged.connect(self.populateFields)
@@ -131,6 +133,17 @@ class CitationEditorWin(QtGui.QMainWindow, Ui_CitationEditorWindow):
 
         self.selected = entry
         entry.setStyleSheet("font-size:15px;background-color:#FFFF66;border: 2px solid #222222")
+
+    def LoadField(self,Path = None):
+        File = xmlpython(Path)
+        List = File.GetLayout('citation')
+        savedfselected = self.fselected
+        for item in List:
+            self.fselected = item
+            self.addField()
+	self.fselected = savedfselected
+
+
 
 
 
