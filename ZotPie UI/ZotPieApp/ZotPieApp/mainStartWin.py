@@ -2,7 +2,7 @@
 from mainStart import Ui_StartWindow
 from batchEditorWin import BatchEditorWin
 from citationEditorWin import CitationEditorWin
-#from coupleDocumentsWin import CoupleDocumentsWin
+from coupleDocumentsWin import CoupleDocumentsWin
 from preferencesWin import PreferencesWin
 from userData import UserData
 
@@ -24,7 +24,7 @@ class MainStartWin(QtGui.QMainWindow, Ui_StartWindow):
     def eventHandlerSetup(self):
         self.btn_OpenBatchEditor.clicked.connect(lambda: self.openWindow(BatchEditorWin(self)))
         self.btn_OpenCitationEditor.clicked.connect(lambda: self.openWindow(CitationEditorWin(self)))
-        #self.btn_OpenCoupleDocuments.clicked.connect(lambda: self.openWindow(CoupleDocumentsWin()))
+        self.btn_OpenCoupleDocuments.clicked.connect(lambda: self.openWindow(CoupleDocumentsWin(self)))
         #self.btn_OpenCoupleDocuments.clicked.connect(lambda: self.testuserdata())
         self.actionPreferences.triggered.connect(lambda: self.openWindow(PreferencesWin(self)))
         self.btn_Prefs.clicked.connect(lambda: self.openWindow(PreferencesWin(self)))

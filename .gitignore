@@ -1,0 +1,4 @@
+*.pyc
+*.idea
+keys.json
+userdata.cfg
