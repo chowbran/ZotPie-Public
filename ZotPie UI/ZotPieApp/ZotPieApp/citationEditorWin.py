@@ -3,6 +3,7 @@ from citationEditor import Ui_CitationEditorWindow
 from pyzotero import zotero
 from xmleditor import xmlpython
 
+
 zot = zotero.Zotero('2720485', 'user', 'amxUEQbOcgQShX0Xd0zuQDvR')
 records = []
 recordFields = []
@@ -135,13 +136,17 @@ class CitationEditorWin(QtGui.QMainWindow, Ui_CitationEditorWindow):
         entry.setStyleSheet("font-size:15px;background-color:#FFFF66;border: 2px solid #222222")
 
     def LoadField(self,Path = None):
-        File = xmlpython(Path)
+        fileName = QtGui.QFileDialog.getOpenFileName(self, 'OpenFile')
+        File = xmlpython(fileName)
         List = File.GetLayout('citation')
         savedfselected = self.fselected
         for item in List:
             self.fselected = item
             self.addField()
-	self.fselected = savedfselected
+	    self.fselected = savedfselected
+
+
+
 
 
 
