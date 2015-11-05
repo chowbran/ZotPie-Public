@@ -13,6 +13,7 @@ utypeGroup = ''
 keyGroup = ''
 
 class CoupleDocuments:
+
     def __init__(self):
         self.userData = UserData()
 
@@ -32,7 +33,6 @@ class CoupleDocuments:
 
         self.zot = zotero.Zotero(self.uid, utype, self.key)
 
-
     def getCollections(self, groupId=''):
         '''returns the collections of the user in a dictionary, or the group corresponding
            to the Id of given one.
@@ -44,11 +44,12 @@ class CoupleDocuments:
 
         returnCollections = {}
 
+
+
         for collection in accessKey.collections():
             returnCollections[collection['key']] = collection['data']['name']
 
         return returnCollections
-
 
     def getRecords(self, key, groupId=''):
         ''' gets the records of a chosen collection, or the group corresponding
@@ -60,13 +61,21 @@ class CoupleDocuments:
         else:
             accessKey = self.zot
 
-        listofRecords = accessKey.collection_items(key)
         namesofRecords = {}
 
-        for record in listofRecords:
-            # json_file = open('tester.json', 'w')
-            # json.dump(record, json_file)
-            namesofRecords[record['data']['key']] = record['data']['title']
+        if key == 'n/a':
+            listofRecords = accessKey.top()
+
+            for record in listofRecords:
+
+                if record['data']['collections'] == []:
+                    namesofRecords[record['data']['key']] = record['data']['title']
+        else:
+
+            listofRecords = accessKey.collection_items(key)
+
+            for record in listofRecords:
+                namesofRecords[record['data']['key']] = record['data']['title']
 
         return namesofRecords
 
@@ -80,8 +89,6 @@ class CoupleDocuments:
             groupAccessName[group['data']['id']] = group['data']['name']
 
         return groupAccessName
-
-
 
     def jsonFileUpdater(self, key, documentList):
         '''takes in a key of an original document and a list of dictionaries groups
@@ -132,8 +139,6 @@ class CoupleDocuments:
             if itemkey == key:
                 return value
 
-
-
     def updateCoupledDocuments(self, key, documentsToChange):
         '''Given a key, and a dictionary of changes accesses the json file and updates the
            coupled documents corresponding to the original in the zotero database. Returns
@@ -172,7 +177,8 @@ if __name__ == "__main__":
     test = CoupleDocuments()
     test.config()
     collections = test.getCollections()
-
-    key = collections.keys()[0]
-    collections = test.getRecords(key)
+    # print collections
+    #
+    #
+    collections = test.getRecords('')
     print collections
