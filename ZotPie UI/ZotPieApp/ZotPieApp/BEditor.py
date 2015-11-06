@@ -62,26 +62,28 @@ class BEditor:
         except Exception, err:
             raise
 
-    def editBatchTags(self, old_tag, new_tag):
+    def editBatchTags(self, oldTags, new_tag):
         ''' ({str}, str)
             this takes all items with tag, old_tag and updates it so
             that old_tag is replaced by new_tag
         '''
 
-        searchTags = old_tag
+        searchTags = oldTags
 
         allItems = self._zot.items()
 
         items = filter(lambda x: 
-            not old_tag.isdisjoint([tag['tag'] for tag in x['data']['tags']]), allItems)
+            not oldTags.isdisjoint([tag['tag'] for tag in x['data']['tags']]), allItems)
+
 
         #for each item in the library access the list containing all of its tag information
         #in item['data']['tags'] which is a list of dicts of form {tag: tagname, type: value}
         for item in items:
             for tag in item['data']['tags']:
                 #replace old tag with new tagname with new_tag if applicable
-                tag['tag'] = new_tag
-                self._zot.update_item(item)
+                if tag['tag'] in oldTags:
+                    tag['tag'] = new_tag
+            self._zot.update_item(item)
 
     def batch_edit_tag(self, old_tag, new_tag):
         ''' this takes all items with tag, old_tag and updates it so
