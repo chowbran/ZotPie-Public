@@ -1,7 +1,7 @@
 import os
 import sys
 from pyzotero import zotero
-from pickler import pickler
+from pickler import Pickler
 import time
 
 class BTool:
@@ -11,25 +11,22 @@ class BTool:
 		needs data for accessing the user's library if first use.
 	'''
 
-	def __init__(self, uid='', utype='', apikey=''):
-		''' intialize a new backup tool '''
+	def __init__(self, uid, utype, apikey):
+		''' intialize a new backup tool  @must provide
+		user/library id, user type (if not user) and apikey'''
 		#the name of pickle file used to save user info
 		self._user_pickle = "user_data"
 
 		#get data for accesing Zotero library
 		if len(uid) > 0 and len(utype) > 0 and len(apikey) > 0:
-			self._userData = {"user_id": user_id, "user_type": user_type, "api_key": api_key}
+			self._userData = {"user_id": uid, "user_type": utype, "api_key": apikey}
 		else:
-			if validate_path("data\user_data.p"):
-				p = Pickler(self._user_pickle)
-				self._userData = p.load()
-			else:
-				print >> sys.stderr, 'usage: please provide a valid library id, type, and API key'
+			print >> sys.stderr, 'usage: please provide a valid library id, type, and API key'
 
 		#validate the users info, if invalid return error
-		validate_credentials():
+		self.validate_credentials()
 
-	def validate_credentials():
+	def validate_credentials(self):
 		''' checks that user has read/write access to library'''
 		#initialize a connection to library
 		try:
@@ -43,11 +40,11 @@ class BTool:
 		try:
 			key_info = zot.key_info()['access']['user']
 			if not 'files' in key_info:
-				print >> sterr, "user does not have read access to library"
+				print >> sys.sterr, "user does not have read access to library"
 			elif not 'write' in key_info:
-				print >> stderr, "user does not have write access to library"
+				print >> sys.stderr, "user does not have write access to library"
 			elif not 'library' in key_info:
-				print >> sterr, "user does not have access to library"
+				print >> sys.sterr, "user does not have access to library"
 		except Exception, err:
 			#this should never happen, but just incase!
 			raise
@@ -69,6 +66,7 @@ class BTool:
 			return p.load()
 		except Exception, err:
 			raise
+		#return p.load()
 
 	def update_savelog(self, mode, item):
 		'''(BTool, string, string)-> NoneType
@@ -105,19 +103,19 @@ class BTool:
 		#get the data to backup and name the save file
 		#library_id + current (24 hour) time to allow for easy backing up
 		data = zot.items()
-		version = user_id + time.strftime("%H:%M:%S")
+		version = self._userData["user_id"] + str(data[-1]["version"])
 		p = Pickler(version)
 
 		#save the data and update savelog
 		p.save(data)
-		p.update_savelog(data)
+		self.update_savelog("add", version)
 
 
 	def restore(self, version):
 		'''(BTool, str)-> NoneType
 		'''
 		#backup current library
-		self.backup()
+		#self.backup()
 
 		#delete all library data
 		zot = zotero.Zotero(self._userData['user_id'],
@@ -127,10 +125,13 @@ class BTool:
 		items = zot.items()
 
 		for item in items:
-			zot.delete(item)
+			zot.delete_item(item)
 
 		#add old library data
 		p = Pickler(version)
 		items = p.load()
+		
 		for item in items:
-			zot.create_items(item)
+			item["data"]["version"] = 0
+			item["key"] = ''
+			r = zot.create_items([item])
