@@ -10,13 +10,6 @@ from nltk import stem,tokenize
 
 
 class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*class it is
-    
-    def normalize(self, s):
-        words = tokenize.wordpunct_tokenize(s.lower().strip())
-        return ' '.join([self.stemmer.stem(w) for w in words])
-
-    def fuzzy_match(self, s1, s2, max_dist=3):
-        return edit_distance(self.normalize(s1), self.normalize(s2)) <= max_dist
 
     def __init__(self, parent=None):
         super(BatchEditorWin, self).__init__(parent)
@@ -26,12 +19,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         self.setupUi(self)
         self.editor = BEditor('2710002', 'user', 'jxIEnHTfXW5guwz6X8q5upsv')
 
-        # store tags in a list
-        self.tagSet = self.editor.getTags()
-        self.changeSet = set() 
-
         # Populate the collection drop down menu
-        tags = self.editor.getTags()
         collections = self.editor.get_collections()
         names = [coll.values()[0] for coll in collections]
         self.combo_Collection.addItems(names)
@@ -40,12 +28,26 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         self.eventHandlerSetup()
         self.quagganIn = QtGui.QPixmap('Images/Box_quaggan_icon.png')
         self.quagganOut = QtGui.QPixmap('Images/120px-Box_quaggan_icon_2.png')
+
+    def normalize(self, s):
+        words = tokenize.wordpunct_tokenize(s.lower().strip())
+        return ' '.join([self.stemmer.stem(w) for w in words])
+
+    def fuzzy_match(self, s1, s2, max_dist=3):
+        return edit_distance(self.normalize(s1), self.normalize(s2)) <= max_dist
     
     def eventHandlerSetup(self):
+        self.tagSet = self.editor.getTags()
+        self.changeSet = set()
+
         self.btn_Apply.clicked.connect(self.btnApplyHandler)
 
         self.combo_Scope.currentIndexChanged.connect(lambda x: 
-            self.combo_Collection.setEnabled(x != 0))
+            self.changeScope("") if x == 0 else 
+                self.changeScope(str(self.combo_Collection.itemText(self.combo_Collection.currentIndex()))))
+        
+        self.combo_Collection.currentIndexChanged.connect(lambda x:
+            self.changeScope(str(self.combo_Collection.itemText(x))))
 
         # Handles the txt_Filter textEdited event
         self.txt_Filter.textEdited.connect(self.textFilterEditedHandler)
@@ -54,8 +56,25 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         self.btn_Add.clicked.connect(self.addChange)
         self.btn_Remove.clicked.connect(self.removeChange)
 
-
         self.combo_Modify.currentIndexChanged.connect(self._hideNewFields)
+
+    def changeScope(self, collection):
+        if collection == "":
+            self.combo_Collection.setEnabled(False)
+            # Use all scope
+            self.tagSet = self.editor.getTags()
+            self.changeSet = set()
+            self.refreshListWidgets()
+            return
+
+        self.combo_Collection.setEnabled(True)
+
+        self.tagSet = self.editor.getTagsFromCollection(collection)
+        
+        self.changeSet = set()
+
+        # self.txt_Filter.clear()
+        self.refreshListWidgets()
 
 
     def addChange(self):
@@ -76,7 +95,8 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
 
         toChangeStr = [str(row.text()) for row in selected]
 
-        self.changeSet = self.changeSet.union(set(toChangeStr))
+        # self.changeSet = self.changeSet.union(set(toChangeStr))
+        self.changeSet = self.changeSet | set(toChangeStr)
 
         # self.list_ChangeTags.addItems(toChangeStr)
         # self.list_Tags.clearSelection()
@@ -102,7 +122,9 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         toNoChangeStr = [str(row.text()) for row in selected]
         # toNoChangeStr = [str(row.text()) for row in toNoChange]
 
-        self.changeSet = self.changeSet.difference(set(toNoChangeStr))
+        # self.changeSet = self.changeSet.difference(set(toNoChangeStr))
+        self.changeSet = self.changeSet - set(toNoChangeStr)
+
 
         # print self.changeSet
         # print self.list_ChangeTags
@@ -133,8 +155,6 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         # Remove the ones already selected
         tagList[:] = [tag for tag in tagList if tag not in self.changeSet]
 
-        print search
-
         if str(search).strip() == '':
             result = [] #{tagList}
         else:
@@ -149,8 +169,8 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
             Hides unnecessary fields
         '''
 
-        self.lbl_New.setEnabled(selIndex != 1)
-        self.txt_NewValue.setEnabled(selIndex != 1)
+        self.lbl_Replace.setEnabled(selIndex != 1)
+        self.txt_Replace.setEnabled(selIndex != 1)
 
 
     def btnApplyHandler(self):
@@ -164,14 +184,13 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         # old_value = self.txt_OldValue.text().trimmed()
         new_value = self.txt_Replace.text().trimmed()
 
-        if (new_value == ''):
-        # if (old_value == '' or new_value == ''):
-            QtGui.QMessageBox.warning(self, "Error", "Values cannot be empty.")
-            return
-
         record_type = self.combo_Type.itemText(type_index)
         action = self.combo_Modify.itemText(action_index)
         scope = self.combo_Scope.itemText(scope_index)
+
+        if (new_value == '' and action != 'Remove'):
+            QtGui.QMessageBox.warning(self, "Error", "Values cannot be empty.")
+            return
 
         coll = self.combo_Collection.itemText(self.combo_Collection.currentIndex())
         reply = QtGui.QMessageBox.question(self, 'Confirmation',
@@ -186,28 +205,18 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         coll = self.combo_Collection.itemText(
                     self.combo_Collection.currentIndex())
 
-        # if action == "Modify":
-        #     if scope == "All":
-        #         self.editor.batch_edit_tag(str(old_value), str(new_value))
-        #     elif scope == "Collection":
-        #         self.editor.batch_edit_tag_collection(str(coll), str(old_value), str(new_value))
-        # elif action == "Remove":
-        #     if scope == "All":
-        #         self.editor.delete_tag(str(old_value))
-        #     elif scope == "Collection":
-        #         self.editor.delete_tag_collection(str(coll), str(old_value))
-
         if action == "Modify":
             if scope == "All":
                 self.editor.editBatchTags(self.changeSet, str(new_value))
             elif scope == "Collection":
-                self.editor.batch_edit_tag_collection(str(coll), str(old_value), str(new_value))
+                self.editor.editBatchTags(self.changeSet, str(new_value), str(new_value))
         elif action == "Remove":
             if scope == "All":
-                self.editor.delete_tag(str(old_value))
+                self.editor.deleteBatchTags(self.changeSet)
+                # self.editor.delete_tag(str(old_value))
             elif scope == "Collection":
-                self.editor.delete_tag_collection(str(coll), str(old_value))
-
+                self.editor.deleteBatchTags(self.changeSet, str(coll))
+                # self.editor.delete_tag_collection(str(coll), str(old_value))
 
         for i in range(0,6):
             self.progressBar.setValue(self.progressBar.value() + 10)
@@ -225,7 +234,15 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
             modStr = "{0} tag(s): {1} to {2} from {3}.".format(actionStr, str(self.changeSet), str(new_value), modifiedCollection)
         else:
             actionStr = "Removed"
-            modStr = "{0} tag(s): {1} from {3}.".format(actionStr, str(old_value), str(new_value), modifiedCollection)
+            modStr = "{0} tag(s): {1} from {3}.".format(actionStr, str(self.changeSet), str(new_value), modifiedCollection)
            
         self.lbl_Quaggan.setPixmap(self.quagganOut);
         QtGui.QMessageBox.information(self, actionStr, modStr)
+
+
+        self.tagSet = (self.tagSet - self.changeSet) 
+        print self.tagSet
+        self.tagSet = self.tagSet | set([new_value])
+        print self.tagSet
+        self.changeSet = set()
+        self.list_ChangeTags.clear()
