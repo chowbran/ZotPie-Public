@@ -5,6 +5,7 @@ from citationEditorWin import CitationEditorWin
 from coupleDocumentsWin import CoupleDocumentsWin
 from preferencesWin import PreferencesWin
 from userData import UserData
+from localZot import LocalZot
 
 import sys
 
@@ -14,6 +15,7 @@ class MainStartWin(QtGui.QMainWindow, Ui_StartWindow):
         self.setupUi(self)
         self.eventHandlerSetup()
         self.userData = UserData()
+        self.localZot = LocalZot()
         
         if (self.userData.getValue('GENERAL', 'apikey') == ''):
             QtGui.QMessageBox.warning(self, "Missing API Key", "Please enter your API/Library key under preferences")
