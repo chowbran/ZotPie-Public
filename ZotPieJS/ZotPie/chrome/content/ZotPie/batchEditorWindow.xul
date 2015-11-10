@@ -1,10 +1,69 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<hbox>
+<label control="lbl_find" value="Find:"/>
+<textbox id="txt_find" flex="1"/>
+</hbox>
 
-<window
-    id="findfile-window"
-    title="Find Files"
-    orient="horizontal"
-    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-<!-- Other elements go here --> 
+<hbox>
+<label control="lbl_replace" value="Replace:"/>
+<textbox id="txt_replace" flex="1"/>
+</hbox>
+
+<hbox flex="1" style="margin: 10px">
+<listbox id="list_tags" flex="1">
+
+</listbox>
+<vbox pack="center">
+<button id="btn_add" label=">>"/>
+<button id="btn_remove" label=">>"/>
+</vbox>
+<listbox id ="list_change" flex="1">
+
+</listbox>
+</hbox>
+<groupbox style="margin: 10px">
+    <caption label="Parameters"/>
+    <hbox>
+        <vbox>
+            <label value="Type:"/>
+            <menulist id="combo_type" width="150px">
+                <menupopup>
+                    <menuitem label="Tag"/>
+                </menupopup>
+            </menulist>
+        </vbox>
+        <vbox>
+            <label value="Action:"/>
+            <menulist id="combo_action" width="150px">
+                <menupopup>
+                    <menuitem label="Modify"/>
+                    <menuitem label="Remove"/>
+                </menupopup>
+            </menulist>
+        </vbox>
+        <vbox>
+            <label value="Scope:"/>
+            <menulist id="combo_scope" width="150px">
+                <menupopup>
+                    <menuitem label="All"/>
+                    <menuitem label="Collection"/>
+                </menupopup>
+            </menulist>
+        </vbox>
+        <vbox>
+            <label value="Collection:"/>
+            <menulist id="combo_collection" width="150px">
+                <menupopup>
+                  
+                </menupopup>
+            </menulist>
+        </vbox>
+    </hbox>
+</groupbox>
+<hbox style="margin-bottom:10px;margin-left:10px;margin-right:10px">
+<progressmeter flex="1" mode="{determined | undetermined}" value="{determined value [0 - 100]}"/>
+<button id="btn_apply" label="Apply"/>
+</hbox>
 </window>
