@@ -2,24 +2,23 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     title="Batch Editor">
-
 <!-- Include the main extension logic -->
 <script src="chrome://zotero/content/include.js"/>
 <script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
-
+ 
 <hbox>
 <label control="lbl_find" value="Find:"/>
 <textbox id="txt_find" flex="1"/>
 </hbox>
-
+ 
 <hbox>
 <label control="lbl_replace" value="Replace:"/>
 <textbox id="txt_replace" flex="1"/>
 </hbox>
-
+ 
 <hbox flex="1" style="margin: 10px">
 <listbox id="list_tags" flex="1">
-
+ 
 </listbox>
 <vbox pack="center">
 <button id="btn_add" label=">>"
@@ -28,7 +27,7 @@
     oncommand="Zotero.BatchEditor.batchTagEditTest()"/>
 </vbox>
 <listbox id ="list_change" flex="1">
-
+ 
 </listbox>
 </hbox>
 <groupbox style="margin: 10px">
@@ -68,7 +67,7 @@
             <menulist id="combo_collection" width="150px"
                     oncommand="Zotero.BatchEditor.batchTagEditTest()">
                 <menupopup>
-                  
+                   
                 </menupopup>
             </menulist>
         </vbox>
