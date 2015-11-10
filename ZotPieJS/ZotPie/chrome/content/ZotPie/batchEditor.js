@@ -3,13 +3,13 @@ Zotero.BatchEditor = {
 	
 	init: function () {
 		// Connect to (and create, if necessary) helloworld.sqlite in the Zotero directory
-		this.DB = new Zotero.DBConnection('helloworld');
+		this.DB = new Zotero.DBConnection('zotero');
 		
 		if (!this.DB.tableExists('changes')) {
 			this.DB.query("CREATE TABLE changes (num INT)");
 			this.DB.query("INSERT INTO changes VALUES (0)");
 		}
-		
+
 		// Register the callback in Zotero as an item observer
 		var notifierID = Zotero.Notifier.registerObserver(this.notifierCallback, ['item']);
 		
@@ -17,6 +17,97 @@ Zotero.BatchEditor = {
 		window.addEventListener('unload', function(e) {
 				Zotero.Notifier.unregisterObserver(notifierID);
 		}, false);
+	},
+
+	batchTagEditTest: function () {
+		var items = [];
+		var collections = [];
+		var collectionID;
+		var allItems = [];
+		var oldTags = ['a','abc','d'];
+		var oldTagIds = ['a','abc','d'];
+		var collection = 'Hellos'
+		var newTag = 'sometesttag'
+
+		if (collection != '') {
+			collections = Zotero.getCollections();
+			collections.forEach(function(coll) {
+				if (coll.getName() == collection) {
+					collectionID = coll.getID();
+				}
+			});
+			allItems = Zotero.Collections.get(collectionID).getChildItems();
+        } else {
+	  		allItems = Zotero.Items.getAll();
+        }
+
+
+        console.log(Zotero.Tags.getID(oldTags[0], 0));
+        console.log(Zotero.Tags.getID(oldTags[1], 0));
+        console.log(Zotero.Tags.getID(oldTags[2], 0));
+        oldTagIDs = oldTags.map(function (tag) {
+        	return Zotero.Tags.getID(tag, 0);
+        });
+
+        console.log(oldTagIDs);
+
+        // Filters the list of all items to a sublist where each element
+        // contains one (or more) old tags
+        items = allItems.filter(function(item) {
+        	return item.hasTags(oldTags);
+        });
+
+        var ids = [];
+
+        for (var i in items) {
+        	var allTags = allItems[i].getTags();
+        	tags = oldTags.map(tag => tag.toLowerCase());
+        	for (var id in allTags) {
+			    if (tags.indexOf(allTags[id].name.toLowerCase()) != -1) {
+			      ids.push(allTags[id].id);
+			    }
+			}
+			console.log(ids);
+			ids.forEach(function(id) {
+            	allItems[i].removeTag(id);
+			});
+            // allItems[i].Tags.erase(ids);
+            allItems[i].addTag(newTag, 1);
+			ids = [];
+            // self._zot.update_item(item)
+
+        }
+
+	},
+
+	batchTagEdit: function (oldTags, newTag, collection='') {
+		var items = [];
+		var collections = [];
+		var collectionID;
+		var allItems = [];
+
+		// if (collection != '') {
+  //           collections = self._zot.collections();
+
+  //           // Default collection
+  //           collectionID = collections[0]['data']['key']
+
+  //           // Find the collectionID of collection collection
+  //           for coll in collections:
+  //               if coll['data']['name'] == collection:
+  //                   collectionID = coll['data']['key']
+            
+  //           allItems = self._zot.collection_items(collectionID);
+  //       } else {
+  //           allItems = self._zot.items()
+  //       }
+
+		oldTags.forEach(function(tag) {
+				items.push(Zotero.Item.getElementsByTagName(tag));
+			}	
+		);
+
+		console.log(items);
 	},
 	
 	insertHello: function() {
