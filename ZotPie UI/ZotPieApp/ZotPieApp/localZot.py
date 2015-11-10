@@ -31,29 +31,27 @@ class LocalZot:
         print "adasdasdasdas\n\n\n\n\n\addasdasdads"
 
         self.conn = sqlite3.connect(dbPath + "\zoteroBAK.sqlite")
-        self.getCollection("2533477")
+        self.getCollection()
+        self.getCollection('2533477')
         print(self.generateObjectKey())
 
-    def getCollection(self, groupId=''):
+    def getCollection(self, groupId=None):
         
         returnCollection = []
-        collectionData = {}
-        innerData = {}
         
-        for row in self.conn.execute('SELECT * FROM collections'):
-            print row
-            if (groupId == ''):
-                if (row[-2] == None):
-                    innerData['name'] = row[1]
-                    collectionData['data'] = innerData
-                    collectionData['key'] = row[-1]
-                    returnCollection.append(collectionData)
-            else:
-                if (str(row[-2]) == groupId):
-                    innerData['name'] = row[1]
-                    collectionData['data'] = innerData
-                    collectionData['key'] = row[-1]
-                    returnCollection.append(collectionData)
+        sql = 'SELECT * FROM collections WHERE libraryID=?'
+
+        if (groupId != None):
+            t = (groupId,)
+
+        for row in (self.conn.execute(sql, t) if groupId != None else self.conn.execute('SELECT * FROM collections WHERE libraryID IS NULL')):
+            #print row
+            collectionData = {}
+            innerData = {}
+            innerData['name'] = row[1]
+            collectionData['data'] = innerData
+            collectionData['key'] = row[-1]
+            returnCollection.append(collectionData)
             
         print returnCollection
 
@@ -62,7 +60,10 @@ class LocalZot:
         pass
 
     def dateToSQL(self, toUTC=False):
-        pass
+        if (toUTC):
+            return format(datetime.datetime.utcnow(), '%Y-%m-%d %H:%M:%S')
+        
+        return format(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
 
     def generateObjectKey(self):
         baseString = "23456789ABCDEFGHIJKMNPQRSTUVWXZ"
