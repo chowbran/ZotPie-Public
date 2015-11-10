@@ -1,0 +1,5 @@
+content	ZotPie				chrome/content/ZotPie/
+locale	ZotPie	en-US		chrome/locale/en-US/ZotPie/
+skin	ZotPie	default		chrome/skin/default/ZotPie/
+
+overlay	chrome://zotero/content/zoteroPane.xul	chrome://ZotPie/content/overlay.xul
