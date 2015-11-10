@@ -249,3 +249,4 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         print self.tagSet
         self.changeSet = set()
         self.list_ChangeTags.clear()
+        self.refreshListWidgets()
