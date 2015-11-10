@@ -70,7 +70,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         self.combo_Collection.setEnabled(True)
 
         self.tagSet = self.editor.getTagsFromCollection(collection)
-        
+    
         self.changeSet = set()
 
         self.refreshListWidgets()
@@ -81,12 +81,6 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         toChangeStr = []
 
         selected = self.list_Tags.selectedItems()
-        # selectdRows = [self.list_Tags.row(selectedItem) for selectedItem in selected]
-
-        # for row in selectdRows:
-        #     toChange += [self.list_Tags.takeItem(row)]
-
-        # toChangeStr = [str(row.text()) for row in toChange]
 
         for selectedItem in selected:
             self.list_Tags.removeItemWidget(selectedItem)
@@ -94,11 +88,8 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
 
         toChangeStr = [str(row.text()) for row in selected]
 
-        # self.changeSet = self.changeSet.union(set(toChangeStr))
         self.changeSet = self.changeSet | set(toChangeStr)
 
-        # self.list_ChangeTags.addItems(toChangeStr)
-        # self.list_Tags.clearSelection()
         self.refreshListWidgets()
 
     def removeChange(self):
@@ -107,40 +98,17 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
 
         selected = self.list_ChangeTags.selectedItems()
 
-        # selectdRows = [self.list_ChangeTags.row(selectedItem) for selectedItem in selected]
-
-        # for row in selectdRows:
-        #     toNoChange += [self.list_ChangeTags.takeItem(row)]
-
-        # print toNoChange
-
         for selectedItem in selected:
             self.list_ChangeTags.removeItemWidget(selectedItem)
             self.list_Tags.addItem(selectedItem)
 
         toNoChangeStr = [str(row.text()) for row in selected]
-        # toNoChangeStr = [str(row.text()) for row in toNoChange]
-
-        # self.changeSet = self.changeSet.difference(set(toNoChangeStr))
         self.changeSet = self.changeSet - set(toNoChangeStr)
 
-
-        # print self.changeSet
-        # print self.list_ChangeTags
-
-        # self.list_ChangeTags.repaint()
-        # self.list_Tags.repaint()
-
-        # QtGui.QApplication.processEvents()
-
-        # self.list_Tags.addItems(toNoChangeStr)
-        # self.list_ChangeTags.clearSelection()
         self.refreshListWidgets()
 
     def refreshListWidgets(self):
-        # self.list_Tags.clear()
         self.list_ChangeTags.clear()
-        # self.list_Tags.addItems(list(self.tagSet.difference(self.changeSet)))
 
         changes = list(self.changeSet)
         changes.sort()
@@ -245,7 +213,7 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
 
         self.tagSet = (self.tagSet - self.changeSet) 
         print self.tagSet
-        self.tagSet = self.tagSet | set([new_value])
+        self.tagSet = self.tagSet | set([str(new_value)])
         print self.tagSet
         self.changeSet = set()
-        self.list_ChangeTags.clear()
+        self.refreshListWidgets()
