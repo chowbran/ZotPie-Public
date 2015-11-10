@@ -1,5 +1,6 @@
 __author__ = 'Wilfred'
 import xml.etree.ElementTree as ET
+import os
 class xmlpython():
 
     def __init__(self,filename = None):
@@ -35,8 +36,11 @@ class xmlpython():
         List = self.flatten(List)
         List2 = []
         for element in List:
-                List2.append(element.values())
+                Key = str(element.keys()).replace("]",'').replace("[",'').replace("'",'')
+                Value = str(element.values()).replace("]",'').replace("[",'').replace("'",'')
+                List2.append(Key + '="' + Value + '"')
         List2 = self.flatten(List2)
+
         return List2
 
     def flatten(self,S):
@@ -55,17 +59,23 @@ class xmlpython():
                 break
 
         for element in form:
+            if 'layout' in element.tag:
+                form = element
+                break
+
+        for element in form:
             form.remove(element)
 
         bns = (self.root.tag).find('{')
         ens = (self.root.tag).find('}')
         ns = self.root.tag[bns+1:ens]
         ET.register_namespace('',ns)
-
         for field in Fields:
-            field = ET.SubElement(form,field)
+            value = field
+            if 'text' in value:
+                field = ET.SubElement(form,value)
+            else:
+                field = ET.SubElement(form,'text ' + value)
         self.tree.write(Name)
 
-if __name__ == "__main__":
-    File = xmlpython('newsletter.xml')
-    print File.GetLayout('citation')
+
