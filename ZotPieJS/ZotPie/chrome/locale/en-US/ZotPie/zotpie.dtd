@@ -1,2 +1,4 @@
-<!ENTITY zotpie.name			"Zot Pie">
+<!ENTITY zotpie.name			"ZotPie">
 <!ENTITY batchEditor.name		"Batch Editor">
+<!ENTITY citationEditor.name	"Citation Editor">
+<!ENTITY coupleDocuments.name	"Link Documents">

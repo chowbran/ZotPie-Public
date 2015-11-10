@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<groupbox height="200px">
+    <caption label="Citation Preview"/>
+</groupbox>
+<groupbox>
+    <caption label="Citation Parameters"/>
+    <vbox>
+    <hbox>
+        <label value="Record:" width="300px"/>
+        <label value="Field:" width="300px"/>
+    </hbox>
+    <hbox>
+        <menulist id="combo_record" width="300px">
+        <menupopup>
+
+        </menupopup>
+        </menulist>
+        <menulist id="combo_field" width="300px">
+        <menupopup>
+
+        </menupopup>
+        </menulist>
+    </hbox>
+        <button id="btn_add" label="Add" flex="1"/>
+        <button id="btn_remove" label="Remove" flex="1"/>
+    </vbox>
+</groupbox>
+    <hbox>
+        <button id="btn_load" label="Load"/>
+        <spacer flex="1"/>
+        <button id="btn_generate" label="Generate"/>
+    </hbox>
+</window>
