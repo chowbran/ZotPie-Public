@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" demote-non-dropping-particle="never">
+	<info>
+		<title>Newsletter</title>
+		<id>http://www.zotero.org/styles/custom-newsletter</id>
+		<link rel="self" href="http://www.zotero.org/styles/custom-newsletter"/>
+		<author>
+			<name>Aurimas Vinckevicius</name>
+			<email>aurimas.dev@gmail.com</email>
+		</author>
+		<updated>2014-10-17T21:25:31+00:00</updated>
+	</info>
+	<citation>
+		<layout>
+			<group>
+				<text variable="author"/>
+				<text variable="publisher"/>
+				<text variable="date"/>
+			</group>
+			<date>
+				<text variable="yes"/>
+				<text variable="no"/>
+				<text variable="maybe"/>
+			</date>
+		</layout>
+	</citation>
+	<bibliography>
+	</bibliography>
+</style>
