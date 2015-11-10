@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<tabbox id="tabboxid" flex="1">
+    <tabs>
+        <tab label="Sync"/>
+        <tab label="Link Records"/>
+        <tab label="Unlink Records"/>
+    </tabs>
+    <tabpanels flex="1">
+        <tabpanel>
+        <vbox>
+        <description>Click the 'Sync' button below to sync previously linked records.
+         To link new records, click on the 'Link Records' tab above.
+         To unlink previously linked records, click on the 'Unlink Records' tab above</description>
+        <hbox>
+         <button id="btn_sync" label="Sync" width="200px" height="60px"
+            oncommand="Zotero.CoupleDocuments.{function}"/>
+         <spacer flex="1"/>
+        </hbox>
+        </vbox>
+        </tabpanel>
+
+        <tabpanel>
+        <vbox>
+        <hbox>
+        <vbox>
+            <label value="Collection of Original:"/>
+            <menulist id="combo_original" width="200px"
+                oncommand="Zotero.CoupleDocuments.{function}">
+                <menupopup>
+                   
+                </menupopup>
+            </menulist>
+        </vbox>
+
+        <spacer width="150px"/>
+        <vbox>
+            <label value="Group of Copy:"/>
+            <menulist id="combo_copygroup" width="175px"
+                oncommand="Zotero.CoupleDocuments.{function}">
+                <menupopup>
+                  
+                </menupopup>
+            </menulist>
+        </vbox>
+        <vbox>
+            <label value="Collection of Copy:"/>
+            <menulist id="combo_copycollection" width="175px"
+                oncommand="Zotero.CoupleDocuments.{function}">
+                <menupopup>
+                 
+                </menupopup>
+            </menulist>
+        </vbox>
+        </hbox>
+        <hbox flex="1">
+        <listbox id="list_original" flex="1" width="350px">
+          
+        </listbox>
+        <listbox id="list_copy" flex="1" width="350px">
+         
+        </listbox>
+        </hbox>
+        <hbox>
+        <spacer flex="1"/>
+        <button id="btn_link" label="Link"
+            oncommand="Zotero.CoupleDocuments.{function}"/>
+        </hbox>
+        </vbox>
+        </tabpanel>
+
+        <tabpanel>
+        <vbox>
+        <hbox>
+        <vbox>
+            <label value="Collection of Original:"/>
+            <menulist id="combo_original_rem" width="200px"
+                oncommand="Zotero.CoupleDocuments.{function}">
+                <menupopup>
+                  
+                </menupopup>
+            </menulist>
+        </vbox>
+
+        <spacer width="150px"/>
+        <vbox>
+            <label value="Group of Copy:"/>
+            <menulist id="combo_copygroup_rem" width="175px"
+                oncommand="Zotero.CoupleDocuments.{function}">
+                <menupopup>
+                 
+                </menupopup>
+            </menulist>
+        </vbox>
+        <vbox>
+            <label value="Collection of Copy:"/>
+            <menulist id="combo_copycollection_rem" width="175px"
+                oncommand="Zotero.CoupleDocuments.{function}">
+                <menupopup>
+                
+                </menupopup>
+            </menulist>
+        </vbox>
+        </hbox>
+        <hbox flex="1">
+        <listbox id="list_original_rem" flex="1" width="350px">
+         
+        </listbox>
+        <listbox id="list_copy_rem" flex="1" width="350px">
+        
+        </listbox>
+        </hbox>
+        <hbox>
+        <spacer flex="1"/>
+        <button id="btn_unlink" label="Unlink"
+            oncommand="Zotero.CoupleDocuments.{function}"/>
+        </hbox>
+        </vbox>
+        </tabpanel>
+    </tabpanels>
+</tabbox>
+</window>
