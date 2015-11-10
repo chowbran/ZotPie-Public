@@ -40,9 +40,5 @@ class Map():
                 return (self.Zlocalname[i])[7:len(self.Zlocalname[i])-1]
             i+=1
 
-    def printZ(self):
-        pass
-
-
 
 
