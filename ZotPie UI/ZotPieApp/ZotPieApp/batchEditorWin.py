@@ -73,7 +73,6 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         
         self.changeSet = set()
 
-        # self.txt_Filter.clear()
         self.refreshListWidgets()
 
 
@@ -142,7 +141,10 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         # self.list_Tags.clear()
         self.list_ChangeTags.clear()
         # self.list_Tags.addItems(list(self.tagSet.difference(self.changeSet)))
-        self.list_ChangeTags.addItems(list(self.changeSet))
+
+        changes = list(self.changeSet)
+        changes.sort()
+        self.list_ChangeTags.addItems(changes)
 
         self.textFilterEditedHandler()
 
@@ -155,14 +157,15 @@ class BatchEditorWin(QtGui.QMainWindow, Ui_BatchEditorWindow):   #or whatever Q*
         # Remove the ones already selected
         tagList[:] = [tag for tag in tagList if tag not in self.changeSet]
 
-        if str(search).strip() == '':
-            result = [] #{tagList}
-        else:
+        result = []
+        if not str(search).strip() == '':
             result = filter(lambda x: self.fuzzy_match(str(search), str(x)), tagList)
 
+        result.sort()
 
         self.list_Tags.clear()
         self.list_Tags.addItems(result)
+
 
     def _hideNewFields(self, selIndex):
         ''' (BatchEditorWin, bool) -> None
