@@ -8,12 +8,12 @@
  
 <hbox>
 <label control="lbl_find" value="Find:"/>
-<textbox id="txt_find" flex="1"/>
+<textbox id="txt_find" flex="1" onchange="Zotero.BatchEditor.onFindChange()"/>
 </hbox>
  
 <hbox>
 <label control="lbl_replace" value="Replace:"/>
-<textbox id="txt_replace" flex="1"/>
+<textbox id="txt_replace" flex="1" />
 </hbox>
  
 <hbox flex="1" style="margin: 10px">
@@ -26,7 +26,7 @@
 <button id="btn_remove" label=">>"
     oncommand="Zotero.BatchEditor.batchTagEditTest()"/>
 </vbox>
-<listbox id ="list_change" flex="1">
+<listbox id="list_change" flex="1">
  
 </listbox>
 </hbox>
@@ -45,7 +45,7 @@
         <vbox>
             <label value="Action:"/>
             <menulist id="combo_action" width="150px"
-                    oncommand="Zotero.BatchEditor.batchTagEditTest()">
+                    oncommand="Zotero.BatchEditor.onActionChange()">
                 <menupopup>
                     <menuitem label="Modify"/>
                     <menuitem label="Remove"/>
@@ -55,7 +55,7 @@
         <vbox>
             <label value="Scope:"/>
             <menulist id="combo_scope" width="150px"
-                    oncommand="Zotero.BatchEditor.batchTagEditTest()">
+                    oncommand="Zotero.BatchEditor.onScopeChange()">
                 <menupopup>
                     <menuitem label="All"/>
                     <menuitem label="Collection"/>
@@ -65,7 +65,7 @@
         <vbox>
             <label value="Collection:"/>
             <menulist id="combo_collection" width="150px"
-                    oncommand="Zotero.BatchEditor.batchTagEditTest()">
+                    oncommand="Zotero.BatchEditor.onCollectionChange()">
                 <menupopup>
                    
                 </menupopup>
