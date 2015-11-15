@@ -5,6 +5,10 @@ if (!Zotero.BatchEditor) {
 	loader.loadSubScript("chrome://zotpie/content/batchEditor.js");
 }
 
+if (!Zotero.Couple){
+    loader.loadSubScript("chrome://zotpie/content/couple.js");
+}
+
 if (!Zotero.ZotPie) {
 	loader.loadSubScript("chrome://zotpie/content/ZotPie.js");
 }

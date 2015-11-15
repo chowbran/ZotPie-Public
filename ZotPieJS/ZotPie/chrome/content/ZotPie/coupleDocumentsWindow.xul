@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="Couple" onload="Zotero.Couple.onLoad()" >
+<script src="chrome://zotero/content/include.js"/>
+<script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
+
 <tabbox id="tabboxid" flex="1">
     <tabs>
         <tab label="Sync"/>
@@ -15,7 +19,7 @@
          To unlink previously linked records, click on the 'Unlink Records' tab above</description>
         <hbox>
          <button id="btn_sync" label="Sync" width="200px" height="60px"
-            oncommand="Zotero.CoupleDocuments.{function}"/>
+            oncommand="Zotero.CoupleDocuments.getCollections()"/>
          <spacer flex="1"/>
         </hbox>
         </vbox>
@@ -27,7 +31,7 @@
         <vbox>
             <label value="Collection of Original:"/>
             <menulist id="combo_original" width="200px"
-                oncommand="Zotero.CoupleDocuments.{function}">
+                oncommand="Zotero.CoupleDocuments.getCollections()">
                 <menupopup>
                    
                 </menupopup>
@@ -38,7 +42,7 @@
         <vbox>
             <label value="Group of Copy:"/>
             <menulist id="combo_copygroup" width="175px"
-                oncommand="Zotero.CoupleDocuments.{function}">
+                oncommand="Zotero.CoupleDocuments.getCollections()">
                 <menupopup>
                   
                 </menupopup>
@@ -47,7 +51,7 @@
         <vbox>
             <label value="Collection of Copy:"/>
             <menulist id="combo_copycollection" width="175px"
-                oncommand="Zotero.CoupleDocuments.{function}">
+                oncommand="Zotero.CoupleDocuments.getCollections()">
                 <menupopup>
                  
                 </menupopup>
@@ -65,7 +69,7 @@
         <hbox>
         <spacer flex="1"/>
         <button id="btn_link" label="Link"
-            oncommand="Zotero.CoupleDocuments.{function}"/>
+            oncommand="Zotero.CoupleDocuments.getCollections()"/>
         </hbox>
         </vbox>
         </tabpanel>
@@ -76,7 +80,7 @@
         <vbox>
             <label value="Collection of Original:"/>
             <menulist id="combo_original_rem" width="200px"
-                oncommand="Zotero.CoupleDocuments.{function}">
+                oncommand="Zotero.CoupleDocuments.getCollections()">
                 <menupopup>
                   
                 </menupopup>
@@ -87,7 +91,7 @@
         <vbox>
             <label value="Group of Copy:"/>
             <menulist id="combo_copygroup_rem" width="175px"
-                oncommand="Zotero.CoupleDocuments.{function}">
+                oncommand="Zotero.CoupleDocuments.getCollections()">
                 <menupopup>
                  
                 </menupopup>
@@ -96,7 +100,7 @@
         <vbox>
             <label value="Collection of Copy:"/>
             <menulist id="combo_copycollection_rem" width="175px"
-                oncommand="Zotero.CoupleDocuments.{function}">
+                oncommand="Zotero.CoupleDocuments.getCollections()">
                 <menupopup>
                 
                 </menupopup>
@@ -114,7 +118,7 @@
         <hbox>
         <spacer flex="1"/>
         <button id="btn_unlink" label="Unlink"
-            oncommand="Zotero.CoupleDocuments.{function}"/>
+            oncommand="Zotero.CoupleDocuments.getCollections()"/>
         </hbox>
         </vbox>
         </tabpanel>
