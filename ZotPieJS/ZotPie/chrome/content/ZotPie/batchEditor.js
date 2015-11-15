@@ -62,8 +62,12 @@ Zotero.BatchEditor = {
 	onFindChange: function() {
 		this.txtFind = this.doc.getElementById('txt_find').value;
 
-		// var tokenizer = new this.natural.WordTokenizer();
 		console.log(this.editDistance(this.txtFind, "DoG"));
+		_populateTags();
+	},
+
+	_populateTags: function() {
+
 	},
 
 	onActionChange: function() {
@@ -185,7 +189,7 @@ Zotero.BatchEditor = {
 		if (this.editAction == 'modify') {
 			batchTagEdit(srcTags, newTag);
 		} else if (this.editAction == 'remove') {
-			batchTagRemove();
+			batchTagRemove(srcTags);
 		}
 	},
 
@@ -209,18 +213,12 @@ Zotero.BatchEditor = {
         	return Zotero.Tags.getID(tag, 0);
         });
 
-        console.log(oldTagIDs);
-        console.log(allItems);
-
         // Filters the list of all items to a sublist where each element
         // contains one (or more) old tags
         items = allItems.filter(function(item) { // slow?
         	var result = item.hasTags(oldTagIDs);
         	return result;
         });
-
-        console.log(items);
-
 
         for (var item of items) {
         	// Get the tags of the item to edit
@@ -233,8 +231,6 @@ Zotero.BatchEditor = {
         	}
 
         	for (var tag of allTags) { //Slow?
-        		console.log(j);
-        		console.log(tag.id);
         		if (!this.matchCase) {
 				    if (oldTags.indexOf(tag.name) != -1) {
 				    	ids.push(tag.id);
@@ -245,7 +241,6 @@ Zotero.BatchEditor = {
 				    }
         		}
 			}
-			console.log(ids);
 			ids.forEach(function(id) {
             	item.removeTag(id);
 			});
