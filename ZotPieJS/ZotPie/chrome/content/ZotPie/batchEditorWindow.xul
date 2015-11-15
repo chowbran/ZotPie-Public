@@ -9,6 +9,7 @@
 <hbox>
 <label control="lbl_find" value="Find:"/>
 <textbox id="txt_find" flex="1" onchange="Zotero.BatchEditor.onFindChange()"/>
+<checkbox id="chk_matchcase" label="Match Case" checked="{true | *false}"/>
 </hbox>
  
 <hbox>
@@ -38,7 +39,7 @@
             <menulist id="combo_type" width="150px"
                     oncommand="Zotero.BatchEditor.batchTagEditTest()">
                 <menupopup>
-                    <menuitem label="Tag"/>
+                    <menuitem label="Tag" value="tag"/>
                 </menupopup>
             </menulist>
         </vbox>
@@ -47,8 +48,8 @@
             <menulist id="combo_action" width="150px"
                     oncommand="Zotero.BatchEditor.onActionChange()">
                 <menupopup>
-                    <menuitem label="Modify"/>
-                    <menuitem label="Remove"/>
+                    <menuitem label="Modify" value="modify"/>
+                    <menuitem label="Remove" value = "remove"/>
                 </menupopup>
             </menulist>
         </vbox>
@@ -57,8 +58,8 @@
             <menulist id="combo_scope" width="150px"
                     oncommand="Zotero.BatchEditor.onScopeChange()">
                 <menupopup>
-                    <menuitem label="All"/>
-                    <menuitem label="Collection"/>
+                    <menuitem label="All" value="all"/>
+                    <menuitem label="Collection" value="collection"/>
                 </menupopup>
             </menulist>
         </vbox>
@@ -67,7 +68,7 @@
             <menulist id="combo_collection" width="150px"
                     oncommand="Zotero.BatchEditor.onCollectionChange()">
                 <menupopup>
-                   
+                    
                 </menupopup>
             </menulist>
         </vbox>
