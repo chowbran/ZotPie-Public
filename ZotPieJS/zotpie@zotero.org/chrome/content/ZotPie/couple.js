@@ -4,7 +4,7 @@
 window.addEventListener('load', function(e) { Zotero.Couple.init(); }, false);
 
 Zotero.Couple = {
-    DB: null,
+
 
     init:function(){
 
@@ -22,17 +22,46 @@ Zotero.Couple = {
     },
 
     onLoad: function(){
-        this._setupCollections();
-        this._setupGroups();
-        var curGroupId = Zotero.ZotPie.coupleDoc.document.getElementById('combo_copygroup').index;
-        //TODO
-        console.log(curGroupId);
-        this._setupCollections(Zotero.Groups.get(curGroupId));
+        this.doc = Zotero.ZotPie.coupleDoc.document;
+        this.setupCollections();
+        this.setupGroups();
+        this.setupGroupCollections();
+        this.setupRecords('group');
+        this.setupRecords('user');
 
     },
 
-    _setupGroups: function () {
-        var menu = Zotero.ZotPie.coupleDoc.document.getElementById('combo_copygroup');
+    setupCollections: function() {
+
+        var menu = this.doc.getElementById('combo_original');
+        var collections = Zotero.getCollections();
+
+
+        // Set up the menu collection name as label and collection id as value
+        for ( i=0; i < collections.length; i ++) {
+            menu.appendItem(collections[i]['_name'], collections[i]['_id']);
+        }
+
+        menu.selectedIndex = 0;
+    },
+
+    setupGroupCollections: function(){
+
+        var menu = this.doc.getElementById('combo_copycollection');
+        var curGroupId = this.doc.getElementById('combo_copygroup').value;
+        var curGroup = Zotero.Groups.get(curGroupId);
+        var collections = curGroup.getCollections();
+
+        for ( i=0; i < collections.length; i ++) {
+            menu.appendItem(collections[i]['_name'], collections[i]['_id']);
+
+        }
+
+        menu.selectedIndex = 0;
+    },
+
+    setupGroups: function () {
+        var menu = this.doc.getElementById('combo_copygroup');
         var groups = Zotero.Groups.getAll();
 
         for ( i=0; i < groups.length; i ++) {
@@ -42,23 +71,31 @@ Zotero.Couple = {
         menu.selectedIndex = 0;
     },
 
-    _setupCollections: function(group) {
-        group = group || 0;
-        if (group === 0){
-            var menu = Zotero.ZotPie.coupleDoc.document.getElementById('combo_original');
-            var collections = Zotero.getCollections();
+    setupRecords: function(type){
+
+        if (type === 'group'){
+            var curCollectionId = this.doc.getElementById('combo_copycollection').value;
+            var menu = this.doc.getElementById('list_copy');
         }else{
-            var menu = Zotero.ZotPie.coupleDoc.document.getElementById('combo_copycollection');
-            var collections = group.getCollections();
+            var curCollectionId = this.doc.getElementById('combo_original').value;
+            var menu = this.doc.getElementById('list_original');
+        }
+        var collection = Zotero.Collections.get(curCollectionId);
+        var records = collection.getChildItems();
+
+        for (i=0; i < records.length; i ++){
+            console.log(records[i]);
+            menu.appendItem(records[i].getDisplayTitle(), records[i]['_id']);
         }
 
-        // Set up the menu collection name as label and collection id as value
-        for ( i=0; i < collections.length; i ++) {
-            menu.appendItem(collections[i]['_name'], collections[i]['_id']);
-        }
 
-        menu.selectedIndex = 0;
     },
+
+    onCollectionChange: function(group){
+
+    },
+
+
 
     // Callback implementing the notify() method to pass to the Notifier
     notifierCallback: {

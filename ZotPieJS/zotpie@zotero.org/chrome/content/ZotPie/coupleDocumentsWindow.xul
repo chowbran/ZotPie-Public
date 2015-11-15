@@ -31,7 +31,7 @@
         <vbox>
             <label value="Collection of Original:"/>
             <menulist id="combo_original" width="200px"
-                oncommand="Zotero.CoupleDocuments.getCollections()">
+                oncommand="Zotero.Couple.setupRecords()">
                 <menupopup>
                    
                 </menupopup>
@@ -42,7 +42,7 @@
         <vbox>
             <label value="Group of Copy:"/>
             <menulist id="combo_copygroup" width="175px"
-                oncommand="Zotero.CoupleDocuments.getCollections()">
+                oncommand="Zotero.Couple.setupCollections()">
                 <menupopup>
                   
                 </menupopup>
