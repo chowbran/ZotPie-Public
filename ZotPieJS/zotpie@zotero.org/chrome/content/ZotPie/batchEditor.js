@@ -60,24 +60,64 @@ Zotero.BatchEditor = {
 
 	},
 
+	populateTags: function(likeText) {
+		var self = this;
+
+		console.log(this.tagSet);
+
+		var newTagSet = this.tagSet.filter(function (tag) {
+			console.log(tag.name);
+			return (self.editDistance(likeText, tag.name) <= 3);
+		});
+
+		newTagSet = diff(newTagSet, this.changeSet);
+	},
+
+
 	onFindChange: function() {
 		this.txtFind = this.doc.getElementById('txt_find').value;
 
-		console.log(this.editDistance(this.txtFind, "DoG"));
-		populateTags();
+		this.populateTags(this.txtFind);
 	},
 
 	resetTags: function(collectionID) {
-
-		this.tagSet = this.ALLITEMS.Filter(function (item) {
+		this.tagSet = this.ALLITEMS.filter(function (item) {
+			console.log (collectionID);
 			return collectionID > 0 ? item.inCollection(collectionID) : item;
-		}.map(function (item) {
+		}).map(function (item) {
 			return item.getTags();
+		});
+
+		console.log(this.tagSet);
+
+		// Flatten array
+		this.tagSet = [].concat.apply([],this.tagSet);
+
+		// Get unique
+		this.tagSet = this.unique(this.tagSet);
+		console.log (this.tagSet);
+	},
+
+	// b - a
+	diff: function(b, a) {
+    	return b.filter(function(i) {return a.indexOf(i) < 0;});
+	},
+
+	unique: function(xs) {
+		var seen = {};
+		return xs.filter(function(x) {
+			if (seen[x])
+				return;
+			seen[x] = true;
+			return x;
 		});
 	},
 
 	_setupTags: function() {
 		this.ALLITEMS = Zotero.Items.getAll(); 
+		this.resetTags(this.currentCollID);
+
+		console.log(this.ALLITEMS);
 		// this.tagSet = Zotero.Tags.getAll();
 		// this.changeSet = {};
 	},
@@ -101,14 +141,19 @@ Zotero.BatchEditor = {
 			this.currentCollID = -1;
 			cboColl.disabled = true;
 		} else if (cboScope.value = "collection") {
+			this.currentCollID = this.doc.getElementById('combo_collection').value;
 			cboColl.disabled = false;
 		}
+
+		this.resetTags(this.currentCollID);
 	},
 
 	onCollectionChange: function() {
 		console.log("Change collection");
-		var selected = this.doc.getElementById('combo_collection').index;
+		var selected = this.doc.getElementById('combo_collection').value;
 		this.currentCollID = selected;
+
+		this.resetTags(this.currentCollID);
 	},
 
 
@@ -250,7 +295,7 @@ Zotero.BatchEditor = {
 	*/
 
 	// Compute the edit distance between the two given strings
-	editDistance: function(a, b){
+	editDistance: function(a, b) {
 	  if(a.length == 0) return b.length; 
 	  if(b.length == 0) return a.length; 
 
