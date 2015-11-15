@@ -9,6 +9,7 @@ window.addEventListener('load', function(e) { Zotero.BatchEditor.init(); }, fals
 
 Zotero.BatchEditor = {
 	DB: null,
+	// natural: require('natural'),
 	
 	init: function () {
 		// this.batchEditorInit();
@@ -24,7 +25,7 @@ Zotero.BatchEditor = {
 		// Register the callback in Zotero as an item observer
 		var notifierID = Zotero.Notifier.registerObserver(this.notifierCallback, ['item']);
 		
-		window.addEventListener("DOMContentLoaded", function(e) {this.onLoad()}, true);
+		window.addEventListener("DOMContentLoaded", function(e) {this.onLoad}, true);
 
 		// Unregister callback when the window closes (important to avoid a memory leak)
 		window.addEventListener('unload', function(e) {
@@ -34,64 +35,64 @@ Zotero.BatchEditor = {
 	},
 
 	onLoad: function() {
-		console.log("init batch Editor");
+		console.log("Init batchTagEditor");
+		this.doc = Zotero.ZotPie.batchEditorDoc.document;
+		this.editAction = this.doc.getElementById('combo_action').value;
 		this.matchCase = false;
 		this.currentCollID = -1;
-		this.editAction = Zotero.ZotPie.batchEditorDoc.document.getElementById('txt_find').value;
-		// this.editAction = document.getElementById('txt_find').value;
 
 		console.log(this.editAction);
 
-		this.txtFind = "TEST";
 		this._setupCollections();
 
 	},
 
 	_setupCollections: function() {
 		console.log("populating menu");
-		var menu = Zotero.ZotPie.batchEditorDoc.document.getElementById('combo_collection');
+		var menu = this.doc.getElementById('combo_collection');
 		collections = Zotero.getCollections();
 
 		// Set up the menu collection name as label and collection id as value
-		for (var coll in collections) {
+		for (var coll of collections) {
 			menu.appendItem(coll.getName(), coll.getID());
 		}
-		// collections.forEach(function(coll) {
-		// 	menu.appendItem(coll.getName(), coll.getName());
-		// 	if (coll.getName() == collStr) {
-		// 		collectionID = coll.getID();
-		// 	}
-		// });
 		menu.selectedIndex = 0;
 	},
 
 	onFindChange: function() {
-		// var txtBox = document.getElementById('txt_find');
-		var txtBox = Zotero.ZotPie.batchEditorDoc.document.getElementById('txt_find');
-		this.txtFind = txtBox.value;
-		console.log(this.txtFind);
+		this.txtFind = this.doc.getElementById('txt_find').value;
+
+		// var tokenizer = new this.natural.WordTokenizer();
+		console.log(this.editDistance(this.txtFind, "DoG"));
 	},
 
 	onActionChange: function() {
+		var txtReplace = this.doc.getElementById('txt_replace');
+
+		this.editAction = this.doc.getElementById('combo_action').value;
+
+		if (this.editAction == 'modify') {
+			txtReplace.disabled = false;
+		} else if (this.editAction == 'remove') {
+			txtReplace.disabled = true;
+		}
 
 	},
 
 	onScopeChange: function() {
-		console.log("Change scope");
-		console.log(this.txtFind);
-		var cboScope = Zotero.ZotPie.batchEditorDoc.document.getElementById('combo_scope');
-		if (cboScope.label == "All") {
+		var cboScope = this.doc.getElementById('combo_scope');
+		var cboColl = this.doc.getElementById('combo_collection')
+		if (cboScope.value == "all") {
 			this.currentCollID = -1;
-			cboScope.disabled = true;
-		} else if (cboScope.label = "Collection") {
-			cboScope.disabled = false;
-			// onCollectionChange();
+			cboColl.disabled = true;
+		} else if (cboScope.value = "collection") {
+			cboColl.disabled = false;
 		}
 	},
 
 	onCollectionChange: function() {
 		console.log("Change collection");
-		var selected = Zotero.ZotPie.batchEditorDoc.document.getElementById('combo_collection').index;
+		var selected = this.doc.getElementById('combo_collection').index;
 		this.currentCollID = selected;
 	},
 
@@ -106,16 +107,98 @@ Zotero.BatchEditor = {
 		var newTag = 'sometesttag'
         var ids = [];
 
-		if (collStr!= '') {
-			collections = Zotero.getCollections();
+        if (this.currentCollID > 0) {
+        	var coll = Zotero.Collections.get(collectionID);
+			allItems = coll.getChildItems();
+        } else {
+	  		allItems = Zotero.Items.getAll();
+        }
 
-			// Get the collection with the same name as the one searched for
-			collections.forEach(function(coll) {
-				if (coll.getName() == collStr) {
-					collectionID = coll.getID();
-				}
-			});
+		// if (collStr!= '') {
+		// 	collections = Zotero.getCollections();
+
+		// 	// Get the collection with the same name as the one searched for
+		// 	collections.forEach(function(coll) {
+		// 		if (coll.getName() == collStr) {
+		// 			collectionID = coll.getID();
+		// 		}
+		// 	});
         	
+  //       	var coll = Zotero.Collections.get(collectionID);
+		// 	allItems = coll.getChildItems();
+  //       } else {
+	 //  		allItems = Zotero.Items.getAll();
+  //       }
+
+        oldTagIDs = oldTags.map(function (tag) { // slow?
+        	return Zotero.Tags.getID(tag, 0);
+        });
+
+        console.log(oldTagIDs);
+        console.log(allItems);
+
+        // Filters the list of all items to a sublist where each element
+        // contains one (or more) old tags
+        items = allItems.filter(function(item) { // slow?
+        	var result = item.hasTags(oldTagIDs);
+        	return result;
+        });
+
+        console.log(items);
+
+
+        for (var item of items) {
+        	// Get the tags of the item to edit
+        	var allTags = item.getTags(); 
+
+        	// Swap to lower case
+        	if (!this.matchCase) {
+        		var temp = oldTags.map(tag => tag.toLowerCase());
+        		oldTags = temp;
+        	}
+
+        	for (var tag of allTags) { //Slow?
+        		console.log(j);
+        		console.log(tag.id);
+        		if (!this.matchCase) {
+				    if (oldTags.indexOf(tag.name) != -1) {
+				    	ids.push(tag.id);
+				    }
+        		} else {
+				    if (oldTags.indexOf(tag.name.toLowerCase()) != -1) {
+				    	ids.push(tag.id);
+				    }
+        		}
+			}
+			console.log(ids);
+			ids.forEach(function(id) {
+            	item.removeTag(id);
+			});
+            item.addTag(newTag, 1);
+			ids = [];
+        }
+	},
+
+	onApply: function() {
+		var newTag = this.doc.getElementById('txt_replace').value;
+		var srcTags = [];
+		if (this.editAction == 'modify') {
+			batchTagEdit(srcTags, newTag);
+		} else if (this.editAction == 'remove') {
+			batchTagRemove();
+		}
+	},
+
+	batchTagRemove: function (oldTags) {
+		var collStr = "hellos";
+		var items = [];
+		var collections = [];
+		var collectionID;
+		var allItems = [];
+		var oldTagIds = [];
+        var ids = [];
+
+        if (this.currentCollID > 0) {
         	var coll = Zotero.Collections.get(collectionID);
 			allItems = coll.getChildItems();
         } else {
@@ -139,9 +222,9 @@ Zotero.BatchEditor = {
         console.log(items);
 
 
-        for (var i in items) {
+        for (var item of items) {
         	// Get the tags of the item to edit
-        	var allTags = items[i].getTags(); 
+        	var allTags = item.getTags(); 
 
         	// Swap to lower case
         	if (!this.matchCase) {
@@ -149,58 +232,135 @@ Zotero.BatchEditor = {
         		oldTags = temp;
         	}
 
-        	for (var j in allTags) { //Slow?
+        	for (var tag of allTags) { //Slow?
         		console.log(j);
-        		console.log(allTags[j].id);
+        		console.log(tag.id);
         		if (!this.matchCase) {
-				    if (oldTags.indexOf(allTags[j].name) != -1) {
-				    	ids.push(allTags[j].id);
+				    if (oldTags.indexOf(tag.name) != -1) {
+				    	ids.push(tag.id);
 				    }
         		} else {
-				    if (oldTags.indexOf(allTags[j].name.toLowerCase()) != -1) {
-				    	ids.push(allTags[j].id);
+				    if (oldTags.indexOf(tag.name.toLowerCase()) != -1) {
+				    	ids.push(tag.id);
 				    }
         		}
 			}
 			console.log(ids);
 			ids.forEach(function(id) {
-            	items[i].removeTag(id);
+            	item.removeTag(id);
 			});
-            items[i].addTag(newTag, 1);
 			ids = [];
-        }
+		}
 	},
 
-	batchTagEdit: function (oldTags, newTag, collection='') {
+	batchTagEdit: function (oldTags, newTag) {
+		var collStr = "hellos";
 		var items = [];
 		var collections = [];
 		var collectionID;
 		var allItems = [];
+		var oldTagIds = [];
+        var ids = [];
 
-		// if (collection != '') {
-  //           collections = self._zot.collections();
+        if (this.currentCollID > 0) {
+        	var coll = Zotero.Collections.get(collectionID);
+			allItems = coll.getChildItems();
+        } else {
+	  		allItems = Zotero.Items.getAll();
+        }
 
-  //           // Default collection
-  //           collectionID = collections[0]['data']['key']
+        oldTagIDs = oldTags.map(function (tag) { // slow?
+        	return Zotero.Tags.getID(tag, 0);
+        });
 
-  //           // Find the collectionID of collection collection
-  //           for coll in collections:
-  //               if coll['data']['name'] == collection:
-  //                   collectionID = coll['data']['key']
-            
-  //           allItems = self._zot.collection_items(collectionID);
-  //       } else {
-  //           allItems = self._zot.items()
-  //       }
+        console.log(oldTagIDs);
+        console.log(allItems);
 
-		oldTags.forEach(function(tag) {
-				items.push(Zotero.Item.getElementsByTagName(tag));
-			}	
-		);
+        // Filters the list of all items to a sublist where each element
+        // contains one (or more) old tags
+        items = allItems.filter(function(item) { // slow?
+        	var result = item.hasTags(oldTagIDs);
+        	return result;
+        });
 
-		console.log(items);
+        console.log(items);
+
+
+        for (var item of items) {
+        	// Get the tags of the item to edit
+        	var allTags = item.getTags(); 
+
+        	// Swap to lower case
+        	if (!this.matchCase) {
+        		var temp = oldTags.map(tag => tag.toLowerCase());
+        		oldTags = temp;
+        	}
+
+        	for (var tag of allTags) { //Slow?
+        		console.log(j);
+        		console.log(tag.id);
+        		if (!this.matchCase) {
+				    if (oldTags.indexOf(tag.name) != -1) {
+				    	ids.push(tag.id);
+				    }
+        		} else {
+				    if (oldTags.indexOf(tag.name.toLowerCase()) != -1) {
+				    	ids.push(tag.id);
+				    }
+        		}
+			}
+			console.log(ids);
+			ids.forEach(function(id) {
+            	item.removeTag(id);
+			});
+            item.addTag(newTag, 1);
+			ids = [];
+		}
 	},
 	
+	/*
+	Copyright (c) 2011 Andrei Mackenzie
+	Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+	The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+	*/
+
+	// Compute the edit distance between the two given strings
+	editDistance: function(a, b){
+	  if(a.length == 0) return b.length; 
+	  if(b.length == 0) return a.length; 
+
+	  var matrix = [];
+
+	  // increment along the first column of each row
+	  var i;
+	  for(i = 0; i <= b.length; i++){
+	    matrix[i] = [i];
+	  }
+
+	  // increment each column in the first row
+	  var j;
+	  for(j = 0; j <= a.length; j++){
+	    matrix[0][j] = j;
+	  }
+
+	  // Fill in the rest of the matrix
+	  for(i = 1; i <= b.length; i++){
+	    for(j = 1; j <= a.length; j++){
+	      if(b.charAt(i-1) == a.charAt(j-1)){
+	        matrix[i][j] = matrix[i-1][j-1];
+	      } else {
+	        matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, // substitution
+	                                Math.min(matrix[i][j-1] + 1, // insertion
+	                                         matrix[i-1][j] + 1)); // deletion
+	      }
+	    }
+	  }
+
+	  return matrix[b.length][a.length];
+	},
+
+
 	insertHello: function() {
 		var data = {
 			title: "Zotero",
