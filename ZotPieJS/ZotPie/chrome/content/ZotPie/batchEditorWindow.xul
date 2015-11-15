@@ -37,7 +37,7 @@
         <vbox>
             <label value="Type:"/>
             <menulist id="combo_type" width="150px"
-                    oncommand="Zotero.BatchEditor.batchTagEditTest()">
+                    oncommand="Zotero.BatchEditor.onApply()">
                 <menupopup>
                     <menuitem label="Tag" value="tag"/>
                 </menupopup>
@@ -49,7 +49,7 @@
                     oncommand="Zotero.BatchEditor.onActionChange()">
                 <menupopup>
                     <menuitem label="Modify" value="modify"/>
-                    <menuitem label="Remove" value = "remove"/>
+                    <menuitem label="Remove" value="remove"/>
                 </menupopup>
             </menulist>
         </vbox>
@@ -65,7 +65,7 @@
         </vbox>
         <vbox>
             <label value="Collection:"/>
-            <menulist id="combo_collection" width="150px"
+            <menulist id="combo_collection" width="150px" disabled="true"
                     oncommand="Zotero.BatchEditor.onCollectionChange()">
                 <menupopup>
                     
