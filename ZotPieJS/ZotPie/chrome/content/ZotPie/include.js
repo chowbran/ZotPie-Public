@@ -1,6 +1,7 @@
 // Only create main object once
+let loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
+                .getService(Components.interfaces.mozIJSSubScriptLoader);
+
 if (!Zotero.BatchEditor) {
-	let loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
-					.getService(Components.interfaces.mozIJSSubScriptLoader);
 	loader.loadSubScript("chrome://zotpie/content/batchEditor.js");
 }
