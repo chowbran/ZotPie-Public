@@ -11,6 +11,8 @@ Zotero.BatchEditor = {
 	DB: null,
 	
 	init: function () {
+		// this.batchEditorInit();
+
 		// Connect to (and create, if necessary) helloworld.sqlite in the Zotero directory
 		this.DB = new Zotero.DBConnection('zotero');
 
@@ -22,24 +24,32 @@ Zotero.BatchEditor = {
 		// Register the callback in Zotero as an item observer
 		var notifierID = Zotero.Notifier.registerObserver(this.notifierCallback, ['item']);
 		
+		window.addEventListener("DOMContentLoaded", this.onLoad, false);
+
 		// Unregister callback when the window closes (important to avoid a memory leak)
 		window.addEventListener('unload', function(e) {
 				Zotero.Notifier.unregisterObserver(notifierID);
 		}, false);
 
 
-		// Our stuffs
-		console.log("Init");
+	},
+
+	onLoad: function() {
 		this.matchCase = false;
 		this.currentCollID = -1;
-		this.editAction = document.getElementById("combo_action");
-		this.txtFind = " fsdf";
+		this.editAction = Zotero.ZotPie.batchEditorDoc.document.getElementById('txt_find').value;
+		// this.editAction = document.getElementById('txt_find').value;
+
+		console.log(this.editAction);
+
+		this.txtFind = "TEST";
 		this._setupCollections();
+
 	},
 
 	_setupCollections: function() {
 		console.log("populating menu");
-		var menu = document.getElementById("combo_collection");
+		var menu = document.getElementById('combo_collection');
 		collections = Zotero.getCollections();
 
 		// Set up the menu collection name as label and collection id as value
@@ -56,7 +66,10 @@ Zotero.BatchEditor = {
 	},
 
 	onFindChange: function() {
-		this.txtFind = document.getElementById("txt_find").value;
+		// var txtBox = document.getElementById('txt_find');
+		var txtBox = Zotero.ZotPie.batchEditorDoc.document.getElementById('txt_find');
+		this.txtFind = txtBox.value;
+		console.log(this.txtFind);
 	},
 
 	onActionChange: function() {
@@ -66,7 +79,7 @@ Zotero.BatchEditor = {
 	onScopeChange: function() {
 		console.log("Change scope");
 		console.log(this.txtFind);
-		var cboScope = document.getElementById("combo_scope");
+		var cboScope = document.getElementById('combo_scope');
 		if (cboScope.label == "All") {
 			this.currentCollID = -1;
 			cboScope.disabled = true;
@@ -78,7 +91,7 @@ Zotero.BatchEditor = {
 
 	onCollectionChange: function() {
 		console.log("Change collection");
-		var selected = document.getElementById("combo_collection").index;
+		var selected = document.getElementById('combo_collection').index;
 		this.currentCollID = selected;
 	},
 
