@@ -23,23 +23,40 @@ Zotero.Couple = {
 
     onLoad: function(){
         this._setupCollections();
+        this._setupGroups();
+        var curGroupId = Zotero.ZotPie.coupleDoc.document.getElementById('combo_copygroup').index;
+        //TODO
+        console.log(curGroupId);
+        this._setupCollections(Zotero.Groups.get(curGroupId));
+
     },
 
-    _setupCollections: function() {
-        console.log("populating menu");
-        var menu = Zotero.ZotPie.batchEditorDoc.document.getElementById('combo_original');
-        collections = Zotero.getCollections();
+    _setupGroups: function () {
+        var menu = Zotero.ZotPie.coupleDoc.document.getElementById('combo_copygroup');
+        var groups = Zotero.Groups.getAll();
+
+        for ( i=0; i < groups.length; i ++) {
+            menu.appendItem(groups[i]['_name'], groups[i]['_id']);
+        }
+
+        menu.selectedIndex = 0;
+    },
+
+    _setupCollections: function(group) {
+        group = group || 0;
+        if (group === 0){
+            var menu = Zotero.ZotPie.coupleDoc.document.getElementById('combo_original');
+            var collections = Zotero.getCollections();
+        }else{
+            var menu = Zotero.ZotPie.coupleDoc.document.getElementById('combo_copycollection');
+            var collections = group.getCollections();
+        }
 
         // Set up the menu collection name as label and collection id as value
-        for (var coll in collections) {
-            menu.appendItem(coll['_name'], coll['_key']);
+        for ( i=0; i < collections.length; i ++) {
+            menu.appendItem(collections[i]['_name'], collections[i]['_id']);
         }
-        // collections.forEach(function(coll) {
-        // 	menu.appendItem(coll.getName(), coll.getName());
-        // 	if (coll.getName() == collStr) {
-        // 		collectionID = coll.getID();
-        // 	}
-        // });
+
         menu.selectedIndex = 0;
     },
 
