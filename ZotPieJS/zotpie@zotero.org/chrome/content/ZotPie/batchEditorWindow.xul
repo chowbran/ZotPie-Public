@@ -3,7 +3,7 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     title="Batch Editor" onload="Zotero.BatchEditor.onLoad()">
 <!-- Include the main extension logic -->
-<script src="chrome://zotero/content/include.js"/>
+<script src="chrome://zotero/content/array_intersect.min.js"/>
 <script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
  
 <hbox>

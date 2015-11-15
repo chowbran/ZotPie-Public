@@ -44,7 +44,7 @@ Zotero.BatchEditor = {
 		console.log(this.editAction);
 
 		this._setupCollections();
-
+		this._setupTags();
 	},
 
 	_setupCollections: function() {
@@ -57,17 +57,29 @@ Zotero.BatchEditor = {
 			menu.appendItem(coll.getName(), coll.getID());
 		}
 		menu.selectedIndex = 0;
+
 	},
 
 	onFindChange: function() {
 		this.txtFind = this.doc.getElementById('txt_find').value;
 
 		console.log(this.editDistance(this.txtFind, "DoG"));
-		_populateTags();
+		populateTags();
 	},
 
-	_populateTags: function() {
+	resetTags: function(collectionID) {
 
+		this.tagSet = this.ALLITEMS.Filter(function (item) {
+			return collectionID > 0 ? item.inCollection(collectionID) : item;
+		}.map(function (item) {
+			return item.getTags();
+		});
+	},
+
+	_setupTags: function() {
+		this.ALLITEMS = Zotero.Items.getAll(); 
+		// this.tagSet = Zotero.Tags.getAll();
+		// this.changeSet = {};
 	},
 
 	onActionChange: function() {
@@ -80,7 +92,6 @@ Zotero.BatchEditor = {
 		} else if (this.editAction == 'remove') {
 			txtReplace.disabled = true;
 		}
-
 	},
 
 	onScopeChange: function() {
@@ -100,88 +111,6 @@ Zotero.BatchEditor = {
 		this.currentCollID = selected;
 	},
 
-	batchTagEditTest: function () {
-		var collStr = "hellos";
-		var items = [];
-		var collections = [];
-		var collectionID;
-		var allItems = [];
-		var oldTags = ['a','abc','d'];
-		var oldTagIds = [];
-		var newTag = 'sometesttag'
-        var ids = [];
-
-        if (this.currentCollID > 0) {
-        	var coll = Zotero.Collections.get(collectionID);
-			allItems = coll.getChildItems();
-        } else {
-	  		allItems = Zotero.Items.getAll();
-        }
-
-		// if (collStr!= '') {
-		// 	collections = Zotero.getCollections();
-
-		// 	// Get the collection with the same name as the one searched for
-		// 	collections.forEach(function(coll) {
-		// 		if (coll.getName() == collStr) {
-		// 			collectionID = coll.getID();
-		// 		}
-		// 	});
-        	
-  //       	var coll = Zotero.Collections.get(collectionID);
-		// 	allItems = coll.getChildItems();
-  //       } else {
-	 //  		allItems = Zotero.Items.getAll();
-  //       }
-
-        oldTagIDs = oldTags.map(function (tag) { // slow?
-        	return Zotero.Tags.getID(tag, 0);
-        });
-
-        console.log(oldTagIDs);
-        console.log(allItems);
-
-        // Filters the list of all items to a sublist where each element
-        // contains one (or more) old tags
-        items = allItems.filter(function(item) { // slow?
-        	var result = item.hasTags(oldTagIDs);
-        	return result;
-        });
-
-        console.log(items);
-
-
-        for (var item of items) {
-        	// Get the tags of the item to edit
-        	var allTags = item.getTags(); 
-
-        	// Swap to lower case
-        	if (!this.matchCase) {
-        		var temp = oldTags.map(tag => tag.toLowerCase());
-        		oldTags = temp;
-        	}
-
-        	for (var tag of allTags) { //Slow?
-        		console.log(j);
-        		console.log(tag.id);
-        		if (!this.matchCase) {
-				    if (oldTags.indexOf(tag.name) != -1) {
-				    	ids.push(tag.id);
-				    }
-        		} else {
-				    if (oldTags.indexOf(tag.name.toLowerCase()) != -1) {
-				    	ids.push(tag.id);
-				    }
-        		}
-			}
-			console.log(ids);
-			ids.forEach(function(id) {
-            	item.removeTag(id);
-			});
-            item.addTag(newTag, 1);
-			ids = [];
-        }
-	},
 
 	onApply: function() {
 		var newTag = this.doc.getElementById('txt_replace').value;
