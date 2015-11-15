@@ -5,6 +5,6 @@ if (!Zotero.BatchEditor) {
 	loader.loadSubScript("chrome://zotpie/content/batchEditor.js");
 }
 
-if (!Zotero.Interface) {
-	loader.loadSubScript("chrome://zotpie/content/interface.js");
+if (!Zotero.ZotPie) {
+	loader.loadSubScript("chrome://zotpie/content/ZotPie.js");
 }
