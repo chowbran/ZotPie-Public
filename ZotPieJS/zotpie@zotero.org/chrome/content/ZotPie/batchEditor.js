@@ -41,14 +41,11 @@ Zotero.BatchEditor = {
 		this.matchCase = false;
 		this.currentCollID = -1;
 
-		console.log(this.editAction);
-
 		this._setupCollections();
 		this._setupTags();
 	},
 
 	_setupCollections: function() {
-		console.log("populating menu");
 		var menu = this.doc.getElementById('combo_collection');
 		collections = Zotero.getCollections();
 
@@ -60,66 +57,127 @@ Zotero.BatchEditor = {
 
 	},
 
-	populateTags: function(likeText) {
+	_setupTags: function() {
+		this.ALLITEMS = Zotero.Items.getAll(); 
+		this.changeSet = [];
+		this.resetTags(this.currentCollID);
+
+		// this.tagSet = Zotero.Tags.getAll();
+	},
+
+	/* Updates the listbox of tags that are in the unchanged list.
+	 * Triggered each time the search box is edited.
+	 */
+	updateTags: function(likeText) {
 		var self = this;
 
-		console.log(this.tagSet);
+		// Clear listbox
+		var listbox = this.doc.getElementById('list_tags');
+		var count = listbox.itemCount;
+		console.log(count);
+
+		while (count--) {
+			listbox.removeItemAt(count);
+		}
+
+		if (!likeText || likeText.length == 0) {
+			return;
+		}
 
 		var newTagSet = this.tagSet.filter(function (tag) {
-			console.log(tag.name);
 			return (self.editDistance(likeText, tag.name) <= 3);
 		});
 
-		newTagSet = diff(newTagSet, this.changeSet);
+		newTagSet = this.removeDuplicateItems(newTagSet);
+
+		console.log (newTagSet);
+		console.log (this.changeSet);
+		newTagSet = this.diff(newTagSet, this.changeSet);
+		console.log (newTagSet);
+
+		for (var tag of newTagSet) {
+			listbox.appendItem(tag.name, tag.id);
+		}
 	},
 
+	onSelect: function(element) {
+		var eID = element.getAttribute('id');
+		var lstSource = this.doc.getElementById(eID);
+		var lstTarget;
+
+		if (eID == 'list_tags') {
+			lstTarget = this.doc.getElementById('list_change');
+		} else {
+			lstTarget = this.doc.getElementById('list_tags');
+		}
+
+		var count = lstSource.selectedCount;
+		while (count--) {
+			var item = lstSource.selectedItems[0];
+			lstSource.removeItemAt(lstSource.getIndexOfItem(item));
+
+			var label = item.getAttribute('label');
+			var value = item.getAttribute('value');
+
+			lstTarget.appendItem(label, value);
+
+			if (eID == 'list_tags') {
+				this.changeSet.push(Zotero.Tags.get(value));
+			} else {
+				this.changeSet.splice(this.changeSet.indexOf(Zotero.Tags.get(value)), 1);
+				this.changeSet.remove(Zotero.Tags.get(value));
+				lstTarget = this.doc.getElementById('list_tags');
+			}
+		}
+	},
 
 	onFindChange: function() {
 		this.txtFind = this.doc.getElementById('txt_find').value;
 
-		this.populateTags(this.txtFind);
+		this.updateTags(this.txtFind);
 	},
 
+	/* Resets the total tag set, relative to the current 
+	 * collection with collection id collectionID.
+	 */
 	resetTags: function(collectionID) {
 		this.tagSet = this.ALLITEMS.filter(function (item) {
-			console.log (collectionID);
 			return collectionID > 0 ? item.inCollection(collectionID) : item;
 		}).map(function (item) {
 			return item.getTags();
 		});
 
-		console.log(this.tagSet);
-
 		// Flatten array
 		this.tagSet = [].concat.apply([],this.tagSet);
 
-		// Get unique
-		this.tagSet = this.unique(this.tagSet);
-		console.log (this.tagSet);
+		// Remove the duplicates
+		this.tagSet = this.removeDuplicateItems(this.tagSet);
+
+		this.updateTags();
 	},
 
 	// b - a
+	// slow?
 	diff: function(b, a) {
-    	return b.filter(function(i) {return a.indexOf(i) < 0;});
+    	return b.filter(function(i) {return !(i in a); });
 	},
 
-	unique: function(xs) {
-		var seen = {};
-		return xs.filter(function(x) {
-			if (seen[x])
-				return;
-			seen[x] = true;
-			return x;
-		});
-	},
+	// http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
+	// slow?
+	removeDuplicateItems: function(items) {
+	    var seen = {};
+	    var out = [];
+	    var len = items.length;
+	    var j = 0;
 
-	_setupTags: function() {
-		this.ALLITEMS = Zotero.Items.getAll(); 
-		this.resetTags(this.currentCollID);
-
-		console.log(this.ALLITEMS);
-		// this.tagSet = Zotero.Tags.getAll();
-		// this.changeSet = {};
+	    for(var i = 0; i < len; i++) {
+	         var item = items[i];
+	         if(seen[item.id] !== 1) {
+	               seen[item.id] = 1;
+	               out[j++] = item;
+	         }
+	    }
+	    return out;
 	},
 
 	onActionChange: function() {

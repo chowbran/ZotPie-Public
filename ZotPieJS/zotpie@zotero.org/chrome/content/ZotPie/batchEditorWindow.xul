@@ -19,16 +19,16 @@
 </hbox>
  
 <hbox flex="1" style="margin: 10px">
-<listbox id="list_tags" flex="1">
+<listbox id="list_tags" onselect="Zotero.BatchEditor.onSelect(event.target)" seltype="multiple" flex="1">
  
 </listbox>
 <vbox pack="center">
 <button id="btn_add" label=">>"
-    oncommand="Zotero.BatchEditor.batchTagEditTest()"/>
+    oncommand="Zotero.BatchEditor.onAdd()"/>
 <button id="btn_remove" label=">>"
-    oncommand="Zotero.BatchEditor.batchTagEditTest()"/>
+    oncommand="Zotero.BatchEditor.onRemove()"/>
 </vbox>
-<listbox id="list_change" flex="1">
+<listbox id="list_change" onselect="Zotero.BatchEditor.onSelect(event.target)" seltype="multiple" flex="1">
  
 </listbox>
 </hbox>
