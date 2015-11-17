@@ -8,7 +8,7 @@ Zotero.Couple = {
 
     init:function(){
 
-        this.DB = new Zotero.DBConnection('zotero');
+        this.DB = new Zotero.DBConnection('linkedDocuments');
 
         // Register the callback in Zotero as an item observer
         var notifierID = Zotero.Notifier.registerObserver(this.notifierCallback, ['item']);
@@ -23,17 +23,17 @@ Zotero.Couple = {
 
     onLoad: function(){
         this.doc = Zotero.ZotPie.coupleDoc.document;
-        this.setupCollections();
-        this.setupGroups();
-        this.setupGroupCollections();
-        this.setupRecords('group');
-        this.setupRecords('user');
+        this.setCollections();
+        this.setGroups();
+        this.setGroupCollections();
+        this.setRecords('user');
 
     },
 
-    setupCollections: function() {
+    setCollections: function() {
 
         var menu = this.doc.getElementById('combo_original');
+        menu.removeAllItems();
         var collections = Zotero.getCollections();
 
 
@@ -43,11 +43,13 @@ Zotero.Couple = {
         }
 
         menu.selectedIndex = 0;
+
     },
 
-    setupGroupCollections: function(){
+    setGroupCollections: function(){
 
         var menu = this.doc.getElementById('combo_copycollection');
+        menu.removeAllItems();
         var curGroupId = this.doc.getElementById('combo_copygroup').value;
         var curGroup = Zotero.Groups.get(curGroupId);
         var collections = curGroup.getCollections();
@@ -58,10 +60,13 @@ Zotero.Couple = {
         }
 
         menu.selectedIndex = 0;
+
+        this.setRecords('group');
     },
 
-    setupGroups: function () {
+    setGroups: function () {
         var menu = this.doc.getElementById('combo_copygroup');
+        menu.removeAllItems();
         var groups = Zotero.Groups.getAll();
 
         for ( i=0; i < groups.length; i ++) {
@@ -71,30 +76,77 @@ Zotero.Couple = {
         menu.selectedIndex = 0;
     },
 
-    setupRecords: function(type){
+    setRecords: function(type){
 
         if (type === 'group'){
             var curCollectionId = this.doc.getElementById('combo_copycollection').value;
-            var menu = this.doc.getElementById('list_copy');
+            var list = this.doc.getElementById('list_copy');
+            this.clearListBox(list);
         }else{
             var curCollectionId = this.doc.getElementById('combo_original').value;
-            var menu = this.doc.getElementById('list_original');
+            var list = this.doc.getElementById('list_original');
+            this.clearListBox(list);
         }
         var collection = Zotero.Collections.get(curCollectionId);
         var records = collection.getChildItems();
 
         for (i=0; i < records.length; i ++){
-            console.log(records[i]);
-            menu.appendItem(records[i].getDisplayTitle(), records[i]['_id']);
+
+            list.appendItem(records[i].getDisplayTitle(), records[i]['_id']);
+        }
+    },
+
+    clearListBox: function(list){
+
+        var count = list.itemCount;
+        while(count-- > 0){
+            list.removeItemAt(0);
+        }
+    },
+
+    updateLink: function () {
+        copyList = this.doc.getElementById('list_copy');
+        original = this.doc.getElementById('list_original');
+
+
+        copySet = "";
+
+        var count = copyList.selectedCount;
+        var count2 = original.selectedCount;
+        if (count !== 0 && count2 !== 0){
+            original = original.value;
+            for(i = 0; i < count; i ++){
+                copySet = copySet.concat(copyList.getSelectedItem(i).value + ',');
+            }
+
+            
+            if (!this.DB.tableExists('linked')) {
+                this.DB.query("CREATE TABLE linked (original INT, copies VARCHAR)");
+            }else{
+                var sql = "SELECT original FROM linked WHERE original IN (" + original + ")";
+                var exist = this.DB.rowQuery(sql);
+                console.log(exist);
+                if (exist === undefined){
+                    this.DB.query('INSERT INTO linked (original, copies) VALUES (' + original + ' , \"' + copySet + "\")");
+                }else{
+                    this.DB.query('UPDATE linked SET copies = \"' + copySet + '\" WHERE original = ' + original + ';');
+
+                }
+            }
         }
 
 
-    },
-
-    onCollectionChange: function(group){
 
     },
 
+    sync: function(){
+        var linkSet = this.DB.query("SELECT * FROM linked");
+        if(linkSet ? linkSet : []){
+            for (i=0; i < linkSet.length; i ++){
+                console.log(linkSet[i]);
+            }
+        }
+    },
 
 
     // Callback implementing the notify() method to pass to the Notifier

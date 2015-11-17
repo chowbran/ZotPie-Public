@@ -19,7 +19,7 @@
          To unlink previously linked records, click on the 'Unlink Records' tab above</description>
         <hbox>
          <button id="btn_sync" label="Sync" width="200px" height="60px"
-            oncommand="Zotero.CoupleDocuments.getCollections()"/>
+            oncommand="Zotero.Couple.sync()"/>
          <spacer flex="1"/>
         </hbox>
         </vbox>
@@ -31,7 +31,7 @@
         <vbox>
             <label value="Collection of Original:"/>
             <menulist id="combo_original" width="200px"
-                oncommand="Zotero.Couple.setupRecords()">
+                oncommand="Zotero.Couple.setRecords('user')">
                 <menupopup>
                    
                 </menupopup>
@@ -42,7 +42,7 @@
         <vbox>
             <label value="Group of Copy:"/>
             <menulist id="combo_copygroup" width="175px"
-                oncommand="Zotero.Couple.setupCollections()">
+                oncommand="Zotero.Couple.setGroupCollections()">
                 <menupopup>
                   
                 </menupopup>
@@ -51,7 +51,7 @@
         <vbox>
             <label value="Collection of Copy:"/>
             <menulist id="combo_copycollection" width="175px"
-                oncommand="Zotero.CoupleDocuments.getCollections()">
+                oncommand="Zotero.Couple.setRecords('group')">
                 <menupopup>
                  
                 </menupopup>
@@ -62,14 +62,14 @@
         <listbox id="list_original" flex="1" width="350px">
           
         </listbox>
-        <listbox id="list_copy" flex="1" width="350px">
+        <listbox id="list_copy" flex="1" width="350px" seltype="multiple">
          
         </listbox>
         </hbox>
         <hbox>
         <spacer flex="1"/>
         <button id="btn_link" label="Link"
-            oncommand="Zotero.CoupleDocuments.getCollections()"/>
+            oncommand="Zotero.Couple.updateLink()"/>
         </hbox>
         </vbox>
         </tabpanel>
@@ -80,7 +80,7 @@
         <vbox>
             <label value="Collection of Original:"/>
             <menulist id="combo_original_rem" width="200px"
-                oncommand="Zotero.CoupleDocuments.getCollections()">
+                oncommand="Zotero.Couple.getCollections()">
                 <menupopup>
                   
                 </menupopup>
@@ -91,7 +91,7 @@
         <vbox>
             <label value="Group of Copy:"/>
             <menulist id="combo_copygroup_rem" width="175px"
-                oncommand="Zotero.CoupleDocuments.getCollections()">
+                oncommand="Zotero.Couple.getCollections()">
                 <menupopup>
                  
                 </menupopup>
@@ -100,7 +100,7 @@
         <vbox>
             <label value="Collection of Copy:"/>
             <menulist id="combo_copycollection_rem" width="175px"
-                oncommand="Zotero.CoupleDocuments.getCollections()">
+                oncommand="Zotero.Couple.getCollections()">
                 <menupopup>
                 
                 </menupopup>
@@ -118,7 +118,7 @@
         <hbox>
         <spacer flex="1"/>
         <button id="btn_unlink" label="Unlink"
-            oncommand="Zotero.CoupleDocuments.getCollections()"/>
+            oncommand="Zotero.Couple.getCollections()"/>
         </hbox>
         </vbox>
         </tabpanel>
