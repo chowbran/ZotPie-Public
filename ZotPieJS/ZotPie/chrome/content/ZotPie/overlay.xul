@@ -25,4 +25,6 @@
 	<!-- Include the main extension logic -->
 	<script src="chrome://zotero/content/include.js"/>
 	<script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
+  <script src="chrome://zotpie/content/overlay.js" type="application/javascript;version=1.8"/>
+  
 </overlay>
