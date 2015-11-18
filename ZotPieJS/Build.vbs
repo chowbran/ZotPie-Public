@@ -1,4 +1,4 @@
-Call ArchiveFolder(".\ZotPie.zip", ".\ZotPie\", ".\ZotPie.xpi")
+Call ArchiveFolder(".\ZotPie.zip", ".\zotpie@zotero.org\", ".\ZotPie.xpi")
 
 Sub ArchiveFolder (zipFile, sFolder, xpiFile)
     Dim shApp
