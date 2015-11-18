@@ -115,22 +115,32 @@ Zotero.Couple = {
         var count2 = original.selectedCount;
         if (count !== 0 && count2 !== 0){
             original = original.value;
+            var numOfCopies = 0;
             for(i = 0; i < count; i ++){
-                copySet = copySet.concat(copyList.getSelectedItem(i).value + ',');
+
+                var copy = Zotero.Items.get(copyList.getSelectedItem(i).value);
+                var originalItem = Zotero.Items.get(original);
+                //check if the items to copy over, are same type as original
+
+                if (originalItem['_itemTypeID'] === copy['_itemTypeID']) {
+                    numOfCopies ++;
+                    copySet = copySet.concat(copyList.getSelectedItem(i).value + ',');
+                }
+
             }
 
-            
-            if (!this.DB.tableExists('linked')) {
-                this.DB.query("CREATE TABLE linked (original INT, copies VARCHAR)");
-            }else{
-                var sql = "SELECT original FROM linked WHERE original IN (" + original + ")";
-                var exist = this.DB.rowQuery(sql);
-                console.log(exist);
-                if (exist === undefined){
-                    this.DB.query('INSERT INTO linked (original, copies) VALUES (' + original + ' , \"' + copySet + "\")");
+            if (numOfCopies !== 0){
+                if (!this.DB.tableExists('linked')) {
+                    this.DB.query("CREATE TABLE linked (original INT, copies VARCHAR)");
                 }else{
-                    this.DB.query('UPDATE linked SET copies = \"' + copySet + '\" WHERE original = ' + original + ';');
+                    var sql = "SELECT original FROM linked WHERE original IN (" + original + ")";
+                    var exist = this.DB.rowQuery(sql);
 
+                    if (exist === undefined){
+                        this.DB.query('INSERT INTO linked (original, copies) VALUES (' + original + ' , \"' + copySet + "\")");
+                    }else{
+                        this.DB.query('UPDATE linked SET copies = \"' + copySet + '\" WHERE original = ' + original + ';');
+                    }
                 }
             }
         }
@@ -138,12 +148,35 @@ Zotero.Couple = {
 
 
     },
-
+t 
     sync: function(){
         var linkSet = this.DB.query("SELECT * FROM linked");
+
         if(linkSet ? linkSet : []){
             for (i=0; i < linkSet.length; i ++){
-                console.log(linkSet[i]);
+
+                var original = Zotero.Items.get((linkSet[i])['original']);
+                var copyArray = linkSet[i]['copies'].split(',');
+
+
+                //only go to range of array -1, since there's an extra comma at the end
+                for (i = 0; i < copyArray.length - 1; i ++){
+                    //get the item to be copied, and all items that have the same item type ID
+                    var copy = Zotero.Items.get(copyArray[i]);
+                    var fields = Zotero.ItemFields.getItemTypeFields(copy['_itemTypeID'], true);
+
+
+                    //go through every single field and update accordingly
+                    for (j = 0; j < fields.length; j ++){
+                        var fieldName = Zotero.ItemFields.getName(fields[j]);
+                        copy.setField(fieldName, original.getField(fieldName));
+
+                    }
+
+                    copy.save();
+
+                }
+
             }
         }
     },
