@@ -33,9 +33,74 @@ var ZotPieOverlay = new function ()
 
 		    tabpanels.appendChild(cdTabPanel);
 		}
-	}
+
+	    // Add custom elements to the Zotero toolbar
+
+        // Grab the advanced search node (we will add our custom elements before this)
+		var advSearch = document.getElementById("zotero-tb-advanced-search");
+
+		if (advSearch) {
+		    var sep = document.createElement("toolbarseparator");
+		    advSearch.parentNode.insertBefore(sep, advSearch);
+
+		    var cslEdit = document.createElement("toolbarbutton");
+		    cslEdit.setAttribute("id", "zotpie-csledit");
+		    cslEdit.setAttribute("class", "zotero-tb-button");
+		    cslEdit.setAttribute("tooltiptext", "CSL Editor");
+		    cslEdit.setAttribute("image", "chrome://ZotPie/skin/toolbar-csledit.png");
+		    cslEdit.setAttribute("oncommand", "openInViewer('chrome://zotero/content/tools/csledit.xul', true)");
+		    sep.parentNode.insertBefore(cslEdit, sep);
+
+		    var batchEdit = document.createElement("toolbarbutton");
+		    batchEdit.setAttribute("id", "zotpie-batchedit");
+		    batchEdit.setAttribute("class", "zotero-tb-button");
+		    batchEdit.setAttribute("tooltiptext", "Batch Tag Editor");
+		    batchEdit.setAttribute("image", "chrome://ZotPie/skin/tag.png");
+		    batchEdit.setAttribute("oncommand", "window.openDialog('chrome://zotpie/content/batchEditorWindow.xul', 'Batch Editor', 'chrome,centerscreen')");
+		    cslEdit.parentNode.insertBefore(batchEdit, cslEdit);
+
+		    var documentLinker = document.createElement("toolbarbutton");
+		    documentLinker.setAttribute("id", "zotpie-documentlinker");
+		    documentLinker.setAttribute("class", "zotero-tb-button");
+		    documentLinker.setAttribute("tooltiptext", "Document Linker");
+		    documentLinker.setAttribute("image", "chrome://ZotPie/skin/toolbar-documentlinker.png");
+		    documentLinker.setAttribute("oncommand", "window.openDialog('chrome://zotpie/content/coupleDocumentsWindow.xul', 'Link Documents', 'chrome,centerscreen')");
+		    batchEdit.parentNode.insertBefore(documentLinker, batchEdit);
+		}
+	},
 	
-	
+    /**
+    * Opens a URI in the basic viewer in Standalone, or a new window in Firefox
+    */
+    openInViewer = function (uri, newTab) {
+        var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+			.getService(Components.interfaces.nsIWindowMediator);
+        const features = "menubar=yes,toolbar=no,location=no,scrollbars,centerscreen,resizable";
+		
+        if(Zotero.isStandalone) {
+            var win = wm.getMostRecentWindow("zotero:basicViewer");
+            if(win) {
+                win.loadURI(uri);
+            } else {
+                window.openDialog("chrome://zotero/content/standalone/basicViewer.xul",
+					"basicViewer", "chrome,resizable,centerscreen,menubar,scrollbars", uri);
+            }
+        } else {
+            var win = wm.getMostRecentWindow("navigator:browser");
+            if(win) {
+                if(newTab) {
+                    win.gBrowser.selectedTab = win.gBrowser.addTab(uri);
+                } else {
+                    win.open(uri, null, features);
+                }
+            }
+            else {
+                var ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
+							.getService(Components.interfaces.nsIWindowWatcher);
+                var win = ww.openWindow(null, uri, null, features + ",width=775,height=575", null);
+            }
+        }
+    }
 	this.onUnload = function() {
 
 	}
