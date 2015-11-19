@@ -56,7 +56,7 @@ var ZotPieOverlay = new function ()
 		    batchEdit.setAttribute("class", "zotero-tb-button");
 		    batchEdit.setAttribute("tooltiptext", "Batch Tag Editor");
 		    batchEdit.setAttribute("image", "chrome://ZotPie/skin/tag.png");
-		    batchEdit.setAttribute("oncommand", "window.openDialog('chrome://zotpie/content/batchEditorWindow.xul', 'Batch Editor', 'chrome,centerscreen')");
+		    batchEdit.setAttribute("oncommand", "Zotero.ZotPie.startBatchEditor()");
 		    cslEdit.parentNode.insertBefore(batchEdit, cslEdit);
 
 		    var documentLinker = document.createElement("toolbarbutton");
