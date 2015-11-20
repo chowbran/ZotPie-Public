@@ -17,11 +17,6 @@
 				<text variable="publisher"/>
 				<text variable="date"/>
 			</group>
-			<date>
-				<text variable="yes"/>
-				<text variable="no"/>
-				<text variable="maybe"/>
-			</date>
 		</layout>
 	</citation>
 	<bibliography>

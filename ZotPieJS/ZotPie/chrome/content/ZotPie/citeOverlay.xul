@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://zotpie/skin/overlay.css" type="text/css"?>
+<!DOCTYPE window SYSTEM "chrome://zotpie/locale/zotpie.dtd">
+
+<overlay id="zotpie-citeoverlay"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	
+	<!-- Include the main extension logic -->
+	<script src="chrome://zotero/content/include.js"/>
+	<script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
+  <script src="chrome://zotpie/content/citeOverlay.js" type="application/javascript;version=1.8"/>
+  
+</overlay>

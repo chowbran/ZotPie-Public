@@ -3,3 +3,4 @@ locale	ZotPie	en-US		chrome/locale/en-US/ZotPie/
 skin	ZotPie	default		chrome/skin/default/ZotPie/
 
 overlay	chrome://zotero/content/zoteroPane.xul	chrome://ZotPie/content/overlay.xul
+overlay chrome://zotero/content/tools/csledit.xul chrome://ZotPie/content/citeOverlay.xul
