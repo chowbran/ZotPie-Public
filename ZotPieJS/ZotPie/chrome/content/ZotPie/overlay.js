@@ -2,16 +2,19 @@ var ZotPieOverlay = new function ()
 {
     var tab, tabpanels;
 
-    console.log("AAAA");
-    this.isTab = false;
-    var ZoteroPane = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(Components.interfaces.nsIWindowMediator).getMostRecentWindow("navigator:browser").ZoteroPane;
+    var ps = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                              .getService(Components.interfaces.nsIPromptService);
+    var ZoteroPane = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+        .getService(Components.interfaces.nsIWindowMediator)
+        .getMostRecentWindow("navigator:browser").ZoteroPane;
+    
+    var batchedItems = [];
+
 	this.onLoad = function() {
-		console.log("TEST");
 
 		tab = document.getElementById("zotero-view-tabbox");
 			
 		if (tab) {
-		    console.log("COOL");
 		    console.log(tab.getAttribute("id"));
 
 		    var cdTab = document.createElement("tab");
@@ -93,13 +96,37 @@ var ZotPieOverlay = new function ()
 		    addToQueue.setAttribute("id", "zotpie-batcheditqueue");
 		    addToQueue.setAttribute("label", "Add Item to Batch Edit Queue...")
 		    addToQueue.setAttribute("image","chrome://ZotPie/skin/tagbatch.png");
-		    addToQueue.setAttribute("oncommand", "openBatchTagEdit()");
+		    addToQueue.setAttribute("oncommand", "addToBatchEditQueue()");
 		    itemContextMenu.appendChild(addToQueue);
 		}
 	},
 	
-    openBatchTagEdit = function () {
+    addToBatchEditQueue = function () {
         var selectedItems = ZoteroPane.getSelectedItems();
+        var item = selectedItems[0];
+        var counter = 0;
+
+        for (i = 0; i < selectedItems.length; i++) {
+            if (batchedItems.indexOf(selectedItems[i].id) == -1) {
+                batchedItems.push(selectedItems[i].id);
+                counter++;
+            }
+        }
+
+        var flags = ps.BUTTON_POS_0 * ps.BUTTON_TITLE_IS_STRING +
+                    ps.BUTTON_POS_1 * ps.BUTTON_TITLE_IS_STRING +
+                    ps.BUTTON_POS_2 * ps.BUTTON_TITLE_IS_STRING;
+        // This value of flags will create 3 buttons. The first will be "Save", the
+        // second will be the value of aButtonTitle1, and the third will be "Cancel"
+
+        var button = ps.confirmEx(null, "Success!", "Added " + counter + " items to the tag batch edit queue.\nThere are currently "
+                                        + batchedItems.length.toString() + " items in the queue.",
+                                       flags, "Open Batch Editor", "Continue Adding", null, null, {});
+
+        if (button == 0) {
+            Zotero.ZotPie.startBatchEditor();
+        }
+        //toastr.success("test");
 
     },
     /**
