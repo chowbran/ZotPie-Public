@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://zotpie/skin/overlay.css" type="text/css"?>
-<?xml-stylesheet href="chrome://zotpie/content/toastr.css" type="text/css"?>
-<?xml-stylesheet href=""chrome://zotpie/content/toastr.min.css" type="text/css"?>
 <!DOCTYPE window SYSTEM "chrome://zotpie/locale/zotpie.dtd">
 
 <overlay id="zotpie-overlay"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	
+  
 	<stringbundleset id="stringbundleset">
 		<stringbundle id="zotpie-zotero-strings"
 			src="chrome://zotpie/locale/zotpie.properties"/>
