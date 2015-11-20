@@ -29,11 +29,11 @@ class CoupleDocumentsWin(QtGui.QMainWindow, Ui_CoupleDocumentsWindow):
     def populateUserRecords(self):
         self.list_Original.clear()
         index = self.combo_Original.currentIndex()
-        collectionName = (self.combo_Original.itemText(index))
-        collection = self.userCollections
+        collectionName = self.combo_Original.itemText(index)
+
         collectionKey = ''
 
-        for key in collection.keys():
+        for key in self.userCollections.keys():
             if self.userCollections[key] == collectionName:
                 collectionKey = key
 
@@ -52,17 +52,11 @@ class CoupleDocumentsWin(QtGui.QMainWindow, Ui_CoupleDocumentsWindow):
             if (value == collectionName):
                 collectionKey = key
                 break
-        
-        if (collectionKey == ''):
-            return
 
-        #print(self.curGroupId)
-        #print(collectionKey)
         recordsDic = self.cDoc.getRecords(collectionKey, self.curGroupId)
 
         for value in recordsDic.values():
             self.list_Copy.addItem(value)
-
 
     def populateGroupCollections(self):
         self.combo_Copy.clear()
@@ -88,6 +82,12 @@ class CoupleDocumentsWin(QtGui.QMainWindow, Ui_CoupleDocumentsWindow):
 
         for key in self.userCollections.keys():
             self.combo_Original.addItem(self.userCollections[key])
+
+        self.userCollections['n/a'] = 'no collection'
+
+        print(self.userCollections)
+
+        self.combo_Original.addItem('no collection')
 
 
 

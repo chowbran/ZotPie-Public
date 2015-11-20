@@ -15,7 +15,7 @@ class MainStartWin(QtGui.QMainWindow, Ui_StartWindow):
         self.setupUi(self)
         self.eventHandlerSetup()
         self.userData = UserData()
-        self.localZot = LocalZot()
+        #self.localZot = LocalZot()
         
         if (self.userData.getValue('GENERAL', 'apikey') == ''):
             QtGui.QMessageBox.warning(self, "Missing API Key", "Please enter your API/Library key under preferences")
