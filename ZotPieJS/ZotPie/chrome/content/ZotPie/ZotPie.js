@@ -19,7 +19,12 @@ Zotero.ZotPie = {
     startCouple: function () {
         this.coupleDoc = this.ww.openWindow(null, "chrome://zotpie/content/coupleDocumentsWindow.xul",
             "Couple", "chrome,centerscreen", null);
-    }
+    },
+	
+	startCreateSync : function () {
+		this.createSync = this.ww.openWindow(null,"chrome://zotpie/content/createSyncCollection.xul",
+            "Create Synced Collection", "chrome,centerscreen", null);
+	}
 };
 
 // Initialize the utility

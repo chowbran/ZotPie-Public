@@ -67,6 +67,20 @@ var ZotPieOverlay = new function ()
 		    documentLinker.setAttribute("oncommand", "window.openDialog('chrome://zotpie/content/coupleDocumentsWindow.xul', 'Link Documents', 'chrome,centerscreen')");
 		    batchEdit.parentNode.insertBefore(documentLinker, batchEdit);
 		}
+
+		var addGroup = document.getElementById("zotero-tb-group-add");
+		if (addGroup) {
+		    var sep2 = document.createElement("toolbarseparator");
+		    addGroup.nextSibling.parentNode.insertBefore(sep2, addGroup);
+
+		    var createSync = document.createElement("toolbarbutton");
+		    createSync.setAttribute("id", "zotpie-batchedit");
+		    createSync.setAttribute("class", "zotero-tb-button");
+		    createSync.setAttribute("tooltiptext", "New Synced Collection...");
+		    createSync.setAttribute("image", "chrome://ZotPie/skin/toolbar-synccollection.png");
+		    createSync.setAttribute("oncommand", "Zotero.ZotPie.startCreateSync()");
+		    sep2.parentNode.insertBefore(createSync, sep2);
+		}
 	},
 	
     /**
