@@ -9,17 +9,17 @@
        
     </menupopup>
 </menulist>
-<label value="Group Collection:"/>
+<label value="Group:"/>
 <menulist id="groupcollection"
         oncommand="">
     <menupopup>
 
     </menupopup>
 </menulist>
-<label style="margin-top:10px" value="Enter a name for this collection:"/>
+<label style="margin-top:10px;margin-bottom:10px" value="Enter a name for this group collection:"/>
 <textbox id="zotpie-collectionname"/>
 <hbox style="margin-top:5px" pack="center" align="center">
-<button id="zotpie-ok" label="OK" oncommand=""/>
+<button id="zotpie-ok" label="Create" oncommand=""/>
 <button id="zotpie-cancel" label="Cancel" oncommand=""/>
 </hbox>
 </vbox>

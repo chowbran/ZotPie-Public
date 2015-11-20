@@ -1,75 +1,87 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    title="Batch Editor" onload="Zotero.BatchEditor.onLoad()">
+    title="Batch Editor" onload="Zotero.BatchEditor.{method}">
+ 
 <!-- Include the main extension logic -->
 <script src="chrome://zotero/content/include.js"/>
-<script src="chrome://zotpie/content/array_intersect.min.js" type="application/javascript;version=1.8"/>
 <script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
- 
+
+<hbox>
+<vbox>
+<label value="Items:"/>
+<listbox id="list_items" flex="1">
+
+</listbox>
+</vbox>
+
+<splitter/>
+
+<vbox flex="1">
 <hbox>
 <label control="lbl_find" value="Find:"/>
-<textbox id="txt_find" flex="1" onchange="Zotero.BatchEditor.onFindChange()"/>
-<checkbox id="chk_matchcase" label="Match Case" checked="{true | *false}"/>
+<textbox id="txt_find" flex="1"/>
 </hbox>
  
 <hbox>
 <label control="lbl_replace" value="Replace:"/>
-<textbox id="txt_replace" flex="1" />
+<textbox id="txt_replace" flex="1"/>
 </hbox>
  
 <hbox flex="1" style="margin: 10px">
-<listbox id="list_tags" onselect="Zotero.BatchEditor.onSelect(event.target)" seltype="multiple" flex="1">
+<vbox flex="1">
+<label id="lbl_original" value="Original Tags:"/>
+<listbox id="list_tags" flex="1">
  
 </listbox>
-<vbox pack="center">
-<button id="btn_add" label=">>"
-    oncommand="Zotero.BatchEditor.onAdd()"/>
-<button id="btn_remove" label=">>"
-    oncommand="Zotero.BatchEditor.onRemove()"/>
 </vbox>
-<listbox id="list_change" onselect="Zotero.BatchEditor.onSelect(event.target)" seltype="multiple" flex="1">
+
+<vbox flex="1">
+<label id="lbl_changed" value="Tags to be Changed:"/>
+<listbox id ="list_change" flex="1">
  
 </listbox>
+</vbox>
 </hbox>
+
 <groupbox style="margin: 10px">
     <caption label="Parameters"/>
     <hbox>
         <vbox>
             <label value="Type:"/>
             <menulist id="combo_type" width="150px"
-                    oncommand="Zotero.BatchEditor.onApply()">
+                    oncommand="Zotero.BatchEditor.{function}">
                 <menupopup>
-                    <menuitem label="Tag" value="tag"/>
+                    <menuitem label="Tag"/>
                 </menupopup>
             </menulist>
         </vbox>
         <vbox>
             <label value="Action:"/>
             <menulist id="combo_action" width="150px"
-                    oncommand="Zotero.BatchEditor.onActionChange()">
+                    oncommand="Zotero.BatchEditor.{function}">
                 <menupopup>
-                    <menuitem label="Modify" value="modify"/>
-                    <menuitem label="Remove" value="remove"/>
+                    <menuitem label="Modify"/>
+                    <menuitem label="Remove"/>
                 </menupopup>
             </menulist>
         </vbox>
         <vbox>
             <label value="Scope:"/>
             <menulist id="combo_scope" width="150px"
-                    oncommand="Zotero.BatchEditor.onScopeChange()">
+                    oncommand="Zotero.BatchEditor.{function}">
                 <menupopup>
-                    <menuitem label="All" value="all"/>
-                    <menuitem label="Collection" value="collection"/>
+                    <menuitem label="All"/>
+                    <menuitem label="Collection"/>
                 </menupopup>
             </menulist>
         </vbox>
         <vbox>
             <label value="Collection:"/>
-            <menulist id="combo_collection" width="150px" disabled="true"
-                    oncommand="Zotero.BatchEditor.onCollectionChange()">
+            <menulist id="combo_collection" width="150px"
+                    oncommand="Zotero.BatchEditor.{function}">
                 <menupopup>
-                    
+                     
                 </menupopup>
             </menulist>
         </vbox>
@@ -78,6 +90,8 @@
 <hbox style="margin-bottom:10px;margin-left:10px;margin-right:10px">
 <progressmeter flex="1" mode="{determined | undetermined}" value="{determined value [0 - 100]}"/>
 <button id="btn_apply" label="Apply"
-    oncommand="Zotero.BatchEditor.batchTagEditTest()"/>
+    oncommand="Zotero.BatchEditor.insertHello()"/>
+</hbox>
+</vbox>
 </hbox>
 </window>

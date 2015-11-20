@@ -10,8 +10,18 @@ var ZotPieOverlay = new function ()
     
     var batchedItems = [];
 
-	this.onLoad = function() {
+    this.onLoad = function () {
+        /*
+	    var getCellTextOld = Zotero.ItemTreeView.prototype.getCellText;
 
+	    Zotero.ItemTreeView.prototype.getCellText = function (row, column) {
+	        if (column.id != "zotpie-items-column-isMarked") {
+	            return getCellTextOld.apply(this, [row, column]);
+	        } else {
+	            return -99;
+	        }
+	    }
+        */
 		tab = document.getElementById("zotero-view-tabbox");
 			
 		if (tab) {
@@ -74,15 +84,15 @@ var ZotPieOverlay = new function ()
 		var addGroup = document.getElementById("zotero-tb-group-add");
 		if (addGroup) {
 		    var sep2 = document.createElement("toolbarseparator");
-		    addGroup.nextSibling.parentNode.insertBefore(sep2, addGroup);
+		    addGroup.parentNode.insertBefore(sep2, addGroup);
 
 		    var createSync = document.createElement("toolbarbutton");
-		    createSync.setAttribute("id", "zotpie-batchedit");
+		    createSync.setAttribute("id", "zotpie-createSyncGroupCollection");
 		    createSync.setAttribute("class", "zotero-tb-button");
-		    createSync.setAttribute("tooltiptext", "New Synced Collection...");
+		    createSync.setAttribute("tooltiptext", "New Synced Group Collection...");
 		    createSync.setAttribute("image", "chrome://ZotPie/skin/toolbar-synccollection.png");
 		    createSync.setAttribute("oncommand", "Zotero.ZotPie.startCreateSync()");
-		    sep2.parentNode.insertBefore(createSync, sep2);
+		    addGroup.parentNode.insertBefore(createSync, addGroup.nextSibling);
 		}
 
 		var itemContextMenu = document.getElementById("zotero-itemmenu");
@@ -99,6 +109,30 @@ var ZotPieOverlay = new function ()
 		    addToQueue.setAttribute("oncommand", "addToBatchEditQueue()");
 		    itemContextMenu.appendChild(addToQueue);
 		}
+
+        
+        /*
+		var itemCols = document.getElementById("zotero-items-columns-header");
+
+		if (itemCols) {
+		    var treeCol = document.createElement("treecol");
+		    var splitter = document.createElement("splitter");
+		    splitter.setAttribute("class", "tree-splitter");
+
+		    itemCols.appendChild(splitter);
+
+		    treeCol.setAttribute("id", "zotpie-items-column-isMarked");
+		    treeCol.setAttribute("class", "treecol-image");
+		    //treeCol.setAttribute("label", "isMarked");
+		    //treeCol.setAttribute("fixed", "true");
+		    treeCol.setAttribute("src", "chrome://zotero/skin/treeitem-note-small.png");
+		    treeCol.setAttribute("zotero-persist", "ordinal hidden sortActive sortDirection");
+
+		    itemCols.appendChild(treeCol);
+		}
+        */
+        
+        
 	},
 	
     addToBatchEditQueue = function () {
@@ -114,18 +148,24 @@ var ZotPieOverlay = new function ()
         }
 
         var flags = ps.BUTTON_POS_0 * ps.BUTTON_TITLE_IS_STRING +
-                    ps.BUTTON_POS_1 * ps.BUTTON_TITLE_IS_STRING +
-                    ps.BUTTON_POS_2 * ps.BUTTON_TITLE_IS_STRING;
-        // This value of flags will create 3 buttons. The first will be "Save", the
-        // second will be the value of aButtonTitle1, and the third will be "Cancel"
+            ps.BUTTON_POS_1 * ps.BUTTON_TITLE_IS_STRING +
+            ps.BUTTON_POS_2 * ps.BUTTON_TITLE_IS_STRING;
 
-        var button = ps.confirmEx(null, "Success!", "Added " + counter + " items to the tag batch edit queue.\nThere are currently "
-                                        + batchedItems.length.toString() + " items in the queue.",
-                                       flags, "Open Batch Editor", "Continue Adding", null, null, {});
+        var button;
+
+        if (counter == 0) {
+            button = ps.confirmEx(null, "Warning", "Items are already in the batch edit queue.",
+                   flags, "Open Batch Editor", "Continue Adding", null, null, {});
+        } else {
+            button = ps.confirmEx(null, "Success!", "Added " + counter + " items to the tag batch edit queue.\nThere are currently "
+                                + batchedItems.length.toString() + " items in the queue.",
+                               flags, "Open Batch Editor", "Continue Adding", null, null, {});
+        }
 
         if (button == 0) {
             Zotero.ZotPie.startBatchEditor();
         }
+
         //toastr.success("test");
 
     },
