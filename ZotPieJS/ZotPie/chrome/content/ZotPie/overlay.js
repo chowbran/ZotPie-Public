@@ -4,7 +4,7 @@ var ZotPieOverlay = new function ()
 
     console.log("AAAA");
     this.isTab = false;
-
+    var ZoteroPane = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(Components.interfaces.nsIWindowMediator).getMostRecentWindow("navigator:browser").ZoteroPane;
 	this.onLoad = function() {
 		console.log("TEST");
 
@@ -81,8 +81,27 @@ var ZotPieOverlay = new function ()
 		    createSync.setAttribute("oncommand", "Zotero.ZotPie.startCreateSync()");
 		    sep2.parentNode.insertBefore(createSync, sep2);
 		}
+
+		var itemContextMenu = document.getElementById("zotero-itemmenu");
+
+		if (itemContextMenu) {
+		    var sep3 = document.createElement("menuseparator");
+		    itemContextMenu.appendChild(sep3);
+
+		    var addToQueue = document.createElement("menuitem");
+		    addToQueue.setAttribute("class", "menuitem-iconic");
+		    addToQueue.setAttribute("id", "zotpie-batcheditqueue");
+		    addToQueue.setAttribute("label", "Add Item to Batch Edit Queue...")
+		    addToQueue.setAttribute("image","chrome://ZotPie/skin/tagbatch.png");
+		    addToQueue.setAttribute("oncommand", "openBatchTagEdit()");
+		    itemContextMenu.appendChild(addToQueue);
+		}
 	},
 	
+    openBatchTagEdit = function () {
+        var selectedItems = ZoteroPane.getSelectedItems();
+
+    },
     /**
     * Opens a URI in the basic viewer in Standalone, or a new window in Firefox
     */
