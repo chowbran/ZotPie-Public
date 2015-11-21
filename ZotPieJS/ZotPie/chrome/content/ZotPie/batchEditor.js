@@ -7,6 +7,7 @@
 // Initialize the utility
 // window.addEventListener('load', function(e) { Zotero.BatchEditor.init(); }, false);
 var ed_threshold = 3;
+var changeSet = null;
 Zotero.BatchEditor = {
 
 	// init: function () {
@@ -17,12 +18,20 @@ Zotero.BatchEditor = {
 		console.log('Init batchTagEditor');
 
 		this._ALLITEMS = Zotero.Items.getAll(); 
+		this.doc = Zotero.ZotPie.batchEditorDoc.document;
+		this.editAction = this.doc.getElementById('combo_action').value;
+		this.matchCase = false;
+		this.currentCollID = -1;
+
+		this.changeSet = [];
 
 		if (Zotero.itemFilterSignal && Zotero.batchedItems) {
 			// Change scope to be this list of items
 			console.log(this._ALLITEMS);
+			console.log(Zotero.batchedItems);
 			this._ALLITEMS = this._ALLITEMS.filter(function(item) {
-				return Zotero.batchedItems.indexOf(item.id) > 0;
+				// console.log(item.id);
+				return Zotero.batchedItems.indexOf(item.id) >= 0;
 			});
 			console.log(this._ALLITEMS);
 
@@ -44,7 +53,12 @@ Zotero.BatchEditor = {
 			var splitScreen = this.doc.getElementById('split_screen');
 			splitScreen.setAttribute('hidden', false);
 
-			this._setupItems(Zotero.batchedItems);
+			this._setupItems(this._ALLITEMS, listItems);
+
+			if (changeSet) {
+				this.changeSet = changeSet;
+				changeSet = null;
+			}
 
 			// if global itemFilterSignal is true, set signal to false.
 			// We then use a local flag to handle logic in the class.
@@ -53,17 +67,35 @@ Zotero.BatchEditor = {
 		} else {
 		}
 
-		this.doc = Zotero.ZotPie.batchEditorDoc.document;
-		this.editAction = this.doc.getElementById('combo_action').value;
-		this.matchCase = false;
-		this.currentCollID = -1;
 
 		this._setupCollections();
 		this._setupTags();
 	},
 
-	_setupItems: function(items) {
+	onbeforeunload: function () {
+		/* Keep the changeSet persistent if the user chooses to add
+		 * with the window open
+		 */
+		if (this.changeSet) {
+			changeSet = this.changeSet;
+		}
 
+		/* If this isn't an item filter instance, we 
+		 * clear persistence changeSet
+		 */
+		if (changeSet && !this.itemFilterFlag) {
+			changeSet = null;
+		}
+	},
+
+	_setupItems: function(items, listItems) {
+		if (!listItems) {
+			listItems = this.doc.getElementById('list_items');
+		}
+
+		for (var item of items) {
+			listItems.appendItem(item.getDisplayTitle(false), item.id);
+		}
 	},
 
 	_setupCollections: function() {
@@ -79,8 +111,15 @@ Zotero.BatchEditor = {
 	},
 
 	_setupTags: function() {
-		this.changeSet = [];
 		this.resetTags(this.currentCollID);
+
+		var changeList = this.doc.getElementById('list_change');
+		if (this.changeSet) {
+			for (var tag of this.changeSet) {
+				changeList.appendItem(tag.label, tag.id);
+			}
+		}
+
 	},
 
 	/* Updates the listbox of tags that are in the unchanged list.
@@ -94,6 +133,10 @@ Zotero.BatchEditor = {
 		var count = listbox.itemCount;
 		console.log(count);
 
+		if(!listbox) {
+			return;
+		}
+
 		while (count--) {
 			listbox.removeItemAt(count);
 		}
@@ -102,9 +145,13 @@ Zotero.BatchEditor = {
 		// 	return;
 		// }
 
-		var newTagSet = this.tagSet.filter(function (tag) {
-			return (Zotero.Zotpie_Helpers.editDistance(likeText, tag.name) <= ed_threshold);
-		});
+		if (likeText) {
+			var newTagSet = this.tagSet.filter(function (tag) {
+				return (Zotero.Zotpie_Helpers.editDistance(likeText, tag.name) <= ed_threshold);
+			});
+		} else {
+			var newTagSet = this.tagSet;
+		}
 
 		// Remove duplicates
 		newTagSet = Zotero.Zotpie_Helpers.removeDuplicateItems(newTagSet);
@@ -158,8 +205,9 @@ Zotero.BatchEditor = {
 
 			// Should we add it in?
 			if (eID == 'list_tags' 
+				|| !this.txtFind
 				|| (Zotero.Zotpie_Helpers.editDistance(this.txtFind, label) 
-				<= ed_threshold)) {
+					<= ed_threshold)) {
 				// Where do we add it?
 				var index = this.locationOfInListBox(
 					label.toLowerCase(), lstTarget, this.stringComparator);
@@ -170,14 +218,11 @@ Zotero.BatchEditor = {
 			// Update changeSet
 			if (eID == 'list_tags') {
 				this.changeSet.push(Zotero.Tags.get(value));
-				// Zotero.Helpers.insertAtLocation(Zotero.Tags.get(value), this.changeSet);
 			} else {
 				var res = this.changeSet.map(function (x) { return x.name} ).indexOf(label);
 				if (res > -1) {
 					this.changeSet.splice(res, 1);
 				}
-				// this.changeSet.remove(Zotero.Tags.get(value));
-				// lstTarget = this.doc.getElementById('list_tags');
 			}
 		}
 	},

@@ -32,8 +32,8 @@ Zotero.Zotpie_Helpers = {
 
 	// Compute the edit distance between the two given strings
 	editDistance: function(a, b) {
-	  if(a.length == 0) return b.length; 
-	  if(b.length == 0) return a.length; 
+	  if(!a || a.length == 0) return b ? b.length: 0; 
+	  if(!a || b.length == 0) return a ? a.length: 0; 
 
 	  var matrix = [];
 
