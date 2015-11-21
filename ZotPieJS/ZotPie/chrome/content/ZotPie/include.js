@@ -10,6 +10,10 @@ if (!Zotero.Couple){
     loader.loadSubScript("chrome://zotpie/content/couple.js");
 }
 
+if (!Zotero.SyncCollection){
+    loader.loadSubScript("chrome://zotpie/content/syncCollection.js")
+}
+
 if (!Zotero.ZotPie) {
 	loader.loadSubScript("chrome://zotpie/content/ZotPie.js");
 }

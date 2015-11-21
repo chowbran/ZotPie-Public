@@ -7,7 +7,6 @@ Zotero.Couple = {
 
 
     init:function(){
-        this.DBzotero = new Zotero.DBConnection('zotero');
         this.DB = new Zotero.DBConnection('linkedDocuments');
 
         // Register the callback in Zotero as an item observer
@@ -24,8 +23,8 @@ Zotero.Couple = {
     onLoad: function(){
         this.doc = Zotero.ZotPie.coupleDoc.document;
         this.createTables();
-        this.setCollections();
-        this.setGroups();
+        this.setCollections(this.doc.getElementById('combo_original'));
+        this.setGroups(this.doc.getElementById('combo_copygroup'));
         this.setGroupCollections();
         this.setRecords('user');
         this.setRecordOriginial();
@@ -48,17 +47,9 @@ Zotero.Couple = {
         }
     },
 
-    setCopyCollections: function(linkSet) {
-        var menu = this.doc.getElementById('combo_original_rem');
-        menu.removeAllItems();
+    setCollections: function(elementId) {
 
-
-
-    },
-
-    setCollections: function() {
-
-        var menu = this.doc.getElementById('combo_original');
+        var menu = elementId;
         menu.removeAllItems();
         var collections = Zotero.getCollections();
 
@@ -90,17 +81,11 @@ Zotero.Couple = {
         this.setRecords('group');
     },
 
-    setGroups: function (copy) {
-        if (copy){
-            var menu = this.doc.getElementById('combo_copygroup_rem');
-            menu.removeAllItems();
-            var groups = this.DB;
-        }else{
-            var menu = this.doc.getElementById('combo_copygroup');
-            menu.removeAllItems();
-            var groups = Zotero.Groups.getAll();
-        }
+    setGroups: function (elementId) {
 
+        var menu = elementId;
+        menu.removeAllItems();
+        var groups = Zotero.Groups.getAll();
 
         for ( i=0; i < groups.length; i ++) {
             menu.appendItem(groups[i]['_name'], groups[i]['_id']);
@@ -211,7 +196,6 @@ Zotero.Couple = {
         if (!this.DB.tableExists('linked')) {
             this.DB.query("CREATE TABLE linked (original INT, copies VARCHAR)");
         }
-
     },
 
     //sync: function(){
@@ -288,7 +272,9 @@ Zotero.Couple = {
             if (event == 'add' || event == 'modify' || event == 'delete') {
                 Zotero.Couple.createTables();
                 // Increment a counter every time an item is changed
-
+                if (event === 'add'){
+                    console.log(extraData);
+                }
                 if (event === 'modify' && extraData){
                     //Loop through array of items and modify the corresponding group items if it is necessary
                     var sql = ("SELECT * FROM linked WHERE original IN (");
