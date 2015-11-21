@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    title="Batch Editor" onload="Zotero.BatchEditor.{method}">
+    title="Batch Editor" onload="Zotero.BatchEditor.onLoad()">
  
 <!-- Include the main extension logic -->
 <script src="chrome://zotero/content/include.js"/>
@@ -9,18 +9,18 @@
 
 <hbox>
 <vbox>
-<label value="Items:"/>
-<listbox id="list_items" flex="1">
+<label id="lbl_items" value="Items:" hidden="true"/>
+<listbox id="list_items" flex="1" hidden='true'>
 
 </listbox>
 </vbox>
 
-<splitter/>
+<splitter id="split_screen" hidden="true"/>
 
 <vbox flex="1">
 <hbox>
 <label control="lbl_find" value="Find:"/>
-<textbox id="txt_find" flex="1"/>
+<textbox id="txt_find" flex="1" oninput="Zotero.BatchEditor.onFindChange()"/>
 </hbox>
  
 <hbox>
@@ -31,14 +31,14 @@
 <hbox flex="1" style="margin: 10px">
 <vbox flex="1">
 <label id="lbl_original" value="Original Tags:"/>
-<listbox id="list_tags" flex="1">
+<listbox id="list_tags" flex="1" seltype="multiple" onselect="Zotero.BatchEditor.onSelect(event.target)">
  
 </listbox>
 </vbox>
 
 <vbox flex="1">
 <label id="lbl_changed" value="Tags to be Changed:"/>
-<listbox id ="list_change" flex="1">
+<listbox id="list_change" flex="1" seltype="multiple" onselect="Zotero.BatchEditor.onSelect(event.target)">
  
 </listbox>
 </vbox>
@@ -49,8 +49,7 @@
     <hbox>
         <vbox>
             <label value="Type:"/>
-            <menulist id="combo_type" width="150px"
-                    oncommand="Zotero.BatchEditor.{function}">
+            <menulist id="combo_type" width="150px">
                 <menupopup>
                     <menuitem label="Tag"/>
                 </menupopup>
@@ -59,7 +58,7 @@
         <vbox>
             <label value="Action:"/>
             <menulist id="combo_action" width="150px"
-                    oncommand="Zotero.BatchEditor.{function}">
+                    oncommand="Zotero.BatchEditor.onActionChange()">
                 <menupopup>
                     <menuitem label="Modify"/>
                     <menuitem label="Remove"/>
@@ -68,8 +67,8 @@
         </vbox>
         <vbox>
             <label value="Scope:"/>
-            <menulist id="combo_scope" width="150px"
-                    oncommand="Zotero.BatchEditor.{function}">
+            <menulist id="combo_scope" width="150px" disabled='false'
+                    oncommand="Zotero.BatchEditor.onScopeChange()">
                 <menupopup>
                     <menuitem label="All"/>
                     <menuitem label="Collection"/>
@@ -78,8 +77,8 @@
         </vbox>
         <vbox>
             <label value="Collection:"/>
-            <menulist id="combo_collection" width="150px"
-                    oncommand="Zotero.BatchEditor.{function}">
+            <menulist id="combo_collection" width="150px" disabled='false'
+                    oncommand="Zotero.BatchEditor.onCollectionChange()">
                 <menupopup>
                      
                 </menupopup>
@@ -90,7 +89,7 @@
 <hbox style="margin-bottom:10px;margin-left:10px;margin-right:10px">
 <progressmeter flex="1" mode="{determined | undetermined}" value="{determined value [0 - 100]}"/>
 <button id="btn_apply" label="Apply"
-    oncommand="Zotero.BatchEditor.insertHello()"/>
+    oncommand="Zotero.BatchEditor.onApply()"/>
 </hbox>
 </vbox>
 </hbox>

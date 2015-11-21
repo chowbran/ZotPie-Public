@@ -63,5 +63,30 @@ Zotero.Zotpie_Helpers = {
 	  }
 
 	  return matrix[b.length][a.length];
+	},
+
+	insertAtLocation: function(element, array) {
+		array.splice(locationOf(element, array) + 1, 0, element);
+		return array;
+	},
+
+	// http://stackoverflow.com/questions/1344500/efficient-way-to-insert-a-number-into-a-sorted-array-of-numbers
+	locationOf: function (element, array, compartor, start, end) {
+    	if (array.length === 0)
+	        return -1;
+
+	    start = start || 0;
+	    end = end || array.length;
+	    var pivot = (start + end) >> 1;  // should be faster than the above calculation
+
+	    var c = compartor(element, array[pivot]);
+	    if (end - start <= 1) return c == -1 ? pivot - 1 : pivot;
+
+	    switch (c) {
+	        case -1: return locationOf(element, array, comparer, start, pivot);
+	        case 0: return pivot;
+	        case 1: return locationOf(element, array, comparer, pivot, end);
+	    };
 	}
+
 };
