@@ -28,23 +28,22 @@ Zotero.Couple = {
         this.setGroups();
         this.setGroupCollections();
         this.setRecords('user');
+        this.setRecordOriginial();
 
         //loading the linked tab
 
     },
 
-    getLink: function() {
-        var linkSet = this.DB.query("SELECT * FROM linked");
-        if(linkSet ? linkSet : []){
-            var original = Zotero.Items.get((linkSet[i])['original']);
-            var returnSet = {};
-            returnSet[original] = [];
+    setRecordOriginial: function () {
 
-            var copyArray = linkSet[i]['copies'].split(',');
-            for (i = 0; i < copyArray.length - 1; i ++){
-                var copy = Zotero.Items.get(copyArray[i]);
-                returnSet[original].append(copy);
-                console.log(returnSet[original]);
+        var list = this.doc.getElementById('list_original_rem');
+        this.clearListBox(list);
+        var originalList = this.DB.query("SELECT original FROM linked");
+
+        if (originalList !== false){
+            for (var i =0; i < originalList.length; i ++){
+                var original = Zotero.Items.get(originalList[i]['original']);
+                list.appendItem(original.getDisplayTitle(), original['_id']);
             }
         }
     },
@@ -52,10 +51,10 @@ Zotero.Couple = {
     setCopyCollections: function(linkSet) {
         var menu = this.doc.getElementById('combo_original_rem');
         menu.removeAllItems();
-        
+
+
 
     },
-
 
     setCollections: function() {
 
@@ -91,10 +90,17 @@ Zotero.Couple = {
         this.setRecords('group');
     },
 
-    setGroups: function () {
-        var menu = this.doc.getElementById('combo_copygroup');
-        menu.removeAllItems();
-        var groups = Zotero.Groups.getAll();
+    setGroups: function (copy) {
+        if (copy){
+            var menu = this.doc.getElementById('combo_copygroup_rem');
+            menu.removeAllItems();
+            var groups = this.DB;
+        }else{
+            var menu = this.doc.getElementById('combo_copygroup');
+            menu.removeAllItems();
+            var groups = Zotero.Groups.getAll();
+        }
+
 
         for ( i=0; i < groups.length; i ++) {
             menu.appendItem(groups[i]['_name'], groups[i]['_id']);
@@ -132,45 +138,64 @@ Zotero.Couple = {
     },
     //TODO CLEANUP THE WAY FUNCTIONS ARE HANDLED, ATROCIOUS
     updateLink: function () {
-        copyList = this.doc.getElementById('list_copy');
-        original = this.doc.getElementById('list_original');
+        var copyList = this.doc.getElementById('list_copy');
+        var originalId = this.doc.getElementById('list_original');
+        var copyGroup = this.doc.getElementById('combo_copygroup').label;
+        var copyCollection = this.doc.getElementById('combo_copycollection').label;
 
 
-        copySet = "";
+        var copySet = "";
 
-        var count = copyList.selectedCount;
-        var count2 = original.selectedCount;
-        if (count !== 0 && count2 !== 0){
-            original = original.value;
+
+        if (copyList.selectedCount !== 0 && originalId.selectedCount !== 0){
+
             var numOfCopies = 0;
-            for(i = 0; i < count; i ++){
+            for(var i = 0; i < copyList.selectedCount; i ++){
 
-                var copy = Zotero.Items.get(copyList.getSelectedItem(i).value);
-                var originalItem = Zotero.Items.get(original);
+                var copyId = copyList.getSelectedItem(i).value;
+                var copy = Zotero.Items.get(copyId);
+                var originalItem = Zotero.Items.get(originalId.value);
 
-                var islinked = this.DB.query("SELECT id FROM grouplinked WHERE id=" + id);
-                var linked = islinked.length === 0;
+                var islinked = this.DB.query("SELECT id FROM grouplinked WHERE id=" + copyId);
+
                 //check if the items to copy over, are same type as original and if it is already linked
-
-                if (originalItem['_itemTypeID'] === copy['_itemTypeID'] && linked === false) {
+                if ( islinked === false) {
+                    var ps = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                        .getService(Components.interfaces.nsIPromptService);
+                    ps.alert(null, "", "already linked");
+                }else if( originalItem['_itemTypeID'] === copy['_itemTypeID']){
+                    var ps = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                        .getService(Components.interfaces.nsIPromptService);
+                    ps.alert(null, "", "itemtypes are different");
+                }
+                else{
                     numOfCopies ++;
-                    copySet = copySet.concat(copyList.getSelectedItem(i).value + ',');
+                    copySet = copySet.concat(copyId + ',');
                     //insert the id of the linked sql if there is an id that is already there
-                    this.DB.query("INSERT INTO grouplinked (id) VALUES ('" + id + ")")
+                    this.DB.query("INSERT INTO grouplinked (id, groupId, collection) VALUES (?,?,?)", [copyId, copyGroup, copyCollection]);
+
                 }
             }
             //check if there are any copies at all that are selected
             if (numOfCopies !== 0){
+                //check if the original is linked
+                var sql = "SELECT * FROM linked WHERE original IN (?)" ;
+
+                var exist = this.DB.query(sql, [originalId.value]);
 
 
-
-                var sql = "SELECT original FROM linked WHERE original IN (" + original + ")";
-                var exist = this.DB.rowQuery(sql);
-
-                if (exist === undefined){
-                    this.DB.query('INSERT INTO linked (original, copies) VALUES (' + original + ' , \"' + copySet + "\")");
+                if (exist === false){
+                    sql = "INSERT INTO linked (original, copies) VALUES (? , ?)";
+                    this.DB.query(sql,[originalId.value, copySet.substring(0, copySet.length-1)]);
                 }else{
-                    this.DB.query('UPDATE linked SET copies = \"' + copySet + '\" WHERE original = ' + original + ';');
+                    var prevLinked = exist[0]['copies'].split(',');
+
+                    for (var j = 0; j < prevLinked.length; j ++){
+                        copySet = copySet.concat(prevLinked[j] + ',');
+                    }
+                    sql = "UPDATE linked SET copies = ? WHERE original = ?;";
+                    this.DB.query(sql, [copySet.substring(0, copySet.length-1), originalId.value]);
+
                 }
             }
         }
@@ -181,49 +206,50 @@ Zotero.Couple = {
 
     createTables: function(){
         if (!this.DB.tableExists('grouplinked')){
-            this.DB.query("CREATE TABLE grouplinked (id INT)");
+            this.DB.query("CREATE TABLE grouplinked (id INT, groupId VARCHAR, collection VARCHAR)");
         }
         if (!this.DB.tableExists('linked')) {
             this.DB.query("CREATE TABLE linked (original INT, copies VARCHAR)");
         }
+
     },
 
-    sync: function(){
-        var linkSet = this.DB.query("SELECT * FROM linked");
+    //sync: function(){
+    //    var linkSet = this.DB.query("SELECT * FROM linked");
+    //
+    //    if(linkSet ? linkSet : []){
+    //        for (i=0; i < linkSet.length; i ++){
+    //
+    //            var original = Zotero.Items.get(linkSet[i]['original']);
+    //            var copyArray = linkSet[i]['copies'].split(',');
+    //
+    //
+    //            //only go to range of array -1, since there's an extra comma at the end
+    //            for (i = 0; i < copyArray.length - 1; i ++){
+    //                //get the item to be copied, and all items that have the same item type ID
+    //                var copy = Zotero.Items.get(copyArray[i]);
+    //                var fields = Zotero.ItemFields.getItemTypeFields(copy['_itemTypeID'], true);
+    //
+    //
+    //                //go through every single field and update accordingly
+    //                for (j = 0; j < fields.length; j ++){
+    //
+    //                    var fieldName = Zotero.ItemFields.getName(fields[j]);
+    //
+    //
+    //                    copy.setField(fieldName, original.getField(fieldName));
+    //
+    //                }
+    //
+    //                copy.save();
+    //
+    //            }
+    //
+    //        }
+    //    }
+    //},
 
-        if(linkSet ? linkSet : []){
-            for (i=0; i < linkSet.length; i ++){
-
-                var original = Zotero.Items.get(linkSet[i]['original']);
-                var copyArray = linkSet[i]['copies'].split(',');
-
-
-                //only go to range of array -1, since there's an extra comma at the end
-                for (i = 0; i < copyArray.length - 1; i ++){
-                    //get the item to be copied, and all items that have the same item type ID
-                    var copy = Zotero.Items.get(copyArray[i]);
-                    var fields = Zotero.ItemFields.getItemTypeFields(copy['_itemTypeID'], true);
-
-
-                    //go through every single field and update accordingly
-                    for (j = 0; j < fields.length; j ++){
-
-                        var fieldName = Zotero.ItemFields.getName(fields[j]);
-                        console.log(fieldName);
-                        if (fieldName !== "title"){
-                            copy.setField(fieldName, original.getField(fieldName));
-                        }
-                    }
-
-                    copy.save();
-
-                }
-
-            }
-        }
-    },
-
-    syncv2: function(linkSet){
+    sync: function(linkSet){
 
         for (i=0; i < linkSet.length; i ++){
 
@@ -232,18 +258,19 @@ Zotero.Couple = {
 
 
             //only go to range of array -1, since there's an extra comma at the end
-            for (i = 0; i < copyArray.length - 1; i ++){
+            for (i = 0; i < copyArray.length; i ++){
                 //get the item to be copied, and all items that have the same item type ID
                 var copy = Zotero.Items.get(copyArray[i]);
-                var fields = Zotero.ItemFields.getItemTypeFields(copy['_itemTypeID'], true);
-
+                var fields = Zotero.ItemFields.getItemTypeFields(copy['_itemTypeID']);
+                original['_changed'] = changed;
 
                 //go through every single field and update accordingly
                 for (j = 0; j < fields.length; j ++){
 
                     var fieldName = Zotero.ItemFields.getName(fields[j]);
-                    console.log(fieldName);
+
                     if (fieldName !== "title"){
+
                         copy.setField(fieldName, original.getField(fieldName));
                     }
                 }
@@ -259,19 +286,23 @@ Zotero.Couple = {
     notifierCallback: {
         notify: function(event, type, ids, extraData) {
             if (event == 'add' || event == 'modify' || event == 'delete') {
+                Zotero.Couple.createTables();
                 // Increment a counter every time an item is changed
 
-                if (event === 'modify'){
+                if (event === 'modify' && extraData){
                     //Loop through array of items and modify the corresponding group items if it is necessary
-                    var sql = ("SELECT original FROM linked WHERE original IN (");
+                    var sql = ("SELECT * FROM linked WHERE original IN (");
                     var queryParm = '';
                     for (var i = 0; i < ids.length; i ++){
-                        queryParm.concat(ids[i] + ',');
+                        queryParm = queryParm.concat(ids[i] + ',');
+
                     }
                     //get rid of last comma, and then form the query
                     sql = sql.concat(queryParm.substring(0,queryParm.length-1) + ")");
-                    var linkset = this.DB.query(sql);
-                    this.syncv2(linkset);
+
+                    var linkset = Zotero.Couple.DB.query(sql);
+
+                    Zotero.Couple.sync(linkset);
                 }
             }
 
@@ -322,9 +353,7 @@ Zotero.Couple = {
             //        titles.join("\n");
             //}
             //
-            //var ps = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-            //    .getService(Components.interfaces.nsIPromptService);
-            //ps.alert(null, "", str);
+
         }
     }
 

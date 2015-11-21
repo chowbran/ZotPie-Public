@@ -7,23 +7,23 @@
 
 <tabbox id="tabboxid" flex="1">
     <tabs>
-        <tab label="Sync"/>
+        <!--<tab label="Sync"/>-->
         <tab label="Link Records"/>
         <tab label="Unlink Records"/>
     </tabs>
     <tabpanels flex="1">
-        <tabpanel>
-        <vbox>
-        <description>Click the 'Sync' button below to sync previously linked records.
-         To link new records, click on the 'Link Records' tab above.
-         To unlink previously linked records, click on the 'Unlink Records' tab above</description>
-        <hbox>
-         <button id="btn_sync" label="Sync" width="200px" height="60px"
-            oncommand="Zotero.Couple.sync()"/>
-         <spacer flex="1"/>
-        </hbox>
-        </vbox>
-        </tabpanel>
+        <!--<tabpanel>-->
+        <!--<vbox>-->
+        <!--<description>Click the 'Sync' button below to sync previously linked records.-->
+         <!--To link new records, click on the 'Link Records' tab above.-->
+         <!--To unlink previously linked records, click on the 'Unlink Records' tab above</description>-->
+        <!--<hbox>-->
+         <!--<button id="btn_sync" label="Sync" width="200px" height="60px"-->
+            <!--oncommand="Zotero.Couple.sync()"/>-->
+         <!--<spacer flex="1"/>-->
+        <!--</hbox>-->
+        <!--</vbox>-->
+        <!--</tabpanel>-->
 
         <tabpanel>
         <vbox>
