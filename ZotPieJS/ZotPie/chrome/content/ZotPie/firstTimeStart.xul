@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <hbox style="margin-botton:20px">
+    <image src="chrome://ZotPie/skin/zotpielogo256512.png" width="256" height="512"/>
+    <vbox>
+        <label style="font-size:30px;font-weight:bold" value="Thank you for installing ZotPie!"/>
+        <textbox flex="1" multiline="true" readonly="true" value="ZotPie is a plug-in for Zotero that adds several helpful features to make managing your libraries easier."/>
+    </vbox>
+    </hbox>
+<menuseparator/>
+    <hbox>
+        <spacer flex="1"/>
+        <button id="zotpie-ft-doc" label="View Docs"/>
+        <button id="zotpie-ft-ok" label="OK" oncommand="window.close();"/>
+    </hbox>
+</window>
