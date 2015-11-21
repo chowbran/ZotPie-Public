@@ -20,6 +20,7 @@ Zotero.BatchEditor = {
 		var listItems = this.doc.getElementById('list_items');
 		var lblItems = this.doc.getElementById('lbl_items');
 		var splitScreen = this.doc.getElementById('split_screen');
+		var menuActionAdd = this.doc.getElementById('menu_actionAdd');
 
 		if (Zotero.itemFilterSignal && Zotero.batchedItems) {
 			// Change scope to be this list of items
@@ -38,6 +39,7 @@ Zotero.BatchEditor = {
 			listItems.setAttribute('hidden', false);
 			lblItems.setAttribute('hidden', false);		
 			splitScreen.setAttribute('hidden', false);
+			menuActionAdd.setAttribute('hidden', false);
 
 			this._setupItems(this._ALLITEMS, listItems);
 
@@ -56,6 +58,7 @@ Zotero.BatchEditor = {
 			listItems.setAttribute('hidden', true);
 			lblItems.setAttribute('hidden', true);		
 			splitScreen.setAttribute('hidden', true);
+			menuActionAdd.setAttribute('hidden', true);
 		}
 
 
@@ -275,13 +278,22 @@ Zotero.BatchEditor = {
 
 	onActionChange: function() {
 		var txtReplace = this.doc.getElementById('txt_replace');
-
+		var lblReplace = this.doc.getElementById('lbl_replace');
+		var lblChangedInfo = this.doc.getElementById('lbl_changed');
 		this.editAction = this.doc.getElementById('combo_action').value;
 		
 		if (this.editAction == 'remove') {
 			txtReplace.disabled = true;
 		} else {
 			txtReplace.disabled = false;
+		}
+
+		if (this.editAction == 'add') {
+			lblChangedInfo.value = 'Tags to be Added:';
+			lblReplace.value = "Add";
+		} else {
+			lblChangedInfo.value = 'Tags to be Changed:';
+			lblReplace.value = "Replace";
 		}
 	},
 
@@ -310,6 +322,7 @@ Zotero.BatchEditor = {
 
 	onApply: function() {
 		var newTag = this.doc.getElementById('txt_replace').value;
+
 		var srcTags = [];
 		if (this.editAction == 'modify') {
 			batchTagEdit(srcTags, newTag);

@@ -61,8 +61,8 @@
                     oncommand="Zotero.BatchEditor.onActionChange()">
                 <menupopup>
                     <menuitem label="Modify"/>
-                    <menuitem label="Add"/>
                     <menuitem label="Remove"/>
+                    <menuitem label="Add" id="menu_actionAdd"/>
                 </menupopup>
             </menulist>
         </vbox>
