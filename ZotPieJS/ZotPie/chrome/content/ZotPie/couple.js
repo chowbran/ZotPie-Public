@@ -8,6 +8,8 @@ Zotero.Couple = {
 
     init:function(){
         this.DB = new Zotero.DBConnection('linkedDocuments');
+        this.ps = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+            .getService(Components.interfaces.nsIPromptService);
 
         // Register the callback in Zotero as an item observer
         var notifierID = Zotero.Notifier.registerObserver(this.notifierCallback, ['item']);
@@ -37,11 +39,13 @@ Zotero.Couple = {
 
         var list = this.doc.getElementById('list_original_rem');
         this.clearListBox(list);
-        var originalList = this.DB.query("SELECT original FROM linked");
+        var originalList = this.DB.query("SELECT original FROM grouplinked");
 
         if (originalList !== false){
             for (var i =0; i < originalList.length; i ++){
+                console.log(originalList[i]['original']);
                 var original = Zotero.Items.get(originalList[i]['original']);
+                console.log(original);
                 list.appendItem(original.getDisplayTitle(), original['_id']);
             }
         }
@@ -55,12 +59,12 @@ Zotero.Couple = {
         }
 
         var original = Zotero.Items.get(this.doc.getElementById('list_original_rem').value);
-        var copiesId = this.DB.query('SELECT copies FROM linked WHERE original IN (?)', [original['_id']]);
+        var copyArray = this.DB.query('SELECT id FROM grouplinked WHERE original IN (?)', [original['_id']]);
 
-        var copyArray = copiesId[0]['copies'].split(',');
+        //var copyArray = copiesId[0]['copies'].split(',');
 
         for (var i = 0; i < copyArray.length; i ++){
-            var copy = Zotero.Items.get(copyArray[i]);
+            var copy = Zotero.Items.get(copyArray[i]['id']);
             var copyInfo = this.DB.query('SELECT * FROM grouplinked where id IN (?)', [copy['_id']]);
             var treeitem = document.createElement('treeitem');
             var treerow = document.createElement('treerow');
@@ -70,6 +74,7 @@ Zotero.Couple = {
             var treecell_3 = document.createElement('treecell');
 
             treecell_1.setAttribute("label", copy.getField('title'));
+            treecell_1.setAttribute("value", copyInfo[0]['id']);
             treecell_2.setAttribute("label", copyInfo[0]['groupId']);
             treecell_3.setAttribute("label",copyInfo[0]['collection']);
 
@@ -83,6 +88,44 @@ Zotero.Couple = {
         }
 
     },
+
+    unlinkDocumentManual: function(){
+        var tree = this.doc.getElementById('tree_linked');
+        var originalId = this.doc.getElementById('list_original_rem').value;
+        var copyId = tree.view.getCellValue(tree.currentIndex, tree.columns.getColumnAt(0));
+
+        this.unlinkDocument(copyId, originalId, false);
+
+        tree.view.getItemAtIndex(this.currentIndex).parentNode.removeChild(tree.view.getItemAtIndex(this.currentIndex));
+
+    },
+
+    unlinkDocument: function(copyId, originalId, all){
+        console.log(copyId);
+        console.log(originalId);
+        console.log(all);
+        var copyArray = this.DB.query('SELECT id FROM grouplinked WHERE original IN (?)', originalId);
+
+        if (all){
+            for (var i=0; i < copyArray.length; i ++){
+                copyArray.splice(i, 1);
+                this.DB.query('DELETE FROM grouplinked WHERE original=?', [originalId]);
+            }
+
+        }else{
+            for (var i=0; i < copyArray.length; i ++){
+                if (copyArray[i] === copyId){
+                    copyArray.splice(i, 1);
+                    this.DB.query('DELETE FROM grouplinked WHERE id=?', [copyId]);
+                }
+            }
+
+
+        }
+
+    },
+
+
 
     setCollections: function() {
 
@@ -158,16 +201,14 @@ Zotero.Couple = {
             list.removeItemAt(0);
         }
     },
-    //TODO CLEANUP THE WAY FUNCTIONS ARE HANDLED, ATROCIOUS
+
     updateLink: function () {
         var copyList = this.doc.getElementById('list_copy');
         var originalId = this.doc.getElementById('list_original');
         var copyGroup = this.doc.getElementById('combo_copygroup').label;
         var copyCollection = this.doc.getElementById('combo_copycollection').label;
 
-
         var copySet = "";
-
 
         if (copyList.selectedCount !== 0 && originalId.selectedCount !== 0){
 
@@ -177,129 +218,52 @@ Zotero.Couple = {
                 var copyId = copyList.getSelectedItem(i).value;
                 var copy = Zotero.Items.get(copyId);
                 var originalItem = Zotero.Items.get(originalId.value);
-
                 var islinked = this.DB.query("SELECT id FROM grouplinked WHERE id=" + copyId);
 
                 //check if the items to copy over, are same type as original and if it is already linked
-                if ( islinked === false) {
-                    var ps = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                        .getService(Components.interfaces.nsIPromptService);
-                    ps.alert(null, "", "already linked");
-                }else if( originalItem['_itemTypeID'] === copy['_itemTypeID']){
-                    var ps = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                        .getService(Components.interfaces.nsIPromptService);
-                    ps.alert(null, "", "itemtypes are different");
+                if ( islinked !== false) {
+                    this.ps.alert(null, "", "already linked");
+                }else if( originalItem['_itemTypeID'] !== copy['_itemTypeID']){
+                    this.ps.alert(null, "", "itemtypes are different");
                 }
                 else{
                     numOfCopies ++;
                     copySet = copySet.concat(copyId + ',');
                     //insert the id of the linked sql if there is an id that is already there
-                    this.DB.query("INSERT INTO grouplinked (id, groupId, collection) VALUES (?,?,?)", [copyId, copyGroup, copyCollection]);
-
-                }
-            }
-            //check if there are any copies at all that are selected
-            if (numOfCopies !== 0){
-                //check if the original is linked
-                var sql = "SELECT * FROM linked WHERE original IN (?)" ;
-
-                var exist = this.DB.query(sql, [originalId.value]);
-
-
-                if (exist === false){
-                    sql = "INSERT INTO linked (original, copies) VALUES (? , ?)";
-                    this.DB.query(sql,[originalId.value, copySet.substring(0, copySet.length-1)]);
-                }else{
-                    var prevLinked = exist[0]['copies'].split(',');
-
-                    for (var j = 0; j < prevLinked.length; j ++){
-                        copySet = copySet.concat(prevLinked[j] + ',');
-                    }
-                    sql = "UPDATE linked SET copies = ? WHERE original = ?;";
-                    this.DB.query(sql, [copySet.substring(0, copySet.length-1), originalId.value]);
-
+                    this.DB.query("INSERT INTO grouplinked (original, id, groupId, collection) VALUES (?,?,?,?)",
+                        [originalId.value, copyId, copyGroup, copyCollection]);
+                    this.setRecordOriginial();
                 }
             }
         }
-
-
 
     },
 
     createTables: function(){
         if (!this.DB.tableExists('grouplinked')){
-            this.DB.query("CREATE TABLE grouplinked (id INT, groupId VARCHAR, collection VARCHAR)");
-        }
-        if (!this.DB.tableExists('linked')) {
-            this.DB.query("CREATE TABLE linked (original INT, copies VARCHAR)");
+            this.DB.query("CREATE TABLE grouplinked (original INT, id INT, groupId VARCHAR, collection VARCHAR)");
         }
     },
 
-    //sync: function(){
-    //    var linkSet = this.DB.query("SELECT * FROM linked");
-    //
-    //    if(linkSet ? linkSet : []){
-    //        for (i=0; i < linkSet.length; i ++){
-    //
-    //            var original = Zotero.Items.get(linkSet[i]['original']);
-    //            var copyArray = linkSet[i]['copies'].split(',');
-    //
-    //
-    //            //only go to range of array -1, since there's an extra comma at the end
-    //            for (i = 0; i < copyArray.length - 1; i ++){
-    //                //get the item to be copied, and all items that have the same item type ID
-    //                var copy = Zotero.Items.get(copyArray[i]);
-    //                var fields = Zotero.ItemFields.getItemTypeFields(copy['_itemTypeID'], true);
-    //
-    //
-    //                //go through every single field and update accordingly
-    //                for (j = 0; j < fields.length; j ++){
-    //
-    //                    var fieldName = Zotero.ItemFields.getName(fields[j]);
-    //
-    //
-    //                    copy.setField(fieldName, original.getField(fieldName));
-    //
-    //                }
-    //
-    //                copy.save();
-    //
-    //            }
-    //
-    //        }
-    //    }
-    //},
-
     sync: function(linkSet){
 
-        for (i=0; i < linkSet.length; i ++){
+        for (var i=0; i < linkSet.length; i ++){
+            //loops through every items that corresponds to original in linkset
 
             var original = Zotero.Items.get(linkSet[i]['original']);
-            var copyArray = linkSet[i]['copies'].split(',');
+            var copy = linkSet[i]['id'];
 
+            //get the item to be copied, and all items that have the same item type ID
+            copy = Zotero.Items.get(copy);
+            var fields = Zotero.ItemFields.getItemTypeFields(copy['_itemTypeID']);
 
-            //only go to range of array -1, since there's an extra comma at the end
-            for (i = 0; i < copyArray.length; i ++){
-                //get the item to be copied, and all items that have the same item type ID
-                var copy = Zotero.Items.get(copyArray[i]);
-                var fields = Zotero.ItemFields.getItemTypeFields(copy['_itemTypeID']);
-                original['_changed'] = changed;
-
-                //go through every single field and update accordingly
-                for (j = 0; j < fields.length; j ++){
-
-                    var fieldName = Zotero.ItemFields.getName(fields[j]);
-
-                    if (fieldName !== "title"){
-
-                        copy.setField(fieldName, original.getField(fieldName));
-                    }
-                }
-
-                copy.save();
-
+            //go through every single field and update accordingly
+            for (j = 0; j < fields.length; j ++){
+                var fieldName = Zotero.ItemFields.getName(fields[j]);
+                copy.setField(fieldName, original.getField(fieldName));
             }
 
+            copy.save();
         }
     },
 
@@ -309,73 +273,46 @@ Zotero.Couple = {
             if (event == 'add' || event == 'modify' || event == 'delete') {
                 Zotero.Couple.createTables();
                 // Increment a counter every time an item is changed
-                if (event === 'add'){
-                    console.log(extraData);
-                }
-                if (event === 'modify' && extraData){
-                    //Loop through array of items and modify the corresponding group items if it is necessary
-                    var sql = ("SELECT * FROM linked WHERE original IN (");
+                console.log(extraData);
+                if (event === 'delete'){
+
+                    var sql = ("SELECT * FROM grouplinked WHERE original IN (?)");
                     var queryParm = '';
                     for (var i = 0; i < ids.length; i ++){
                         queryParm = queryParm.concat(ids[i] + ',');
+                    }
 
+                    var original = Zotero.Couple.DB.query(sql,queryParm.substring(0,queryParm.length-1) );
+
+                    //call unlink Documents for every id that is saved, must get the corresponding array first
+                    if (original !== false){
+                        for (i = 0; i < ids.length; i ++){
+                            Zotero.Couple.unlinkDocument('', original[0]['original'], true);
+                        }
+
+                    }else{
+                        sql = ("SELECT * FROM groupLinked WHERE id IN (?)");
+                        var copy = Zotero.Couple.DB.query(sql,queryParm.substring(0,queryParm.length-1) );
+                        if (copy === false){
+                            Zotero.Couple.unlinkDocument(copy[0]['id'], copy[0]['original'], false);
+                        }
+                    }
+                }
+
+                if (event === 'modify'){
+                    //Loop through array of items and modify the corresponding group items if it is necessary
+                    var sql = ("SELECT * FROM grouplinked WHERE original IN (?)");
+                    var queryParm = '';
+                    for (var i = 0; i < ids.length; i ++){
+                        queryParm = queryParm.concat(ids[i] + ',');
                     }
                     //get rid of last comma, and then form the query
-                    sql = sql.concat(queryParm.substring(0,queryParm.length-1) + ")");
-
-                    var linkset = Zotero.Couple.DB.query(sql);
-
-                    Zotero.Couple.sync(linkset);
+                    var linkset = Zotero.Couple.DB.query(sql,queryParm.substring(0,queryParm.length-1) );
+                    if (linkset !== false){
+                        Zotero.Couple.sync(linkset);
+                    }
                 }
             }
-
-
-            //    if (event != 'delete') {
-            //        // Retrieve the added/modified items as Item objects
-            //        var items = Zotero.Items.get(ids);
-            //    }
-            //    else {
-            //        var items = extraData;
-            //    }
-            //
-            //    // Loop through array of items and grab titles
-            //    var titles = [];
-            //    for each(var item in items) {
-            //        // For deleted items, get title from passed data
-            //        if (event == 'delete') {
-            //            titles.push(item.old.title ? item.old.title : '[No title]');
-            //        }
-            //        else {
-            //            titles.push(item.getField('title'));
-            //        }
-            //    }
-            //
-            //    if (!titles.length) {
-            //        return;
-            //    }
-            //
-            //    // Get the localized string for the notification message and
-            //    // append the titles of the changed items
-            //    var stringName = 'notification.item' + (titles.length==1 ? '' : 's');
-            //    switch (event) {
-            //        case 'add':
-            //            stringName += "Added";
-            //            break;
-            //
-            //        case 'modify':
-            //            stringName += "Modified";
-            //            break;
-            //
-            //        case 'delete':
-            //            stringName += "Deleted";
-            //            break;
-            //    }
-            //
-            //    var str = document.getElementById('zotpie-zotero-strings').
-            //            getFormattedString(stringName, [titles.length]) + ":\n\n" +
-            //        titles.join("\n");
-            //}
-            //
 
         }
     }

@@ -78,9 +78,9 @@
                                  onselect="Zotero.Couple.setRecordCopy()">
 
                         </listbox>
-                        <tree width="500" flex="1">
+                        <tree id="tree_linked" width="500" flex="1">
                             <treecols>
-                                <treecol id="name" label="Title" flex="2"/>
+                                <treecol id="name" label="Title" value="" flex="2"/>
                                 <treecol id="location" label="Group" flex="1"/>
                                 <treecol id="size" label="Collection" flex="1"/>
                             </treecols>
@@ -93,7 +93,7 @@
                     <hbox>
                         <spacer flex="1"/>
                         <button id="btn_unlink" label="Unlink"
-                                oncommand="Zotero.Couple.{function}"/>
+                                oncommand="Zotero.Couple.unlinkDocumentManual()"/>
                     </hbox>
                 </vbox>
             </tabpanel>

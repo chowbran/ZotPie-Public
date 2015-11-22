@@ -31,8 +31,6 @@ Zotero.SyncCollection = {
         col.save();
 
         for (i=0; i < records.length; i ++){
-            console.log(records[i]);
-            console.log(records[i].toJSON());
             Zotero.Items.add(records['_itemTypeID'],records[i].toJSON());
         }
 
