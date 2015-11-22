@@ -6,7 +6,18 @@
 <!-- Include the main extension logic -->
 <script src="chrome://zotero/content/include.js"/>
 <script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
- 
+
+<hbox>
+<vbox>
+<label value="Items:"/>
+<listbox id="list_items" flex="1">
+
+</listbox>
+</vbox>
+
+<splitter/>
+
+<vbox flex="1">
 <hbox>
 <label control="lbl_find" value="Find:"/>
 <textbox id="txt_find" flex="1"/>
@@ -18,19 +29,21 @@
 </hbox>
  
 <hbox flex="1" style="margin: 10px">
+<vbox flex="1">
+<label id="lbl_original" value="Original Tags:"/>
 <listbox id="list_tags" flex="1">
  
 </listbox>
-<vbox pack="center">
-<button id="btn_add" label=">>"
-    oncommand="Zotero.BatchEditor.{function}"/>
-<button id="btn_remove" label=">>"
-    oncommand="Zotero.BatchEditor.{function}"/>
 </vbox>
+
+<vbox flex="1">
+<label id="lbl_changed" value="Tags to be Changed:"/>
 <listbox id ="list_change" flex="1">
  
 </listbox>
+</vbox>
 </hbox>
+
 <groupbox style="margin: 10px">
     <caption label="Parameters"/>
     <hbox>
@@ -68,7 +81,7 @@
             <menulist id="combo_collection" width="150px"
                     oncommand="Zotero.BatchEditor.{function}">
                 <menupopup>
-                   
+                     
                 </menupopup>
             </menulist>
         </vbox>
@@ -78,5 +91,7 @@
 <progressmeter flex="1" mode="{determined | undetermined}" value="{determined value [0 - 100]}"/>
 <button id="btn_apply" label="Apply"
     oncommand="Zotero.BatchEditor.insertHello()"/>
+</hbox>
+</vbox>
 </hbox>
 </window>

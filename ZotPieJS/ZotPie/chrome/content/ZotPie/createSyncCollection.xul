@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="SyncCollection" onload="Zotero.SyncCollection.onLoad()">
+    <script src="chrome://zotero/content/include.js"/>
+    <script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
+
+    <vbox style="margin-left:10px;margin-right:10px">
+<label value="Master Collection:"/>
+<menulist id="zotpie_mastercollection"
+        oncommand="">
+    <menupopup>
+       
+    </menupopup>
+</menulist>
+<label value="Group:"/>
+<menulist id="group"
+        oncommand="">
+    <menupopup>
+
+    </menupopup>
+</menulist>
+<label style="margin-top:10px;margin-bottom:10px" value="Enter a name for this group collection:"/>
+<textbox id="zotpie-collectionname"/>
+<hbox style="margin-top:5px" pack="center" align="center">
+<button id="zotpie-ok" label="Create" oncommand="Zotero.SyncCollection.createSyncedCollection()"/>
+<button id="zotpie-cancel" label="Cancel" oncommand=""/>
+</hbox>
+</vbox>
+
+</window>

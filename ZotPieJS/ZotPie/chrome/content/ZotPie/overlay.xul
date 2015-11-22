@@ -4,7 +4,7 @@
 
 <overlay id="zotpie-overlay"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	
+  
 	<stringbundleset id="stringbundleset">
 		<stringbundle id="zotpie-zotero-strings"
 			src="chrome://zotpie/locale/zotpie.properties"/>
@@ -14,14 +14,20 @@
 		<!-- Make sure the menu separator for utilities is visible -->
 		<menuseparator id="zotero-tb-actions-plugins-separator" hidden="false"/>
 		<menuitem insertbefore="zotero-tb-actions-separator" label="&batchEditor.name;"
-			oncommand="window.openDialog('chrome://zotpie/content/batchEditorWindow.xul', 'Batch Editor', 'chrome,centerscreen')"/>
+			oncommand="Zotero.ZotPie.startBatchEditor()"/>
+			<!-- oncommand="window.openDialog('chrome://zotpie/content/batchEditorWindow.xul', 'Batch Editor', 'chrome,centerscreen')"/> -->
 		<menuitem insertbefore="zotero-tb-actions-separator" label="&citationEditor.name;"
 			oncommand="window.openDialog('chrome://zotpie/content/citationEditorWindow.xul', 'Citation Editor', 'chrome,centerscreen')"/>
 		<menuitem insertbefore="zotero-tb-actions-separator" label="&coupleDocuments.name;"
-			oncommand="window.openDialog('chrome://zotpie/content/coupleDocumentsWindow.xul', 'Link Documents', 'chrome,centerscreen')"/>
+			oncommand="Zotero.ZotPie.startCouple()"/>
 	</menupopup>
 	
 	<!-- Include the main extension logic -->
+  
 	<script src="chrome://zotero/content/include.js"/>
 	<script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
+	<script src="chrome://zotpie/content/overlay.js" type="application/javascript;version=1.8"/>
+	<script src="chrome://zotpie/content/customFields.js" type="application/javascript;version=1.8"/>
+
+  
 </overlay>
