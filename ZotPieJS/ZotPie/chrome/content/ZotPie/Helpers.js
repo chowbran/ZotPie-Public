@@ -1,27 +1,39 @@
+
+
+
 Zotero.Zotpie_Helpers = {
+
+	// Array Remove - By John Resig (MIT Licensed)
+	remove: function(array, from, to) {
+		var rest = array.slice((to || from) + 1 || array.length);
+		array.length = from < 0 ? array.length + from : from;
+		return array.push.apply(array, rest);
+	},
+
 	// http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
 	// slow?
 	removeDuplicateItems: function(items) {
-	    var seen = {};
-	    var out = [];
-	    var len = items.length;
-	    var j = 0;
+		var seen = {};
+		var out = [];
+		var len = items.length;
+		var j = 0;
 
-	    for(var i = 0; i < len; i++) {
-	         var item = items[i];
-	         if(seen[item.id] !== 1) {
-	               seen[item.id] = 1;
-	               out[j++] = item;
-	         }
-	    }
-	    return out;
+		for(var i = 0; i < len; i++) {
+			 var item = items[i];
+			 if(seen[item.id] !== 1) {
+					seen[item.id] = 1;
+					out[j++] = item;
+			 }
+		}
+		return out;
 	},
 
 	// b - a
 	// slow?
 	diff: function(b, a) {
-    	return b.filter(function(x) {return !(a.indexOf(x) > -1); });
+		return b.filter(function(x) {return !(a.indexOf(x) > -1); });
 	},
+
 
 	/*
 	Copyright (c) 2011 Andrei Mackenzie
@@ -32,37 +44,37 @@ Zotero.Zotpie_Helpers = {
 
 	// Compute the edit distance between the two given strings
 	editDistance: function(a, b) {
-	  if(!a || a.length == 0) return b ? b.length: 0; 
-	  if(!a || b.length == 0) return a ? a.length: 0; 
-
-	  var matrix = [];
-
-	  // increment along the first column of each row
-	  var i;
-	  for(i = 0; i <= b.length; i++){
-	    matrix[i] = [i];
-	  }
-
-	  // increment each column in the first row
-	  var j;
-	  for(j = 0; j <= a.length; j++){
-	    matrix[0][j] = j;
-	  }
-
-	  // Fill in the rest of the matrix
-	  for(i = 1; i <= b.length; i++){
-	    for(j = 1; j <= a.length; j++){
-	      if(b.charAt(i-1) == a.charAt(j-1)){
-	        matrix[i][j] = matrix[i-1][j-1];
-	      } else {
-	        matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, // substitution
-	                                Math.min(matrix[i][j-1] + 1, // insertion
-	                                         matrix[i-1][j] + 1)); // deletion
-	      }
-	    }
-	  }
-
-	  return matrix[b.length][a.length];
+		if(!a || a.length == 0) return b ? b.length: 0; 
+		if(!a || b.length == 0) return a ? a.length: 0; 
+ 
+		var matrix = [];
+ 
+		// increment along the first column of each row
+		var i;
+		for(i = 0; i <= b.length; i++){
+		 matrix[i] = [i];
+		}
+ 
+		// increment each column in the first row
+		var j;
+		for(j = 0; j <= a.length; j++){
+		 matrix[0][j] = j;
+		}
+ 
+		// Fill in the rest of the matrix
+		for(i = 1; i <= b.length; i++){
+		 for(j = 1; j <= a.length; j++){
+			if(b.charAt(i-1) == a.charAt(j-1)){
+				matrix[i][j] = matrix[i-1][j-1];
+			} else {
+				matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, // substitution
+									Math.min(matrix[i][j-1] + 1, // insertion
+											matrix[i-1][j] + 1)); // deletion
+			}
+		 }
+		}
+ 
+		return matrix[b.length][a.length];
 	},
 
 	insertAtLocation: function(element, array) {
@@ -71,22 +83,22 @@ Zotero.Zotpie_Helpers = {
 	},
 
 	// http://stackoverflow.com/questions/1344500/efficient-way-to-insert-a-number-into-a-sorted-array-of-numbers
-	locationOf: function (element, array, compartor, start, end) {
-    	if (array.length === 0)
-	        return -1;
+	locationOf: function (element, array, comparator, start, end) {
+		if (array.length === 0)
+			return -1;
 
-	    start = start || 0;
-	    end = end || array.length;
-	    var pivot = (start + end) >> 1;  // should be faster than the above calculation
+		start = start || 0;
+		end = end || array.length;
+		var pivot = (start + end) >> 1;  // should be faster than the above calculation
 
-	    var c = compartor(element, array[pivot]);
-	    if (end - start <= 1) return c == -1 ? pivot - 1 : pivot;
+		var c = comparator(element, array[pivot]);
+		if (end - start <= 1) return c == -1 ? pivot - 1 : pivot;
 
-	    switch (c) {
-	        case -1: return locationOf(element, array, comparer, start, pivot);
-	        case 0: return pivot;
-	        case 1: return locationOf(element, array, comparer, pivot, end);
-	    };
+		switch (c) {
+			case -1: return this.locationOf(element, array, comparator, start, pivot);
+			case 0: return pivot;
+			case 1: return this.locationOf(element, array, comparator, pivot, end);
+		};
 	}
 
 };
