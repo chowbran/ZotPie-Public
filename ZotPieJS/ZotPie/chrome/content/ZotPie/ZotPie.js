@@ -6,9 +6,11 @@ Zotero.ZotPie = {
 		this.ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
 		                   .getService(Components.interfaces.nsIWindowWatcher);
 		this.batchEditorDoc = "";
-		this.coupleDoc = "";
 		this.customFieldsDoc = "";
 		this.addFieldDoc = "";
+        this.coupleDoc = "";
+        this.DBhelper = Zotero.CustomDB;
+        this.DBhelper.init();
 	},
 
 
