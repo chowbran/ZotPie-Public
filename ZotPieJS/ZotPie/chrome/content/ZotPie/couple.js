@@ -22,6 +22,9 @@ Zotero.Couple = {
         }, false);
     },
 
+    /**
+     * called when window is open to populate all of the tabs and their information
+     */
     onLoad: function(){
         this.doc = Zotero.ZotPie.coupleDoc.document;
         this.createTables();
@@ -31,10 +34,11 @@ Zotero.Couple = {
         this.setRecords('user');
         this.setRecordOriginial();
 
-        //loading the linked tab
-
     },
 
+    /**
+     * sets/refreshes all records in the unlink tab
+     */
     setRecordOriginial: function () {
 
         var list = this.doc.getElementById('list_original_rem');
@@ -51,6 +55,9 @@ Zotero.Couple = {
         }
     },
 
+    /**
+     * sets/refereshs all copies that are related to select original
+     */
     setRecordCopy: function (){
         var tree = this.doc.getElementById('tree_linkeditems');
 
@@ -60,8 +67,6 @@ Zotero.Couple = {
 
         var original = Zotero.Items.get(this.doc.getElementById('list_original_rem').value);
         var copyArray = this.DB.query('SELECT id FROM grouplinked WHERE original IN (?)', [original['_id']]);
-
-        //var copyArray = copiesId[0]['copies'].split(',');
 
         for (var i = 0; i < copyArray.length; i ++){
             var copy = Zotero.Items.get(copyArray[i]['id']);
@@ -89,6 +94,10 @@ Zotero.Couple = {
 
     },
 
+    /**
+     * unlinks selected original and copy ONLY ALLOWS SINGLE SELECT
+     * too dangerous to multi deselect link
+     */
     unlinkDocumentManual: function(){
         var tree = this.doc.getElementById('tree_linked');
         var originalId = this.doc.getElementById('list_original_rem').value;
@@ -100,10 +109,16 @@ Zotero.Couple = {
 
     },
 
+
+    /**
+     * helper function to unlink a record given a copy and it's original id, if all is set
+     * to true, then remove all copies that are linked to a given original id.
+     * @param copyId the id of the record to be removed
+     * @param originalId the id of the original record the copy is linked to
+     * @param all BOOLEAN, true or false to delete all
+     */
     unlinkDocument: function(copyId, originalId, all){
-        console.log(copyId);
-        console.log(originalId);
-        console.log(all);
+
         var copyArray = this.DB.query('SELECT id FROM grouplinked WHERE original IN (?)', originalId);
 
         if (all){
@@ -126,7 +141,9 @@ Zotero.Couple = {
     },
 
 
-
+    /**
+     * sets the User's collections in link tab
+     */
     setCollections: function() {
 
         var menu = this.doc.getElementById('combo_original');
@@ -143,6 +160,9 @@ Zotero.Couple = {
 
     },
 
+    /**
+     * sets the user's groups in link tab
+     */
     setGroupCollections: function(){
 
         var menu = this.doc.getElementById('combo_copycollection');
@@ -161,6 +181,9 @@ Zotero.Couple = {
         this.setRecords('group');
     },
 
+    /**
+     * sets the groups when a certain collection is chosen
+     */
     setGroups: function () {
 
         var menu = this.doc.getElementById('combo_copygroup');
@@ -174,6 +197,11 @@ Zotero.Couple = {
         menu.selectedIndex = 0;
     },
 
+    /**
+     * sets the records for either the user's collection, or a group's collection
+     * based on the pass in parameter type
+     * @param type either group or user, sets the list of records for selected collection
+     */
     setRecords: function(type){
 
         if (type === 'group'){
@@ -194,6 +222,10 @@ Zotero.Couple = {
         }
     },
 
+    /**
+     * helper function to remove all the values in records list
+     * @param list  list document element
+     */
     clearListBox: function(list){
 
         var count = list.itemCount;
@@ -202,17 +234,18 @@ Zotero.Couple = {
         }
     },
 
+    /**
+     * Takes all of the selected group records, and a selected user record,
+     * and links the set in the database
+     */
     updateLink: function () {
         var copyList = this.doc.getElementById('list_copy');
         var originalId = this.doc.getElementById('list_original');
         var copyGroup = this.doc.getElementById('combo_copygroup').label;
         var copyCollection = this.doc.getElementById('combo_copycollection').label;
 
-        var copySet = "";
-
         if (copyList.selectedCount !== 0 && originalId.selectedCount !== 0){
-
-            var numOfCopies = 0;
+            //var numOfCopies = 0;
             for(var i = 0; i < copyList.selectedCount; i ++){
 
                 var copyId = copyList.getSelectedItem(i).value;
@@ -227,9 +260,9 @@ Zotero.Couple = {
                     this.ps.alert(null, "", "itemtypes are different");
                 }
                 else{
-                    numOfCopies ++;
-                    copySet = copySet.concat(copyId + ',');
-                    //insert the id of the linked sql if there is an id that is already there
+                    //var copySet = "";
+                    //numOfCopies ++;
+                    //copySet = copySet.concat(copyId + ',');
                     this.DB.query("INSERT INTO grouplinked (original, id, groupId, collection) VALUES (?,?,?,?)",
                         [originalId.value, copyId, copyGroup, copyCollection]);
                     this.setRecordOriginial();
@@ -239,12 +272,20 @@ Zotero.Couple = {
 
     },
 
+    /**
+     * helper function for create tables
+     */
     createTables: function(){
         if (!this.DB.tableExists('grouplinked')){
             this.DB.query("CREATE TABLE grouplinked (original INT, id INT, groupId VARCHAR, collection VARCHAR)");
         }
     },
 
+    /**
+     * Whenever an record is augmented, this function is called to
+     * propogate the changes to the linked documents
+     * @param linkSet an array with each element having an originalid and copyid value.
+     */
     sync: function(linkSet){
 
         for (var i=0; i < linkSet.length; i ++){
@@ -271,9 +312,10 @@ Zotero.Couple = {
     notifierCallback: {
         notify: function(event, type, ids, extraData) {
             if (event == 'add' || event == 'modify' || event == 'delete') {
+
                 Zotero.Couple.createTables();
                 // Increment a counter every time an item is changed
-                console.log(extraData);
+
                 if (event === 'delete'){
 
                     var sql = ("SELECT * FROM grouplinked WHERE original IN (?)");
@@ -284,12 +326,12 @@ Zotero.Couple = {
 
                     var original = Zotero.Couple.DB.query(sql,queryParm.substring(0,queryParm.length-1) );
 
-                    //call unlink Documents for every id that is saved, must get the corresponding array first
+                    //call unlink documents for original, if so call unlink for all copies pertaining to documents
                     if (original !== false){
                         for (i = 0; i < ids.length; i ++){
                             Zotero.Couple.unlinkDocument('', original[0]['original'], true);
                         }
-
+                    //check if deleted item is copy, if so call unlink for single copy
                     }else{
                         sql = ("SELECT * FROM groupLinked WHERE id IN (?)");
                         var copy = Zotero.Couple.DB.query(sql,queryParm.substring(0,queryParm.length-1) );
