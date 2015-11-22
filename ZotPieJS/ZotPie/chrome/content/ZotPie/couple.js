@@ -98,6 +98,7 @@ Zotero.Couple = {
 
         tree.view.getItemAtIndex(this.currentIndex).parentNode.removeChild(tree.view.getItemAtIndex(this.currentIndex));
 
+        this.setRecordOriginial();
     },
 
     unlinkDocument: function(copyId, originalId, all){
@@ -119,10 +120,7 @@ Zotero.Couple = {
                     this.DB.query('DELETE FROM grouplinked WHERE id=?', [copyId]);
                 }
             }
-
-
         }
-
     },
 
 

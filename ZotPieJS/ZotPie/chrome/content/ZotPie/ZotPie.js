@@ -7,6 +7,8 @@ Zotero.ZotPie = {
 		                   .getService(Components.interfaces.nsIWindowWatcher);
 		this.batchEditorDoc = "";
         this.coupleDoc = "";
+        this.DBhelper = Zotero.CustomDB;
+        this.DBhelper.init();
 	},
 
 
