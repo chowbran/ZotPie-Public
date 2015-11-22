@@ -60,7 +60,7 @@ var ZotPieCustomFields = new function () {
 
             var addButton = document.createElement("button");
             addButton.setAttribute("label", "Add");
-            addButton.setAttribute("oncommand", "addRow(this)");
+            addButton.setAttribute("oncommand", "Zotero.ZotPie.startCustomFieldsEditor()");
             vbox.appendChild(addButton);
 
             var item = items[0];
@@ -85,7 +85,7 @@ var ZotPieCustomFields = new function () {
 
             var fieldName = document.createElement("label");
             fieldName.setAttribute("value", "Field Name");
-            fieldName.setAttribute("style", "font-weight:bold;margin-right:100px");
+            fieldName.setAttribute("style", "font-weight:bold;margin-right:70px");
             fieldName.setAttribute("flex", "1");
             var fieldData = document.createElement("label");
             fieldData.setAttribute("value", "Data");
@@ -101,23 +101,28 @@ var ZotPieCustomFields = new function () {
 
 
             //var data = db.getData();
-            var data = [["cool", "aaazxczxlckzxclkzlca"], ["bees", "knees"]];
+            var data = [["Gregorian Date", "March 10 1994"], ["Medical Number", "1042"]];
+
             for (i = 0; i < data.length; i++) {
                 var d = data[i];
                 var row = document.createElement("row");
 
                 var t = document.createElement("label");
-                t.setAttribute("flex", "1");
-                //t.setAttribute("width", "150");
-                t.addEventListener("click", function (event) {
-                    if (event.button) {
-                        return;
-                    }
-                    showTextbox(this);
-                }, false);
+                t.setAttribute("style", "font-weight:bold");
+                t.setAttribute("value", data[i][0] + ":");
 
-                t.className = "zotero-clicky";
-                t.setAttribute("value", data[i][0]);
+                //var t = document.createElement("label");
+                //t.setAttribute("flex", "1");
+                ////t.setAttribute("width", "150");
+                //t.addEventListener("click", function (event) {
+                //    if (event.button) {
+                //        return;
+                //    }
+                //    showTextbox(this);
+                //}, false);
+
+                //t.className = "zotero-clicky";
+                //t.setAttribute("value", data[i][0]);
 
                 var t2 = document.createElement("label");
                 t2.setAttribute("flex", "1");
@@ -132,16 +137,19 @@ var ZotPieCustomFields = new function () {
                 t2.setAttribute("value", data[i][1]);
 
                 var removeButton = document.createElement('label');
-                //removeButton.setAttribute("flex", "1");
-                removeButton.setAttribute("value", "-");
-                removeButton.setAttribute("class", "zotero-clicky zotero-clicky-minus");
-                removeButton.setAttribute("onclick", "removeRow(this)");
 
                 row.appendChild(t);
                 row.appendChild(t2);
                 row.appendChild(removeButton);
 
                 rows.appendChild(row);
+
+                //removeButton.setAttribute("flex", "1");
+                removeButton.setAttribute("value", "-");
+                removeButton.setAttribute("class", "zotero-clicky zotero-clicky-minus");
+                removeButton.setAttribute("onclick", "removeRow(this)");
+
+
             }
         }
 
@@ -154,6 +162,7 @@ var ZotPieCustomFields = new function () {
     },
 
     removeRow = function (elem) {
+        //rows.removeChild(row);
 
     },
 
@@ -165,6 +174,7 @@ var ZotPieCustomFields = new function () {
         t.setAttribute('flex', '1');
         //t.setAttribute("width", "120");
         t.setAttribute('onblur', 'hideTextbox(this, this.value)');
+        t.setAttribute('onkeypress', 'keyPress(this, event, this.value)');
 
         var box = elem.parentNode;
         box.replaceChild(t, elem);
@@ -176,6 +186,22 @@ var ZotPieCustomFields = new function () {
         t.value = val;
         //t.setAttribute('onkeypress', "return document.getBindingParent(this).handleKeyPress(event)");
         //t.setAttribute('onpaste', "return document.getBindingParent(this).handlePaste(event)");
+    },
+
+    keyPress = function (elem, event) {
+        var target = event.target;
+        var focused = document.commandDispatcher.focusedElement;
+					
+        switch (event.keyCode) {
+            case event.DOM_VK_RETURN:
+                focused.blur();
+                break;
+            case event.DOM_VK_ESCAPE:
+                // Reset field to original value
+                target.value = target.getAttribute('value');
+                focused.blur();
+                break;
+        }
     },
 
     hideTextbox = function (elem, value) {

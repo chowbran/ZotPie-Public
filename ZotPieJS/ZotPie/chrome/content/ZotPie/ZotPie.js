@@ -8,6 +8,7 @@ Zotero.ZotPie = {
 		this.batchEditorDoc = "";
 		this.coupleDoc = "";
 		this.customFieldsDoc = "";
+		this.addFieldDoc = "";
 	},
 
 
@@ -30,7 +31,12 @@ Zotero.ZotPie = {
 	startCustomFieldsEditor : function () {
 		this.customFieldsDoc = this.ww.openWindow(null,"chrome://zotpie/content/customFieldsEditorWindow.xul",
             "Custom Fields Editor", "chrome,centerscreen", null);
-	}
+	},
+
+    startCustomFieldsAdding : function () {
+        this.addFieldDoc = this.ww.openWindow(null,"chrome://zotpie/content/customFieldsAddingDialog.xul",
+            "Add Custom Field", "chrome,centerscreen", null);
+    }
 };
 
 // Initialize the utility
