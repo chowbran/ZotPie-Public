@@ -17,7 +17,7 @@ var ZotPieCustomFields = new function () {
 
             var cdTab = document.createElement("tab");
             cdTab.setAttribute("id", "zotpie-customdatatab");
-            cdTab.setAttribute("label", "Custom Data");
+            cdTab.setAttribute("label", "Custom Fields");
             cdTab.setAttribute("value", "customdata");
             tab.firstChild.appendChild(cdTab);
             //console.log(zoteroTab.firstChild.);
@@ -53,63 +53,99 @@ var ZotPieCustomFields = new function () {
                 cdTabPanel.removeChild(cdTabPanel.firstChild);
             }
 
+            var item = items[0];
+            console.log(item.id);
+
+            var fields = Zotero.ZotPie.DBHelper.getFieldName(Zotero.ItemTypes.getName(item.itemTypeID));
+            var data = Zotero.ZotPie.DBHelper.getFieldData(item.id);
+
+            console.log(fields);
             var vbox = document.createElement("vbox");
             vbox.setAttribute("flex", "1");
             vbox.setAttribute("style", "overflow:auto");
             cdTabPanel.appendChild(vbox);
 
+            var hbox = document.createElement("hbox");
+            //hbox.setAttribute("pack", "center");
+            hbox.setAttribute("align", "center");
+            hbox.setAttribute("style", "margin-left:5px");
+            var fieldCount = document.createElement("label");
+
+            var count;
+            var countText = "custom fields:";
+
+            if (fields === false || fields[0] === "") {
+                count = 0;
+            } else {
+                count = fields.length;
+
+                if (fields.length === 1) {
+                    countText = "custom field:"
+                }
+            }
+
+            fieldCount.setAttribute("value", count + " " + countText);
+            fieldCount.setAttribute("pack", "center");
+            fieldCount.setAttribute("align", "center")
             var addButton = document.createElement("button");
             addButton.setAttribute("label", "Add");
             addButton.setAttribute("oncommand", "Zotero.ZotPie.startCustomFieldsEditor()");
-            vbox.appendChild(addButton);
-
-            var item = items[0];
-            console.log(item.id);
+            hbox.appendChild(fieldCount);
+            hbox.appendChild(addButton);
+            hbox.appendChild(document.createElement("spacer"));
+            vbox.appendChild(hbox);
 
             var grid = document.createElement("grid");
-            grid.setAttribute("style", "margin:10px");
+            grid.setAttribute("style", "margin-left:5px;margin-right:5px");
             var cols = document.createElement("columns");
             var col1 = document.createElement("column");
             col1.setAttribute("flex", "1");
             var col2 = document.createElement("column");
             col2.setAttribute("flex", "1");
-            var col3 = document.createElement("column");
-            col3.setAttribute("flex", "1");
+            col2.setAttribute("width", "100");
+            //var col3 = document.createElement("column");
+            //col3.setAttribute("flex", "1");
 
             cols.appendChild(col1);
             cols.appendChild(col2);
-            cols.appendChild(col3);
+            //cols.appendChild(col3);
 
             var rows = document.createElement("rows");
-            var row1 = document.createElement("row");
+            //var row1 = document.createElement("row");
 
-            var fieldName = document.createElement("label");
-            fieldName.setAttribute("value", "Field Name");
-            fieldName.setAttribute("style", "font-weight:bold;margin-right:70px");
-            fieldName.setAttribute("flex", "1");
-            var fieldData = document.createElement("label");
-            fieldData.setAttribute("value", "Data");
-            fieldData.setAttribute("style", "font-weight:bold");
-            fieldData.setAttribute("flex", "1");
+            //var fieldName = document.createElement("label");
+            //fieldName.setAttribute("value", "Field Name");
+            //fieldName.setAttribute("style", "font-weight:bold;margin-right:70px");
+            //fieldName.setAttribute("flex", "1");
+            //var fieldData = document.createElement("label");
+            //fieldData.setAttribute("value", "Data");
+            //fieldData.setAttribute("style", "font-weight:bold");
+            //fieldData.setAttribute("flex", "1");
 
-            row1.appendChild(fieldName);
-            row1.appendChild(fieldData);
-            rows.appendChild(row1);
+            //row1.appendChild(fieldName);
+            //row1.appendChild(fieldData);
+            //rows.appendChild(row1);
 
             vbox.appendChild(grid);
             grid.appendChild(rows);
 
 
             //var data = db.getData();
-            var data = [["Gregorian Date", "March 10 1994"], ["Medical Number", "1042"]];
+            //var data = [["Gregorian Date", "March 10 1994"], ["Medical Number", "1042"]];
 
-            for (i = 0; i < data.length; i++) {
-                var d = data[i];
+            console.log(fields);
+
+            if (fields === false || fields[0] === "") {
+                return;
+            }
+
+            for (i = 0; i < fields.length; i++) {
+                //var d = data[i];
                 var row = document.createElement("row");
 
                 var t = document.createElement("label");
-                t.setAttribute("style", "font-weight:bold");
-                t.setAttribute("value", data[i][0] + ":");
+                t.setAttribute("style", "font-weight:bold;text-align:right");
+                t.setAttribute("value", fields[i] + ":");
 
                 //var t = document.createElement("label");
                 //t.setAttribute("flex", "1");
@@ -126,6 +162,9 @@ var ZotPieCustomFields = new function () {
 
                 var t2 = document.createElement("label");
                 t2.setAttribute("flex", "1");
+                t2.setAttribute("width", "100");
+                t2.setAttribute("data-fieldindex", i);
+                t2.setAttribute("data-itemid", item.id);
                 t2.addEventListener("click", function (event) {
                     if (event.button) {
                         return;
@@ -134,20 +173,25 @@ var ZotPieCustomFields = new function () {
                 }, false);
 
                 t2.className = "zotero-clicky";
-                t2.setAttribute("value", data[i][1]);
 
-                var removeButton = document.createElement('label');
+                if (data[i] != undefined) {
+                    t2.setAttribute("value", data[i]);
+                } else {
+                    t2.setAttribute("value", "");
+                }
+
+                //var removeButton = document.createElement('label');
 
                 row.appendChild(t);
                 row.appendChild(t2);
-                row.appendChild(removeButton);
+                //row.appendChild(removeButton);
 
                 rows.appendChild(row);
 
-                //removeButton.setAttribute("flex", "1");
-                removeButton.setAttribute("value", "-");
-                removeButton.setAttribute("class", "zotero-clicky zotero-clicky-minus");
-                removeButton.setAttribute("onclick", "removeRow(this)");
+                ////removeButton.setAttribute("flex", "1");
+                //removeButton.setAttribute("value", "-");
+                //removeButton.setAttribute("class", "zotero-clicky zotero-clicky-minus");
+                //removeButton.setAttribute("onclick", "removeRow(this)");
 
 
             }
@@ -161,13 +205,17 @@ var ZotPieCustomFields = new function () {
 
     },
 
-    removeRow = function (elem) {
-        //rows.removeChild(row);
+    //removeRow = function (elem) {
+    //    //rows.removeChild(row);
 
-    },
+    //},
 
     showTextbox = function (elem) {
+        console.log(elem.getAttribute("data-fieldindex"));
+        console.log(elem.getAttribute("data-itemid"));
         var t = document.createElement("textbox");
+        t.setAttribute("data-fieldindex", elem.getAttribute("data-fieldindex"));
+        t.setAttribute("data-itemid", elem.getAttribute("data-itemid"));
         t.setAttribute('value', elem.getAttribute("value"));
         //t.setAttribute('fieldname', fieldName);
         //t.setAttribute('ztabindex', tabindex);
@@ -207,6 +255,9 @@ var ZotPieCustomFields = new function () {
     hideTextbox = function (elem, value) {
         var t = document.createElement("label");
         t.setAttribute("flex", "1");
+        t.setAttribute("width", "100");
+        t.setAttribute("data-fieldindex", elem.getAttribute("data-fieldindex"));
+        t.setAttribute("data-itemid", elem.getAttribute("data-itemid"));
         //t.setAttribute("width", "150");
         t.addEventListener("click", function (event) {
             if (event.button) {
@@ -218,43 +269,26 @@ var ZotPieCustomFields = new function () {
         t.className = "zotero-clicky";
         t.setAttribute("value", value);
 
-        var box = elem.parentNode;
-        box.replaceChild(t, elem);
-    },
+        var id = elem.getAttribute("data-itemid");
+        var index = elem.getAttribute("data-fieldindex");
+        var fieldData = Zotero.ZotPie.DBHelper.getFieldData(id);
 
-    addToBatchEditQueue = function () {
-        var selectedItems = ZoteroPane.getSelectedItems();
-        var item = selectedItems[0];
-        var counter = 0;
-
-        for (i = 0; i < selectedItems.length; i++) {
-            if (batchedItems.indexOf(selectedItems[i].id) == -1) {
-                batchedItems.push(selectedItems[i].id);
-                counter++;
-            }
+        console.log(fieldData);
+        if (fieldData === false) {
+            fieldData = [];
         }
 
-        var flags = ps.BUTTON_POS_0 * ps.BUTTON_TITLE_IS_STRING +
-            ps.BUTTON_POS_1 * ps.BUTTON_TITLE_IS_STRING +
-            ps.BUTTON_POS_2 * ps.BUTTON_TITLE_IS_STRING;
-
-        var button;
-
-        if (counter == 0) {
-            button = ps.confirmEx(null, "Warning", "Items are already in the batch edit queue.",
-                   flags, "Open Batch Editor", "Continue Adding", null, null, {});
-        } else {
-            button = ps.confirmEx(null, "Success!", "Added " + counter + " items to the tag batch edit queue.\nThere are currently "
-                                + batchedItems.length.toString() + " items in the queue.",
-                               flags, "Open Batch Editor", "Continue Adding", null, null, {});
+        //console.log(fieldData);
+        while (index > fieldData.length) {
+            fieldData.push("");
         }
 
-        if (button == 0) {
-            Zotero.ZotPie.startBatchEditor();
-        }
+        fieldData[index] = value;
 
-        //toastr.success("test");
+        Zotero.ZotPie.DBHelper.setFieldData(id, fieldData);
 
+        var topBox = elem.parentNode;
+        topBox.replaceChild(t, elem);
     },
 
     this.onUnload = function () {

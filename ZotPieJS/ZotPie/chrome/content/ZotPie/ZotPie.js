@@ -9,8 +9,8 @@ Zotero.ZotPie = {
 		this.customFieldsDoc = "";
 		this.addFieldDoc = "";
         this.coupleDoc = "";
-        this.DBhelper = Zotero.CustomDB;
-        this.DBhelper.init();
+        this.DBHelper = Zotero.CustomDB;
+        this.DBHelper.init();
 	},
 
 
