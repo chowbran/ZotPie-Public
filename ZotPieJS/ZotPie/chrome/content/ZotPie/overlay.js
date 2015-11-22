@@ -166,7 +166,7 @@ var ZotPieOverlay = new function () {
 
         if (button == 0) {
         	Zotero.itemFilterSignal = true;
-            Zotero.ZotPie.startBatchEditor();
+            Zotero.ZotPie.startBatchEditor(Zotero.batchedItems);
         }
 
         //toastr.success("test");

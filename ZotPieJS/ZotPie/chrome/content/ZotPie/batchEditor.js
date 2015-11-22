@@ -25,10 +25,14 @@ Zotero.BatchEditor = {
 			el.disabled = Zotero.itemFilterSignal; 
 		}
 
+		console.log(String(window.arguments[0]));
+
+		/* If this was called from the context menu, (ie, we are item filtering)
+         * we limit the scope to those items.
+         */
 		if (Zotero.itemFilterSignal && Zotero.batchedItems) {
 			// Change scope to be this list of items
 			this._ALLITEMS = this._ALLITEMS.filter(function(item) {
-				// console.log(item.id);
 				return Zotero.batchedItems.indexOf(item.id) >= 0;
 			});
 
@@ -89,10 +93,8 @@ Zotero.BatchEditor = {
 		this.resetTags(this.currentCollID);
 
 		var changeList = this.doc.getElementById('list_change');
-		console.log(this.changeSet);
 		if (this.changeSet) {
 			for (var tag of this.changeSet) {
-				console.log(tag.name + tag.id);
 				changeList.appendItem(tag.name, tag.id);
 			}
 		}
@@ -108,7 +110,6 @@ Zotero.BatchEditor = {
 		// Clear listbox
 		var listbox = this.doc.getElementById('list_tags');
 		var count = listbox.itemCount;
-		console.log(count);
 
 		if(!listbox) {
 			return;
@@ -129,12 +130,8 @@ Zotero.BatchEditor = {
 		// Remove duplicates
 		newTagSet = Zotero.Zotpie_Helpers.removeDuplicateItems(newTagSet);
 
-		console.log (this.changeSet);
-
 		// Remove tags already staged
 		newTagSet = Zotero.Zotpie_Helpers.diff(newTagSet, this.changeSet);
-
-		console.log(newTagSet);
 
 		newTagSet.sort(function(a, b) {
 			var titleA = a.name.toLowerCase();
@@ -204,6 +201,8 @@ Zotero.BatchEditor = {
 				}
 			}
 		}
+
+		this.updateTagHighlights();
 	},
 
 	/* Highlights all tags specified by the selected item in list_items.
@@ -226,11 +225,7 @@ Zotero.BatchEditor = {
 			return x.id == selected; 
 		}); 
 
-		console.log (item);
-
 		var tags = item.getTags();
-
-		console.log (tags);
 
 		var self = this;
 
@@ -247,10 +242,6 @@ Zotero.BatchEditor = {
 		}).filter(function (x) {
 			return x >= 0;
 		});
-
-
-		console.log(indexSourceTags);
-		console.log(indexChangeTags);
 
 		var count = lstSourceTags.itemCount;
 		for (var i = 0; i < count; i++) {
@@ -282,7 +273,24 @@ Zotero.BatchEditor = {
 		end = end || lstbox.itemCount;
 		var pivot = (start + end) >> 1;
 
-		var c = comparator(element, lstbox.getItemAtIndex(pivot).label.toLowerCase());
+		var item = lstbox.getItemAtIndex(pivot);
+
+		/* If pivot does not exist in the list, then we add the element
+		 * to the end of ths list
+		 */
+		if (!item) {
+			console.log (item);
+			return lstbox.itemCount;
+		}
+
+		var lbl = item.getAttribute('label');
+
+		if (lbl === undefined) {
+			console.log(item);
+			return item.itemCount;
+		}
+
+		var c = comparator(element, lbl.toLowerCase());
 		if (end - start <= 1) {
 			return c == -1 ? pivot - 1 : pivot;
 		}
@@ -394,7 +402,6 @@ Zotero.BatchEditor = {
 	},
 
 	onCollectionChange: function() {
-		console.log("Change collection");
 		var selected = this.doc.getElementById('combo_collection').value;
 		this.currentCollID = selected;
 
@@ -423,8 +430,6 @@ Zotero.BatchEditor = {
 					var lstbox = this.doc.getElementById('list_change');
 					var label = this.doc.getElementById('txt_replace').value;
 
-				console.log (this.changeSet);
-				console.log (label);
 				if (this.changeSet.indexOf(label) < 0) {
 					var index = this.locationOfInListBox(
 						label.toLowerCase(), lstbox, this.stringComparator);
@@ -441,7 +446,6 @@ Zotero.BatchEditor = {
 		if ((aEvent.target.id == 'list_items' 
 				&& aEvent.keyCode === KeyEvent.VK_DELETE)
 			|| aEvent.target.id == 'btn_remove_item') {
-			console.log ('Delete event');
 
 			var lstbox = this.doc.getElementById('list_items');
 			var item = lstbox.selectedItem;
@@ -449,15 +453,11 @@ Zotero.BatchEditor = {
 
 			lstbox.removeItemAt(lstbox.getIndexOfItem(item));
 
-
-			console.log(Zotero.batchedItems);
 			var i = Zotero.Zotpie_Helpers.locationOf(index, Zotero.batchedItems, this.integerComparator);
 
 			if (i > -1) {
 			    Zotero.batchedItems.splice(i, 1);
 			}
-
-			console.log(Zotero.batchedItems);
 
 			if (Zotero.batchedItems) {
 				// Reload _ALLITEMS
@@ -473,7 +473,6 @@ Zotero.BatchEditor = {
 	},
 
 	batchTagAdd: function(newTags) {
-		console.log(newTags);
 		for (var item of this._ALLITEMS) {
 			var missingTags = Zotero.Zotpie_Helpers.diff(newTags,
 				item.getTags().map(x => x.name));
@@ -482,11 +481,8 @@ Zotero.BatchEditor = {
 	},
 
 	batchTagEdit: function (oldTags, newTag) {
-		var items = [];
 		var allItems = [];
-		var oldTagIds = [];
 		var ids = [];
-		var oldTagNames = [];
 
 		// Get the scope of this modification
 		if (this.currentCollID > 0) {
@@ -496,35 +492,26 @@ Zotero.BatchEditor = {
 			allItems = this._ALLITEMS;//Zotero.Items.getAll();
 		}
 
-		console.log(oldTags);
-
 		// Get ids of the tags to be modified
-		oldTagIDs = oldTags.map(function (tag) { // slow?
+		var oldTagIDs = oldTags.map(function (tag) { // slow?
 			return tag.id;
 			// return Zotero.Tags.getID(tag, 0);
 		});
 
 		// Get ids of the tags to be modified
-		oldTagNames = oldTags.map(function (tag) { // slow?
+		var oldTagNames = oldTags.map(function (tag) { // slow?
 			return tag.name;
 		});
 
-		console.log(oldTagIDs);
-		console.log(allItems);
-
 		// Filters the list of all items to a sublist where each element
 		// contains one (or more) old tags
-		items = allItems.filter(function(item) { // slow?
+		var items = allItems.filter(function(item) { // slow?
 			return item.hasTags(oldTagIDs);
 		});
-
-		console.log(items);
 
 		for (var item of items) {
 			// Get the tags of the item to edit
 			var allTags = item.getTags(); 
-
-			console.log(oldTagNames);
 
 			// Swap to lower case
 			if (!this.matchCase) {
@@ -532,11 +519,7 @@ Zotero.BatchEditor = {
 				oldTagNames = temp;
 			}
 
-			console.log(allTags);
-			console.log(oldTagNames);
-
 			for (var tag of allTags) { //Slow?
-				// console.log(tag.id);
 				if (!this.matchCase) {
 					if (oldTagNames.indexOf(tag.name.toLowerCase()) >= 0) {
 						ids.push(tag.id);
@@ -547,7 +530,6 @@ Zotero.BatchEditor = {
 					}
 				}
 			}
-			console.log(ids);
 			ids.forEach(function(id) {
 				item.removeTag(id);
 			});
