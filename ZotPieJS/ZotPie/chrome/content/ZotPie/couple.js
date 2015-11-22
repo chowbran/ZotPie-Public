@@ -23,8 +23,8 @@ Zotero.Couple = {
     onLoad: function(){
         this.doc = Zotero.ZotPie.coupleDoc.document;
         this.createTables();
-        this.setCollections(this.doc.getElementById('combo_original'));
-        this.setGroups(this.doc.getElementById('combo_copygroup'));
+        this.setCollections();
+        this.setGroups();
         this.setGroupCollections();
         this.setRecords('user');
         this.setRecordOriginial();
@@ -47,9 +47,46 @@ Zotero.Couple = {
         }
     },
 
-    setCollections: function(elementId) {
+    setRecordCopy: function (){
+        var tree = this.doc.getElementById('tree_linkeditems');
 
-        var menu = elementId;
+        while (tree.firstChild) {
+            tree.removeChild(tree.firstChild);
+        }
+
+        var original = Zotero.Items.get(this.doc.getElementById('list_original_rem').value);
+        var copiesId = this.DB.query('SELECT copies FROM linked WHERE original IN (?)', [original['_id']]);
+
+        var copyArray = copiesId[0]['copies'].split(',');
+
+        for (var i = 0; i < copyArray.length; i ++){
+            var copy = Zotero.Items.get(copyArray[i]);
+            var copyInfo = this.DB.query('SELECT * FROM grouplinked where id IN (?)', [copy['_id']]);
+            var treeitem = document.createElement('treeitem');
+            var treerow = document.createElement('treerow');
+
+            var treecell_1 = document.createElement('treecell');
+            var treecell_2 = document.createElement('treecell');
+            var treecell_3 = document.createElement('treecell');
+
+            treecell_1.setAttribute("label", copy.getField('title'));
+            treecell_2.setAttribute("label", copyInfo[0]['groupId']);
+            treecell_3.setAttribute("label",copyInfo[0]['collection']);
+
+            treerow.appendChild(treecell_1);
+            treerow.appendChild(treecell_2);
+            treerow.appendChild(treecell_3);
+
+            treeitem.appendChild(treerow);
+
+            tree.appendChild(treeitem);
+        }
+
+    },
+
+    setCollections: function() {
+
+        var menu = this.doc.getElementById('combo_original');
         menu.removeAllItems();
         var collections = Zotero.getCollections();
 
@@ -81,9 +118,9 @@ Zotero.Couple = {
         this.setRecords('group');
     },
 
-    setGroups: function (elementId) {
+    setGroups: function () {
 
-        var menu = elementId;
+        var menu = this.doc.getElementById('combo_copygroup');
         menu.removeAllItems();
         var groups = Zotero.Groups.getAll();
 
