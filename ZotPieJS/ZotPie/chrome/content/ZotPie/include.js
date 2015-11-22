@@ -6,6 +6,14 @@ if (!Zotero.BatchEditor) {
 	loader.loadSubScript("chrome://zotpie/content/batchEditor.js");
 }
 
+if (!Zotero.CustomFieldsEditor) {
+	loader.loadSubScript("chrome://zotpie/content/customFieldsEditor.js");
+}
+
+if (!Zotero.CustomFieldsAdding) {
+    loader.loadSubScript("chrome://zotpie/content/customFieldsAdding.js")
+}
+
 if (!Zotero.Couple){
     loader.loadSubScript("chrome://zotpie/content/couple.js");
 }

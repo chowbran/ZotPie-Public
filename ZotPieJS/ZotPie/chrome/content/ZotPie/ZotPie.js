@@ -6,7 +6,9 @@ Zotero.ZotPie = {
 		this.ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
 		                   .getService(Components.interfaces.nsIWindowWatcher);
 		this.batchEditorDoc = "";
-        this.coupleDoc = "";
+		this.coupleDoc = "";
+		this.customFieldsDoc = "";
+		this.addFieldDoc = "";
 	},
 
 
@@ -24,7 +26,17 @@ Zotero.ZotPie = {
 	startCreateSync : function () {
 		this.createSync = this.ww.openWindow(null,"chrome://zotpie/content/createSyncCollection.xul",
             "Create Synced Collection", "chrome,centerscreen", null);
-	}
+	},
+	
+	startCustomFieldsEditor : function () {
+		this.customFieldsDoc = this.ww.openWindow(null,"chrome://zotpie/content/customFieldsEditorWindow.xul",
+            "Custom Fields Editor", "chrome,centerscreen", null);
+	},
+
+    startCustomFieldsAdding : function () {
+        this.addFieldDoc = this.ww.openWindow(null,"chrome://zotpie/content/customFieldsAddingDialog.xul",
+            "Add Custom Field", "chrome,centerscreen", null);
+    }
 };
 
 // Initialize the utility

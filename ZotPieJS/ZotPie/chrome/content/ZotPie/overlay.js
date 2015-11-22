@@ -55,6 +55,14 @@ var ZotPieOverlay = new function ()
 		    documentLinker.setAttribute("image", "chrome://ZotPie/skin/toolbar-documentlinker.png");
 		    documentLinker.setAttribute("oncommand", "window.openDialog('chrome://zotpie/content/coupleDocumentsWindow.xul', 'Link Documents', 'chrome,centerscreen')");
 		    batchEdit.parentNode.insertBefore(documentLinker, batchEdit);
+
+		    var customFieldsEditor = document.createElement("toolbarbutton");
+		    customFieldsEditor.setAttribute("id", "zotpie-customfields");
+		    customFieldsEditor.setAttribute("class", "zotero-tb-button");
+		    customFieldsEditor.setAttribute("tooltiptext", "Custom Field Editor");
+		    customFieldsEditor.setAttribute("image", "chrome://ZotPie/skin/toolbar-customfields.png");
+		    customFieldsEditor.setAttribute("oncommand", "Zotero.ZotPie.startCustomFieldsEditor()");
+		    documentLinker.parentNode.insertBefore(customFieldsEditor, documentLinker);
 		}
 
 		var addGroup = document.getElementById("zotero-tb-group-add");
