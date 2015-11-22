@@ -1,0 +1,62 @@
+function () {
+        var iAPI, context;
+        // ****************************************
+        // *
+        // * The root function that gets returned when a new DB is created
+        // * Takes: unlimited filter arguments and creates filters to be run when a query is called
+        // **************************************** 
+        // ****************************************
+        // *
+        // * iAPI is the the method collection valiable when a query has been started by calling dbname
+        // * Certain methods are or are not avaliable once you have started a query such as insert -- you can only insert into root
+        // ****************************************
+        iAPI = TAFFY.mergeObj( TAFFY.mergeObj( API, { insert : undefined } ),
+          { getDBI  : function () { return DBI; },
+            getroot : function ( c ) { return root.call( c ); },
+          context : function ( n ) {
+            // ****************************************
+            // *
+            // * The context contains all the information to manage a query including filters, limits, and sorts
+            // **************************************** 
+            if ( n ){
+              context = TAFFY.mergeObj( context,
+                n.hasOwnProperty('results')
+                  ? TAFFY.mergeObj( n, { run : new Date(), sort: new Date() })
+                  : n
+              );
+            }
+            return context;
+          },
+          extend  : undefined
+        });
+
+        context = (this && this.q) ? this : {
+          limit     : false,
+          start     : false,
+          q         : [],
+          filterRaw : [],
+          index     : [],
+          order     : [],
+          results   : false,
+          run       : null,
+          sort      : null,
+          settings  : settings
+        };
+        // ****************************************
+        // *
+        // * Call the query method to setup a new query
+        // **************************************** 
+        each( arguments, function ( f ) {
+
+          if ( isIndexable( f ) ){
+            context.index.push( f );
+          }
+          else {
+            context.q.push( returnFilter( f ) );
+          }
+          context.filterRaw.push( f );
+        });
+
+
+        return iAPI;
+      }
