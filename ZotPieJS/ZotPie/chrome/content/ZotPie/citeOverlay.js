@@ -1,26 +1,30 @@
 var CiteOverlay = new function ()
 {
-    var cslEditor, win, fields, insert, insertAfter, remove, types;
+    var cslEditor, win, fields, insert, insertAfter, remove, types, ClickableUI,layouts,selected,value;
 
 	this.onLoad = function() {
 
 	    cslEditor = document.getElementById("zotero-csl-editor");
+	    cslEditor.style.display = 'none';
+	    cslList = document.getElementById("zotero-csl-list");
+	    cslList.setAttribute("oncommand", "refreshBox(event);");
 	    win = document.getElementById("csl-edit");
 			
 	    if (win) {
             // Create groupbox to hold controls
 	        var grp = document.createElement("groupbox");
 	        grp.setAttribute("id", "zotpie-groupbox");
-            
             // Create caption label for groupbox
 	        var caption = document.createElement("caption");
 	        caption.setAttribute("label", "Controls");
-
 	        grp.appendChild(caption);
 	        win.appendChild(grp);
 
 	        // Fill the groupbox
-	        var hbox = document.createElement("hbox");
+	        var hbox = document.createElement("box");
+	        ClickableUI = document.createElement("arrowscrollbox");
+	        cslEditor.parentNode.insertBefore(ClickableUI, cslEditor);
+	       // ClickableUI.setAttribute("align", "center");
 	        grp.appendChild(hbox);
 	        newcite = document.createElement("button");
 	        newcite.setAttribute("id", "zotpie-new");
@@ -31,16 +35,21 @@ var CiteOverlay = new function ()
  		    types = document.createElement("menulist");
 	        types.setAttribute("id", "zotpie-types");
 	        types.setAttribute("oncommand", "addItem();");
-	        layouts = document.createElement("menulist");
-	        layouts.setAttribute("id", "zotpie-layout");
-
+	
+	        
 	        format = document.createElement("menulist");
 	        format.setAttribute("id", "zotpie-format")
 	        format.setAttribute("oncommand", "changeFormat();");
 
+	        checkbox = document.createElement("checkbox");
+	        checkbox.setAttribute("label", "Preview TextBox");
+	        checkbox.setAttribute("checked", false);
+	        checkbox.setAttribute("oncommand", "onToggle();");
 	
 	        //var menupopup = document.createElement("menupopup");
 	        //menupopup.setAttribute("id", "zotpie-fieldpu");
+           
+	        hbox.appendChild(checkbox);
 	        hbox.appendChild(newcite);
 	        hbox.appendChild(format);
 		    hbox.appendChild(types);
@@ -53,22 +62,14 @@ var CiteOverlay = new function ()
 	        insert.setAttribute("oncommand", "insertField();");
 	        hbox.appendChild(insert);
 
-	        insertAfter = document.createElement("button");
-	        insertAfter.setAttribute("id", "zotpie-insertafter");
-	        insertAfter.setAttribute("label", "Insert After");
-	        insertAfter.setAttribute("oncommand", "insertFieldAfter();");
-	        hbox.appendChild(insertAfter);
 
 	        remove = document.createElement("button");
 	        remove.setAttribute("id", "zotpie-remove");
 	        remove.setAttribute("label", "Remove");
 	        remove.setAttribute("oncommand", "removeField();");
-	        hbox.appendChild(layouts);
 	        hbox.appendChild(remove);
 
 	        // Set default value of fields
-	        layouts.appendItem("--Select Layouts--", "selectlayout");
-	        layouts.selectedIndex = 0;
 	        format.appendItem("--Select Format--", "selectformat");
 	        format.appendItem("Citation", "citation");
 	        format.appendItem("Bibliography", "bibliography");
@@ -84,16 +85,23 @@ var CiteOverlay = new function ()
 		}
 	}
 	
-	insertAtPoint = function (text) {
-	    var pos = cslEditor.selectionStart;
-	    cslEditor.value = cslEditor.value.substr(0, pos) + '\n'
-                            + text + cslEditor.value.substr(cslEditor.selectionEnd, cslEditor.textLength);
-
+	insertAtPoint = function (text, pos) {
+	    cslEditor.value = cslEditor.value.substr(0, pos) 
+                            + text  + '\n' + cslEditor.value.substr(pos, cslEditor.textLength);
 	    cslEditor.selectionStart = pos + text.length + 1;
 	    cslEditor.selectionEnd = pos + text.length + 1;
 	    cslEditor.focus();
 	}
+	refreshBox = function (value) {
+	    Zotero_CSL_Editor.onStyleSelected(value.target.value);
+	    fields.removeAllItems();
+	    fields.appendItem("--Select Field--", "selectfield");
+	    fields.selectedIndex = 0;
+	    ClickableUI.innerHTML = "";
+	    types.selectedIndex = 0;
+	    format.selectedIndex = 0;
 
+	}
 	addItem = function () {
 	    fields.removeAllItems();
 	    fields.appendItem("--Select Field--", "selectfield");
@@ -108,9 +116,22 @@ var CiteOverlay = new function ()
 
 	}
 
+	onToggle = function () {
+	    if (cslEditor.style.display== 'none') {
+	        cslEditor.style.display = 'inherit';
+	        ClickableUI.style.display = 'none';
+
+	    }
+	    else {
+	        cslEditor.style.display = 'none';
+	        ClickableUI.style.display = 'inherit';
+	    }
+	}
+
 	createNew = function () {
 	    var res = confirm("Pressing ok will remove current style");
 	    if (res) {
+	        ClickableUI.innerHTML = "";
 	        var title = prompt('Please enter the title of your style', 'title');
 	        var userid = prompt('Please enter the id of your style', 'http://www.zotero.org/styles/');
 	        var now = new Date();
@@ -141,11 +162,10 @@ var CiteOverlay = new function ()
 	}
 
 	changeFormat = function () {
-	    layouts.removeAllItems();
-	    layouts.appendItem("--Select Layouts--", "selectlayout");
-	    layouts.selectedIndex = 0;
+	    //layouts.removeAllItems();
 	    var formatname = (format.selectedItem).getAttribute("value");
 	    if (formatname == "citation") {
+	        ClickableUI.innerHTML = "";
 	        var start = cslEditor.value.indexOf("<citation");
 	        var end = cslEditor.value.indexOf("</citation");
 	        var res = (cslEditor.value.substring(start, end));
@@ -154,12 +174,18 @@ var CiteOverlay = new function ()
 	            if (res[i].indexOf("<text") > -1) {
 	                start = res[i].indexOf('="') + 2;
 	                end = (res[i].substring(start, res[i].length)).indexOf('"') + start;
-	                layouts.appendItem(res[i].substring(start, end), res[i]);
+	                var button = document.createElement("button");
+	                button.setAttribute("id", res[i].trim());
+	                button.setAttribute("label", res[i].substring(start, end));
+	                button.setAttribute("oncommand", "selectField(event)");
+	                ClickableUI.appendChild(button);
+
 	            }
 	        }
 	        return;
 	    }
 	    else if (formatname == "bibliography") {
+            ClickableUI.innerHTML = "";
 	        var start = cslEditor.value.indexOf("<bibliography");
 	        var end = cslEditor.value.indexOf("</bibliography");
 	        var res = (cslEditor.value.substring(start, end));
@@ -168,7 +194,11 @@ var CiteOverlay = new function ()
 	            if (res[i].indexOf("<text") > -1) {
 	                start = res[i].indexOf('="') + 2;
 	                end = (res[i].substring(start, res[i].length)).indexOf('"') + start;
-	                layouts.appendItem(res[i].substring(start,end), res[i]);
+	                var button = document.createElement("button");
+	                button.setAttribute("id", res[i].trim());
+	                button.setAttribute("label", res[i].substring(start, end));
+	                button.setAttribute("oncommand", "selectField(event)");
+	                ClickableUI.appendChild(button);
 	            }
 	        }
 	    }
@@ -177,17 +207,46 @@ var CiteOverlay = new function ()
 	    }
 	}
 
-
+	selectField = function (value) {
+	    selected = value.target.id;
+	}
 
 	insertField = function () {
 
 	    var fieldname = (fields.selectedItem).getAttribute("value");
 	    if (fieldname != "selectfield") {
-            
 	    	var input = '<text variable="' + fieldname;
 	    	input = input + '"/>';
-	    	insertAtPoint(input);
-	    	Zotero_CSL_Editor.onStyleModified();
+
+	    	var button = document.createElement("button");
+	    	button.setAttribute("id", input);
+	    	button.setAttribute("label", fieldname);
+	    	button.setAttribute("oncommand", "selectField(event)");
+
+
+	    	if (selected) {
+	    	    pos = cslEditor.value.indexOf(selected);
+	    	    insertAtPoint(input, pos);
+	    	    ClickableUI.insertBefore(button, document.getElementById(selected).nextSibling);
+	    	    Zotero_CSL_Editor.onStyleModified();
+	    	}
+	    	else {
+	    	    var formatname = (format.selectedItem).getAttribute("value");
+	    	    temp = "<" + formatname;
+	    	    temp2 = "</" + formatname;
+	    	    var start = cslEditor.value.indexOf(temp);
+	    	    var end = cslEditor.value.indexOf(temp2);
+	    	    res = (cslEditor.value.substring(start, end));
+	    	    pos = start;
+	    	    start = res.indexOf("<layout");
+	    	    end = res.indexOf("</layout");
+	    	    res = (res.substring(start, end));
+	    	    pos = pos + start + res.indexOf(">") + 1;
+	    	    insertAtPoint(input, pos);
+	    	    ClickableUI.insertBefore(button, ClickableUI.firstChild);
+	    	    Zotero_CSL_Editor.onStyleModified();
+	    	}
+	    	
 	    }
 	    else {
 	        Zotero_CSL_Editor.onStyleModified();
@@ -198,25 +257,24 @@ var CiteOverlay = new function ()
         // Do something depending on field
 	}
 
-	insertFieldAfter = function () {
-	    // Get selected field name
-
-	    // Do something depending on field
-	}
        
 	removeField = function () {
-	    if (layouts.itemCount == 1){
-	        return;    
+	    var element = document.getElementById(selected);
+	    if (element) {
+	        var formatname = (format.selectedItem).getAttribute("value");
+	        cslEditor.value.replace(selected, '');
+	        var start = cslEditor.value.indexOf("<" + formatname);
+	        var end = cslEditor.value.indexOf("</" + formatname);
+	        res = cslEditor.value.substring(start, end);
+	        res = res.replace(selected, "");
+	        cslEditor.value = cslEditor.value.substring(0, start) + res + cslEditor.value.substring(end, cslEditor.length);
+	        element.parentNode.removeChild(element);
+	        selected = undefined;
+	        Zotero_CSL_Editor.onStyleModified();
 	    }
-	    var layoutname = (layouts.selectedItem).getAttribute("value");
-	    if (layoutname == "selectlayout") {
-	        return;
-	    }
-	    cslEditor.value = (cslEditor.value).replace(layoutname, "");
-	    layouts.selectedIndex = layouts.selectedIndex - 1;
-	    layouts.removeItemAt(layouts.selectedIndex + 1);
-	    Zotero_CSL_Editor.onStyleModified();
+
 	}
+
 
 	this.onUnload = function() {
 
