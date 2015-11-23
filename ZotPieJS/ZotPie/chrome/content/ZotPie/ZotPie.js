@@ -11,6 +11,8 @@ Zotero.ZotPie = {
         this.coupleDoc = "";
         this.DBHelper = Zotero.CustomDB;
         this.DBHelper.init();
+
+        this.clickedItemType;
 	},
 
 
@@ -30,7 +32,8 @@ Zotero.ZotPie = {
             "Create Synced Collection", "chrome,centerscreen", null);
 	},
 	
-	startCustomFieldsEditor : function () {
+	startCustomFieldsEditor: function (itemType) {
+	    this.clickedItemType = itemType;
 		this.customFieldsDoc = this.ww.openWindow(null,"chrome://zotpie/content/customFieldsEditorWindow.xul",
             "Custom Fields Editor", "chrome,centerscreen", null);
 	},

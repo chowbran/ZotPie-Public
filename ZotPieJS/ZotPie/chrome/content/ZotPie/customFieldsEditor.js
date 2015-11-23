@@ -6,6 +6,7 @@ var typeMap = {};
 
 var localTypes = [];
 
+// Setup local typemap
 for (i = 0; i < types.length; i++) {
     var s = Zotero.ItemTypes.getLocalizedString(types[i].id);
     typeMap[s] = types[i].name;
@@ -35,6 +36,8 @@ Zotero.CustomFieldsEditor = {
 		this.itemFields = this.doc.getElementById("itemfields");
 		this.tree = this.doc.getElementById("fieldtree");
 
+		//this.clickedItemType = undefined;
+
         // Find native Zotero item types and populate the dropdown
 		this._setupItemTypes();
 	},
@@ -49,6 +52,13 @@ Zotero.CustomFieldsEditor = {
 		}
 
 		this.itemTypes.selectedIndex = 0;
+
+		//console.log(this.clickedItemType);
+		if (Zotero.ZotPie.clickedItemType != undefined) {
+            var localizedClicked = Zotero.ItemTypes.getLocalizedString(Zotero.ZotPie.clickedItemType);
+            this.itemTypes.selectedIndex = localTypes.indexOf(localizedClicked) + 1;
+            Zotero.CustomFieldsEditor.getCustomFields();
+		}
 	},
     
 	selectedField: function () {
