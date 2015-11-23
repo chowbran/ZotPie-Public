@@ -127,7 +127,7 @@ var ZotPieOverlay = new function ()
 	},
 	
     addToBatchEditQueue = function () {
-        var selectedItems = ZoteroPane.getSelectedItems();
+        var selectedItems = Zotero.getActiveZoteroPane().getSelectedItems();
         var item = selectedItems[0];
         var counter = 0;
 

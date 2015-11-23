@@ -37,13 +37,12 @@ var ZotPieCustomFields = new function () {
         // This will update the custom data depending on the item clicked
         var itemsTree = document.getElementById('zotero-items-tree');
         itemsTree.addEventListener("click", updateCustomData, true);
-      
     },
 
     updateCustomData = function (event) {
         // Get the current selected items
-        var items = ZoteroPane.getSelectedItems();
-
+        //var items = ZoteroPane.getSelectedItems();
+        var items = Zotero.getActiveZoteroPane().getSelectedItems();
         // Only show info if a single element is selected
         if (items.length < 2) {
             var cdTabPanel = document.getElementById("zotpie-customdatapanel");
