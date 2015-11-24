@@ -1,6 +1,6 @@
 var CiteOverlay = new function ()
 {
-    var cslEditor, win, fields, insert, insertAfter, remove, types, ClickableUI,layouts,selected,value;
+    var cslEditor, win, fields, insert, insertAfter, remove, types, ClickableUI, layouts, selected, value, itemTypes;
 
 	this.onLoad = function() {
 
@@ -78,7 +78,7 @@ var CiteOverlay = new function ()
 	        fields.selectedIndex = 0;
 	        types.appendItem("--Select Type--", "selecttype");
 	        types.selectedIndex = 0;
-		    var itemTypes = Zotero.ItemTypes.getTypes();
+		    itemTypes = Zotero.ItemTypes.getTypes();
 		for(var i = 0; i < itemTypes.length; i++){
 		    types.appendItem(Zotero.ItemTypes.getLocalizedString(itemTypes[i]['name']), itemTypes[i]['id']);
 			}
@@ -112,6 +112,15 @@ var CiteOverlay = new function ()
 	    var field = Zotero.ItemFields.getItemTypeFields(typename);
 	    for (var i = 0; i < field.length; i++) {
 	        fields.appendItem(Zotero.ItemFields.getLocalizedString(typename, Zotero.ItemFields.getName(field[i])), Zotero.ItemFields.getName(field[i]));
+	    }
+	    for (var i = 0; i < itemTypes.length; i++) {
+	        if (itemTypes[i]['id'] == typename) {
+                typename = itemTypes[i]['name']
+	        }
+	    }
+	    field = Zotero.ZotPie.DBHelper.getFieldName(typename);
+	    for (var i = 0; i < field.length; i++) {
+	        fields.appendItem(field[i], field[i]);
 	    }
 	    
 
@@ -215,10 +224,9 @@ var CiteOverlay = new function ()
 	insertField = function () {
 
 	    var fieldname = (fields.selectedItem).getAttribute("value");
-	    alert(fieldname);
 	    switch (fieldname) {
 	        case "websiteTitle":
-	            fieldname = 'container-title';
+	            fi eldname = 'container-title';
 	            break;
 	        case "publicationTitle":
 	            fieldname = 'container-title';
