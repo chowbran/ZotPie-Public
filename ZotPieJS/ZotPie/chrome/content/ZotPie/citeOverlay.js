@@ -1,6 +1,5 @@
 var CiteOverlay = new function ()
 {
-    var cslEditor, win, fields, insert, insertAfter, remove, types, ClickableUI, layouts, selected, value, itemTypes;
 
   
 	this.onLoad = function() {
