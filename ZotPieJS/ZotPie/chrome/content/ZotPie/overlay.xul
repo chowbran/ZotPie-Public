@@ -11,18 +11,6 @@
 			src="chrome://zotpie/locale/zotpie.properties"/>
 	</stringbundleset>
 	
-	<menupopup id="zotero-tb-actions-popup">
-		<!-- Make sure the menu separator for utilities is visible -->
-		<menuseparator id="zotero-tb-actions-plugins-separator" hidden="false"/>
-		<menuitem insertbefore="zotero-tb-actions-separator" label="&batchEditor.name;"
-			oncommand="Zotero.ZotPie.startBatchEditor()"/>
-			<!-- oncommand="window.openDialog('chrome://zotpie/content/batchEditorWindow.xul', 'Batch Editor', 'chrome,centerscreen')"/> -->
-		<menuitem insertbefore="zotero-tb-actions-separator" label="&citationEditor.name;"
-			oncommand="window.openDialog('chrome://zotpie/content/citationEditorWindow.xul', 'Citation Editor', 'chrome,centerscreen')"/>
-		<menuitem insertbefore="zotero-tb-actions-separator" label="&coupleDocuments.name;"
-			oncommand="Zotero.ZotPie.startCouple()"/>
-	</menupopup>
-	
 	<!-- Include the main extension logic -->
   
 	<script src="chrome://zotero/content/include.js"/>
