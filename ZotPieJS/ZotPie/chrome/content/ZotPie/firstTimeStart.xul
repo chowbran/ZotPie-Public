@@ -11,7 +11,10 @@
 <menuseparator/>
     <hbox>
         <spacer flex="1"/>
-        <button id="zotpie-ft-doc" label="View Docs"/>
+        <button id="zotpie-ft-doc" label="View Docs" oncommand="ZoteroPane.loadURI('https://zotpie.readthedocs.org', {'metaKey':true, 'shiftKey':true})"/>
         <button id="zotpie-ft-ok" label="OK" oncommand="window.close();"/>
     </hbox>
+
+  <script src="chrome://zotero/content/include.js"/>
+	<script src="chrome://zotero/content/zoteroPane.js" type="application/javascript;version=1.8"/>
 </window>
