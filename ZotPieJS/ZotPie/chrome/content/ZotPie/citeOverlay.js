@@ -100,6 +100,7 @@ var CiteOverlay = new function ()
 	    ClickableUI.innerHTML = "";
 	    types.selectedIndex = 0;
 	    format.selectedIndex = 0;
+	    selected = undefined;
 
 	}
 	addItem = function () {
@@ -107,8 +108,8 @@ var CiteOverlay = new function ()
 	    fields.appendItem("--Select Field--", "selectfield");
 	    fields.selectedIndex = 0;
 	    var typename = (types.selectedItem).getAttribute("value");
+	    fields.appendItem("Author", "author");
 	    var field = Zotero.ItemFields.getItemTypeFields(typename);
-        fields.appendItem("Author","author")
 	    for (var i = 0; i < field.length; i++) {
 	        fields.appendItem(Zotero.ItemFields.getLocalizedString(typename, Zotero.ItemFields.getName(field[i])), Zotero.ItemFields.getName(field[i]));
 	    }
@@ -214,10 +215,46 @@ var CiteOverlay = new function ()
 	insertField = function () {
 
 	    var fieldname = (fields.selectedItem).getAttribute("value");
+	    alert(fieldname);
+	    switch (fieldname) {
+	        case "websiteTitle":
+	            fieldname = 'container-title';
+	            break;
+	        case "publicationTitle":
+	            fieldname = 'container-title';
+	            break;
+	        case "url":
+	            fieldname = 'URL';
+	            break;
+	        case 'place':
+	            fieldname = 'publisher-place';
+	            break;
+	        case 'numPages':
+	            fieldname = 'number-of-pages';
+	            break;
+	        case 'series':
+	            fieldname = 'collection-title';
+	            break;
+	        case 'seriesNumber':
+	            fieldname = 'collection-number';
+	            break;
+	        case 'university':
+	            fieldname = 'publisher';
+	            break;
+	        case 'conferenceName':
+	            fieldname = 'event';
+	            break;
+	        case 'numberOfVolumes':
+	            fieldname = 'number-of-volumes';
+	            break;
+
+	    }
 	    if (fieldname != "selectfield") {
 	    	var input = '<text variable="' + fieldname;
 	    	input = input + '"/>';
-
+	    	if (fieldname == 'author' | fieldname == 'editor' | fieldname == 'translator') {
+	    	    input = '<names variable="' + fieldname + '"/>';
+	    	}
 	    	var button = document.createElement("button");
 	    	button.setAttribute("id", input);
 	    	button.setAttribute("label", fieldname);
