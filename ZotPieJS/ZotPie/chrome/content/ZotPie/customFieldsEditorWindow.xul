@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<window
+    id="customFieldsEditor"
+    title="Custom Field Editor"
+    persist="screenX screenY width height"
+    orient="horizontal"
+	height="300px"
+	width="500px"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	onload="Zotero.CustomFieldsEditor.onLoad()">
+	
+<script src="chrome://zotero/content/include.js"/>
+<script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
+
+<popupset>
+  <popup id="editpopup">
+    <menuitem label="Cut" accesskey="t"/>
+    <menuitem label="Copy" accesskey="c"/>
+    <menuitem label="Paste" accesskey="p" disabled="true"/>
+  </popup>
+</popupset>
+
+<vbox flex="1">
+<hbox>
+<label value="Item Type:"/>
+<menulist flex="1" id="itemtypes" oncommand="Zotero.CustomFieldsEditor.getCustomFields()">
+    <menupopup>
+       
+    </menupopup>
+</menulist>
+</hbox>
+
+<spacer style="height: 10px"/>
+<tree id="fieldtree" flex="1" seltype="single" onselect="Zotero.CustomFieldsEditor.selectedField()">
+  <treecols>
+    <treecol id="fieldname" label="Field Name" flex="2"/>
+    <treecol id="fieldtype" label="Type" flex="1"/>
+  </treecols>
+
+  <treechildren id="itemfields">
+  
+  </treechildren>
+</tree>
+ <splitter resizeafter="grow"/>
+
+  <spacer style="height: 10px"/>
+
+  <hbox>
+    <button id="addfield" oncommand="Zotero.CustomFieldsEditor.openAddWindow()" label="New" default="true"/>
+    <button id="removefield" label="Remove" oncommand="Zotero.CustomFieldsEditor.removeSelectedField()"/>
+	<spacer flex="1"/>
+	<button id="cancelbutton" label="Cancel" oncommand="window.close()"/>
+  </hbox>
+  <spacer style="height: 5px"/>
+</vbox>
+
+</window>
