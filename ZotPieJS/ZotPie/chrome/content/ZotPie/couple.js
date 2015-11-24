@@ -299,11 +299,43 @@ Zotero.Couple = {
             var fields = Zotero.ItemFields.getItemTypeFields(copy['_itemTypeID']);
 
             //go through every single field and update accordingly
-            for (j = 0; j < fields.length; j ++){
+            for (var j = 0; j < fields.length; j ++){
                 var fieldName = Zotero.ItemFields.getName(fields[j]);
                 copy.setField(fieldName, original.getField(fieldName));
             }
 
+            //check for the creators if there is any added. If not, simply update all of them
+            var originalCreators = original.getCreators();
+            var copyCreators = copy.getCreators();
+
+
+
+            for (var t = 0; t < originalCreators.length; t ++){
+                if (t < copyCreators.length){
+                    var fields = {
+                        firstName: originalCreators[t].ref['_firstName'],
+                        lastName: originalCreators[t].ref['_lastName'],
+                        fieldMode: originalCreators[t].ref['_fieldMode'],
+                        birthYear: originalCreators[t].ref['_birthYear']
+                    };
+                    copyCreators[t].ref.setFields(fields);
+                    copyCreators[t].ref.save();
+                }
+                if (t > copyCreators.length || t === copyCreators.length){
+                    var fields = {
+                        firstName: originalCreators[t].ref['_firstName'],
+                        lastName: originalCreators[t].ref['_lastName'],
+                        fieldMode: originalCreators[t].ref['_fieldMode'],
+                        birthYear: originalCreators[t].ref['_birthYear']
+                    };
+                    var newCreator = new Zotero.Creator;
+                    newCreator.setFields(fields);
+                    newCreator['_libraryID'] = copy['_libraryID'];
+                    newCreator.save();
+
+                    copy.setCreator(copyCreators.length, newCreator);
+                }
+            }
             copy.save();
         }
     },
