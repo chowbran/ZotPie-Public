@@ -1,5 +1,4 @@
 Zotero.batchedItems = [];
-Zotero.itemFilterSignal = false;
 
 var ZotPieOverlay = new function () {
     var tab, tabpanels;
@@ -156,7 +155,6 @@ var ZotPieOverlay = new function () {
         }
 
         if (button == 0) {
-        	Zotero.itemFilterSignal = true;
             Zotero.ZotPie.startBatchEditor(Zotero.batchedItems);
         }
 
