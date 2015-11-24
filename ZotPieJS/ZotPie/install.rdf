@@ -5,9 +5,9 @@
 	<Description about="urn:mozilla:install-manifest">
 		<em:id>zotpie@zotero.org</em:id>
 		<em:name>ZotPie Plugin for Zotero</em:name>
-		<em:version>1.0.0.SVN</em:version>
-		<em:description>ZotPie plugin for Zotero</em:description>
-		<em:creator>Center for History and New Media<br/>George Mason University</em:creator>
+		<em:version>1.0.0</em:version>
+		<em:description>This is an add-on for Zotero developed for the course CSCC01 at UTSC (Fall 2015)</em:description>
+		<em:creator>Precision Development</em:creator>
 		<em:updateURL>https://www.zotero.org/download/plugins.rdf</em:updateURL>
 		<em:type>2</em:type> <!-- type=extension -->
 		

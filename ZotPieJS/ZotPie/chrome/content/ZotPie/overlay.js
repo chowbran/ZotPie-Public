@@ -22,30 +22,6 @@ var ZotPieOverlay = new function ()
 	        }
 	    }
         */
-		tab = document.getElementById("zotero-view-tabbox");
-			
-		if (tab) {
-		    console.log(tab.getAttribute("id"));
-
-		    var cdTab = document.createElement("tab");
-		    cdTab.setAttribute("id", "zotpie-customdatatab");
-		    cdTab.setAttribute("label", "Custom Data");
-		    cdTab.setAttribute("value", "customdata");
-		    tab.firstChild.appendChild(cdTab);
-		    //console.log(zoteroTab.firstChild.);
-			//zoteroTab.firstChild.setAttribute("id", "zotpie-tabs");
-		}
-
-		tabpanels = document.getElementById("zotero-view-item");
-
-		if (tabpanels) {
-		    var cdTabPanel = document.createElement("tabpanel");
-		    cdTabPanel.setAttribute("id", "zotpie-customdatapanel");
-		    var zoterobox = document.createElement("zoteroitembox");
-		    cdTabPanel.appendChild(zoterobox);
-
-		    tabpanels.appendChild(cdTabPanel);
-		}
 
 	    // Add custom elements to the Zotero toolbar
 
@@ -79,6 +55,14 @@ var ZotPieOverlay = new function ()
 		    documentLinker.setAttribute("image", "chrome://ZotPie/skin/toolbar-documentlinker.png");
 		    documentLinker.setAttribute("oncommand", "window.openDialog('chrome://zotpie/content/coupleDocumentsWindow.xul', 'Link Documents', 'chrome,centerscreen')");
 		    batchEdit.parentNode.insertBefore(documentLinker, batchEdit);
+
+		    var customFieldsEditor = document.createElement("toolbarbutton");
+		    customFieldsEditor.setAttribute("id", "zotpie-customfields");
+		    customFieldsEditor.setAttribute("class", "zotero-tb-button");
+		    customFieldsEditor.setAttribute("tooltiptext", "Custom Field Editor");
+		    customFieldsEditor.setAttribute("image", "chrome://ZotPie/skin/toolbar-customfields.png");
+		    customFieldsEditor.setAttribute("oncommand", "Zotero.ZotPie.startCustomFieldsEditor()");
+		    documentLinker.parentNode.insertBefore(customFieldsEditor, documentLinker);
 		}
 
 		var addGroup = document.getElementById("zotero-tb-group-add");
@@ -131,12 +115,19 @@ var ZotPieOverlay = new function ()
 		    itemCols.appendChild(treeCol);
 		}
         */
-        
+		Zotero.Prefs.set("zotpie-first", "0");
+		var firstTime = Zotero.Prefs.get("zotpie-first");
+		console.log(firstTime);
+		if (firstTime == "0") {
+		    //Zotero.Prefs.set("zotpie-first", "1");
+		    //Zotero.ZotPie.startBatchEditor();
+		    window.openDialog('chrome://zotpie/content/firstTimeStart.xul', 'Welcome', 'chrome,centerscreen');
+		}
         
 	},
 	
     addToBatchEditQueue = function () {
-        var selectedItems = ZoteroPane.getSelectedItems();
+        var selectedItems = Zotero.getActiveZoteroPane().getSelectedItems();
         var item = selectedItems[0];
         var counter = 0;
 
