@@ -38,16 +38,24 @@
 <hbox flex="1" style="margin: 10px">
 <vbox flex="1">
 <label id="lbl_original" class="add_action_excluded" value="Original Tags:"/>
-<listbox id="list_tags" class="add_action_excluded" flex="1" seltype="multiple" onselect="Zotero.BatchEditor.onSelect(event.target)">
+<listbox id="list_tags" class="add_action_excluded" flex="1" seltype="single" onselect="Zotero.BatchEditor.onSelect(event.target)">
  
 </listbox>
+<hbox flex="1">
+<spacer/>
+<!-- <label id="lbl_tags_count" value="0 tags"/> -->
+</hbox>
 </vbox>
 
 <vbox flex="1">
 <label id="lbl_changed" value="Tags to be Changed:"/>
-<listbox id="list_change" flex="1" seltype="multiple" onselect="Zotero.BatchEditor.onSelect(event.target)">
+<listbox id="list_change" flex="1" seltype="single" onselect="Zotero.BatchEditor.onSelect(event.target)">
  
 </listbox>
+<hbox flex="1">
+<spacer/>
+<label id="lbl_change_count" value="0 changes"/>
+</hbox>
 </vbox>
 </hbox>
 
@@ -75,17 +83,18 @@
         </vbox>
         <vbox>
             <label value="Scope:"/>
-            <menulist id="combo_scope" class="item_filter_excluded" width="150px" disabled="false"
+            <menulist id="combo_scope" width="150px" disabled="false"
                     oncommand="Zotero.BatchEditor.onScopeChange()">
                 <menupopup>
-                    <menuitem label="All"/>
-                    <menuitem label="Collection"/>
+                    <menuitem label="All" value="all"/>
+                    <menuitem label="Collection" value="collection"/>
+                    <menuitem label="Items" value="items" id="itm_Items"/>
                 </menupopup>
             </menulist>
         </vbox>
         <vbox>
             <label value="Collection:"/>
-            <menulist id="combo_collection" class="item_filter_excluded" width="150px" disabled="false" oncommand="Zotero.BatchEditor.onCollectionChange()">
+            <menulist id="combo_collection" class="item_filter_excluded" width="150px" disabled="true" oncommand="Zotero.BatchEditor.onCollectionChange()">
                 <menupopup>
                      
                 </menupopup>
@@ -94,7 +103,7 @@
     </hbox>
 </groupbox>
 <hbox style="margin-bottom:10px;margin-left:10px;margin-right:10px">
-<progressmeter flex="1" mode="{determined | undetermined}" value="{determined value [0 - 100]}"/>
+<!-- <progressmeter flex="1" mode="{determined | undetermined}" value="{determined value [0 - 100]}"/> -->
 <button id="btn_apply" label="Apply"
     oncommand="Zotero.BatchEditor.onApply()"/>
 </hbox>
