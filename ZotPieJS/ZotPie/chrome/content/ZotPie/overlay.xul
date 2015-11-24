@@ -10,25 +10,26 @@
 		<stringbundle id="zotpie-zotero-strings"
 			src="chrome://zotpie/locale/zotpie.properties"/>
 	</stringbundleset>
-	
-	<menupopup id="zotero-tb-actions-popup">
-		<!-- Make sure the menu separator for utilities is visible -->
-		<menuseparator id="zotero-tb-actions-plugins-separator" hidden="false"/>
-		<menuitem insertbefore="zotero-tb-actions-separator" label="&batchEditor.name;"
-			oncommand="Zotero.ZotPie.startBatchEditor()"/>
-			<!-- oncommand="window.openDialog('chrome://zotpie/content/batchEditorWindow.xul', 'Batch Editor', 'chrome,centerscreen')"/> -->
-		<menuitem insertbefore="zotero-tb-actions-separator" label="&citationEditor.name;"
-			oncommand="window.openDialog('chrome://zotpie/content/citationEditorWindow.xul', 'Citation Editor', 'chrome,centerscreen')"/>
-		<menuitem insertbefore="zotero-tb-actions-separator" label="&coupleDocuments.name;"
-			oncommand="Zotero.ZotPie.startCouple()"/>
-	</menupopup>
-	
+
+  <menupopup id="zotero-tb-actions-popup">
+    <!-- Make sure the menu separator for utilities is visible -->
+    <menuseparator/>
+    <menuitem label="ZotPie Documentation" oncommand="ZoteroPane.loadURI('https://zotpie.readthedocs.org', {'metaKey':true, 'shiftKey':true})"/>
+  </menupopup>
+
+  <menupopup id="menu_HelpPopup">
+    <!-- Make sure the menu separator for utilities is visible -->
+    <menuseparator/>
+    <menuitem label="ZotPie Documentation" oncommand="ZoteroPane.loadURI('https://zotpie.readthedocs.org', {'metaKey':true, 'shiftKey':true})"/>
+  </menupopup>
+  
 	<!-- Include the main extension logic -->
   
 	<script src="chrome://zotero/content/include.js"/>
 	<script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
 	<script src="chrome://zotpie/content/overlay.js" type="application/javascript;version=1.8"/>
 	<script src="chrome://zotpie/content/customFields.js" type="application/javascript;version=1.8"/>
+  <script src="chrome://zotero/content/zoteroPane.js" type="application/javascript;version=1.8"/>
 
   
 </overlay>
