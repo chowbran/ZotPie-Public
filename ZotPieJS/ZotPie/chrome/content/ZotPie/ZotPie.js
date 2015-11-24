@@ -16,10 +16,9 @@ Zotero.ZotPie = {
 	},
 
 
-	startBatchEditor: function (batchedItemIds) {
-		console.log(batchedItemIds);
+	startBatchEditor: function () {
 		this.batchEditorDoc = this.ww.openWindow(null, "chrome://zotpie/content/batchEditorWindow.xul",
-		                        "Batch Editor", "chrome,centerscreen", batchedItemIds);
+		                        "Batch Editor", "chrome,centerscreen", null);
 		// window.openDialog('chrome://zotpie/content/batchEditorWindow.xul', 'Batch Editor', 'chrome,centerscreen');
 	},
 
