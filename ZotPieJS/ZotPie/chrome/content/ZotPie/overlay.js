@@ -155,7 +155,7 @@ var ZotPieOverlay = new function () {
         }
 
         if (button == 0) {
-            Zotero.ZotPie.startBatchEditor(Zotero.batchedItems);
+            Zotero.ZotPie.startBatchEditor();
         }
 
         //toastr.success("test");
