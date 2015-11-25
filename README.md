@@ -26,6 +26,7 @@ The build files (with README instructions) are located [here.](./ZotPie UI/ZotPi
 All the documentation is contained in the Deliverable 5 folder [here](./Deliverable 5).
 The build files (with README instructions) are located [here.](./ZotPieJS)
 The install instructions are located [here.](http://zotpie.readthedocs.org/en/latest/)
+The lasted build is located [here.](./LatestBuild)
 
 ## Task Board (Sprint #3)
 
