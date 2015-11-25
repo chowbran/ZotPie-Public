@@ -56,7 +56,6 @@ Zotero.BatchEditor = {
 	scopeToItems: function() {
 		// Change scope to be this list of items
 		this._SCOPEDITEMS = this._ALLITEMS.filter(function(item) {
-			// console.log(item.id);
 			return Zotero.batchedItems.indexOf(item.id) >= 0;
 		});
 
@@ -84,7 +83,6 @@ Zotero.BatchEditor = {
 	_setupItems: function(items) {
 		var listItems = this.doc.getElementById('list_items');
 
-		// listItems.clear();
 		for (var item of items) {
 			listItems.appendItem(item.getDisplayTitle(false), item.id);
 		}
@@ -120,8 +118,6 @@ Zotero.BatchEditor = {
 	 * Triggered each time the search box is edited.
 	 */
 	updateTags: function(likeText) {
-		var self = this;
-
 		// Clear listbox
 		var listbox = this.doc.getElementById('list_tags');
 		var count = listbox.itemCount;
@@ -138,22 +134,13 @@ Zotero.BatchEditor = {
 		if (likeText) {
 			var newTagSet = this.tagSet.filter(function (tag) {
 				return (Zotero.Utilities.levenshtein(likeText, tag.name) <= ed_threshold);
-
-				// return (Zotero.Zotpie_Helpers.editDistance(likeText, tag.name) <= ed_threshold);
 			});
 		} else {
 			var newTagSet = this.tagSet;
 		}
 
-		// Remove duplicates
-		// newTagSet = Zotero.Zotpie_Helpers.removeDuplicateItems(newTagSet);
-
-		console.log (this.changeSet);
-
 		// Remove tags already staged
 		newTagSet = Zotero.Utilities.arrayDiff(newTagSet, this.changeSet);
-
-		console.log(newTagSet);
 
 		newTagSet.sort(function(a, b) {
 			var titleA = a.name.toLowerCase();
@@ -205,11 +192,10 @@ Zotero.BatchEditor = {
 			if (eID == 'list_tags' 
 				|| !this.txtFind
 				|| (Zotero.Utilities.levenshtein(this.txtFind, label)
-				// || (Zotero.Zotpie_Helpers.editDistance(this.txtFind, label) 
 					<= ed_threshold)) {
 				// Where do we add it?
 				var index = this.locationOfInListBox(
-					label.toLowerCase(), lstTarget, this.stringComparator);
+					label.toLowerCase(), lstTarget, this.alphaComparator);
 				lstTarget.insertItemAt(index+1, label, value);
 			}
 
@@ -268,7 +254,7 @@ Zotero.BatchEditor = {
 
 		var indexSourceTags = tags.map(function(x) {
 			return changeTagNames.indexOf(x.name) >= 0 ? -1 : self.locationOfInListBox(
-					x.name.toLowerCase(), lstSourceTags, self.stringComparator);
+					x.name.toLowerCase(), lstSourceTags, self.alphaComparator);
 		}).filter(function (x) {
 			return x >= 0;
 		});
@@ -277,7 +263,7 @@ Zotero.BatchEditor = {
 
 		var indexChangeTags = tags.map(function(x) {
 			return changeTagNames.indexOf(x.name) >= 0 ? self.locationOfInListBox(
-					x.name.toLowerCase(), lstChangeTags, self.stringComparator) : -1;
+					x.name.toLowerCase(), lstChangeTags, self.alphaComparator) : -1;
 		}).filter(function (x) {
 			return x >= 0;
 		});
@@ -334,19 +320,11 @@ Zotero.BatchEditor = {
 	},
 
 	// sample for objects like {lastName: 'Miller', ...}
-	stringComparator: function (a, b) {
+	alphaComparator: function (a, b) {
 		if (a < b) return -1;
 		if (a > b) return 1;
 		return 0;
 	},
-
-	// sample for objects like {lastName: 'Miller', ...}
-	integerComparator: function (a, b) {
-		if (a < b) return -1;
-		if (a > b) return 1;
-		return 0;
-	},
-
 
 	onFindChange: function() {
 		this.txtFind = this.doc.getElementById('txt_find').value;
@@ -358,41 +336,9 @@ Zotero.BatchEditor = {
 	 * collection with collection id collectionID.
 	 */
 	resetTags: function(collectionID) {
-
-		// if (collectionID>0) {
-		// 	this.tagSet = this._SCOPEDITEMS.filter(function (item) {
-		// 		return item.inCollection(collectionID);
-		// 	}).map(function (item) {
-		// 		return item.getTags();
-		// 	});
-		// } else {
-		// 	var allTags = Zotero.Tags.getAll();
-		// 	this.tagSet = this._SCOPEDITEMS.map(function (item) {
-		// 		return item.getTags();
-		// 	});
-		// }
-
-		// var allTags = Zotero.Tags.getAll();
-		// var scopedItemIDS = this._SCOPEDITEMS.map(function (item) {
-		// 					return item.id;
-		// 				});
-		if (collectionID>0) {
-			// this.tagSet = this.allTags.map(function (tag) {
-			// 	var itemIDs = tag.getLinkedItems(true);
-
-			// })
-			this.tagSet = this._SCOPEDITEMS.map(function (item) {
-				return item.getTags();
-			});
-		} else {
-			// this.tagSet = this.allTags.map(function (tag) {
-			// 	var itemIDs = tag.getLinkedItems(true);
-
-			// })
-			this.tagSet = this._SCOPEDITEMS.map(function (item) {
-				return item.getTags();
-			});
-		}
+		this.tagSet = this._SCOPEDITEMS.map(function (item) {
+			return item.getTags();
+		});
 
 		// Flatten array
 		this.tagSet = [].concat.apply([],this.tagSet);
@@ -466,23 +412,16 @@ Zotero.BatchEditor = {
 			this.scopeToItems();
 		}
 
-
-
 		this.resetTags(this.currentCollID);
 	},
 
 
 	onCollectionChange: function() {
-		console.log("Change collection");
-
 		var selected = this.doc.getElementById('combo_collection').value;
 
 		if (selected >= 0) {
 	        var collection = Zotero.Collections.get(selected);
 	        var itemIds = collection.getChildItems(true, false);
-
-	        console.log (collection);
-	        console.log (itemIds);
 
 			this._SCOPEDITEMS = this._ALLITEMS.filter(function(x) {
 				return (itemIds.indexOf(x.id) >= 0);
@@ -520,7 +459,7 @@ Zotero.BatchEditor = {
 				console.log (label);
 				if (this.changeSet.indexOf(label) < 0) {
 					var index = this.locationOfInListBox(
-						label.toLowerCase(), lstbox, this.stringComparator);
+						label.toLowerCase(), lstbox, this.alphaComparator);
 
 					lstbox.insertItemAt(index+1, label, 'USER_ADDED');
 
@@ -541,7 +480,6 @@ Zotero.BatchEditor = {
 			var index = item.value;
 
 			lstbox.removeItemAt(lstbox.getIndexOfItem(item));
-
 
 			console.log(Zotero.batchedItems);
 			var i = Zotero.Zotpie_Helpers.locationOf(index, Zotero.batchedItems, this.integerComparator);
@@ -588,26 +526,11 @@ Zotero.BatchEditor = {
 
 		allItems = this._SCOPEDITEMS;
 
-		// // Get the scope of this modification
-		// if (this.currentCollID > 0) {
-		// 	var coll = Zotero.Collections.get(this.currentCollID);
-		// 	allItems = coll.getChildItems();
-		// } else {
-		// 	allItems = this._SCOPEDITEMS;//Zotero.Items.getAll();
-		// }
-
-		console.log(oldTags);
-
 		// Get ids of the tags to be modified
 		oldTagIDs = oldTags.map(function (tag) { // slow?
 			return tag.id;
-			// return Zotero.Tags.getID(tag, 0);
 		});
 
-		// Get names of the tags to be modified
-		// oldTagNames = oldTags.map(function (tag) { // slow?
-		// 	return tag.name;
-		// });
 
 		// Filters the list of all items to a sublist where each element
 		// contains one (or more) old tags
@@ -627,27 +550,9 @@ Zotero.BatchEditor = {
 				oldTagNames = temp;
 			}
 
-			// // Loop through all tags in the item
-			// for (var tag of allTags) { //Slow?
-			// 	// If the tag.name exists in our oldTagsNames array, record it
-			// 	if (!this.matchCase) {
-			// 		if (oldTagNames.indexOf(tag.name.toLowerCase()) >= 0) {
-			// 			ids.push(tag.id);
-			// 		}
-			// 	} else {
-			// 		if (oldTagNames.indexOf(tag.name) >= 0) {
-			// 			ids.push(tag.id);
-			// 		}
-			// 	}
-			// }
-
 			for (var id of oldTagIDs) {
 				item.removeTag(id);
 			}
-
-			// ids.forEach(function(id) {
-			// 	item.removeTag(id);
-			// });
 
 			if (newTag) {
 				item.addTag(newTag, 1);
