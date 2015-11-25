@@ -1,48 +1,91 @@
-
-// var Zotero = Components.classes["@zotero.org/Zotero;1"]
-// 				.getService(Components.interfaces.nsISupports)
-// 				.wrappedJSObject;
-
-
 // Initialize the utility
-window.addEventListener('load', function(e) { Zotero.BatchEditor.init(); }, false);
+var ed_threshold = 2;
+var changeSet = null;
 
 Zotero.BatchEditor = {
-	DB: null,
-	// natural: require('natural'),
-	
-	init: function () {
-		// this.batchEditorInit();
-
-		// Connect to (and create, if necessary) helloworld.sqlite in the Zotero directory
-		this.DB = new Zotero.DBConnection('zotero');
-
-		if (!this.DB.tableExists('changes')) {
-			this.DB.query("CREATE TABLE changes (num INT)");
-			this.DB.query("INSERT INTO changes VALUES (0)");
-		}
-
-		// Register the callback in Zotero as an item observer
-		var notifierID = Zotero.Notifier.registerObserver(this.notifierCallback, ['item']);
-		
-		window.addEventListener("DOMContentLoaded", function(e) {this.onLoad}, true);
-
-		// Unregister callback when the window closes (important to avoid a memory leak)
-		window.addEventListener('unload', function(e) {
-				Zotero.Notifier.unregisterObserver(notifierID);
-		}, false);
-
-	},
 
 	onLoad: function() {
-		console.log("Init batchTagEditor");
+		console.log('Init batchTagEditor');
+		this._ALLITEMS = Zotero.Items.getAll(); 
 		this.doc = Zotero.ZotPie.batchEditorDoc.document;
 		this.editAction = this.doc.getElementById('combo_action').value;
 		this.matchCase = false;
 		this.currentCollID = -1;
 
+		this.changeSet = [];
+
+		var itemFilterElements = this.doc.getElementsByClassName('item_filter_only');
+		var nonItemFilterElements = this.doc.getElementsByClassName('item_filter_excluded');
+
+		for (var el of itemFilterElements) { 
+			el.setAttribute('hidden', !(Zotero.batchedItems.length > 0)); 
+		}
+		for (var el of nonItemFilterElements) { 
+			el.disabled = !(Zotero.batchedItems.length > 0); 
+		}
+
+		if (Zotero.batchedItems.length > 0) {
+			console.log('hello');
+			this.doc.getElementById('itm_Items').disabled = false;
+			this.doc.getElementById('combo_scope').value = "items";
+
+			// Change scope to be this list of items
+			this._SCOPEDITEMS = this._ALLITEMS.filter(function(item) {
+				// console.log(item.id);
+				return Zotero.batchedItems.indexOf(item.id) >= 0;
+			});
+
+			this._setupItems(this._SCOPEDITEMS);
+
+			if (changeSet) {
+				this.changeSet = changeSet;
+				changeSet = null;
+			}
+
+			// if global itemFilterSignal is true, set signal to false.
+			// We then use a local flag to handle logic in the class.
+			this.itemFilterFlag = true;
+		} else {
+			this._SCOPEDITEMS = this._ALLITEMS;
+		}
+
 		this._setupCollections();
 		this._setupTags();
+	},
+
+	scopeToItems: function() {
+		// Change scope to be this list of items
+		this._SCOPEDITEMS = this._ALLITEMS.filter(function(item) {
+			return Zotero.batchedItems.indexOf(item.id) >= 0;
+		});
+
+		// if global itemFilterSignal is true, set signal to false.
+		// We then use a local flag to handle logic in the class.
+		this.itemFilterFlag = true;
+	},
+
+	onBeforeUnLoad: function () {
+		/* Keep the changeSet persistent if the user chooses to add
+		 * with the window open
+		 */
+		if (this.changeSet) {
+			changeSet = this.changeSet;
+		}
+
+		/* If this isn't an item filter instance, we 
+		 * clear persistence changeSet
+		 */
+		if (changeSet && !this.itemFilterFlag) {
+			changeSet = null;
+		}
+	},
+
+	_setupItems: function(items) {
+		var listItems = this.doc.getElementById('list_items');
+
+		for (var item of items) {
+			listItems.appendItem(item.getDisplayTitle(false), item.id);
+		}
 	},
 
 	_setupCollections: function() {
@@ -58,48 +101,70 @@ Zotero.BatchEditor = {
 	},
 
 	_setupTags: function() {
-		this.ALLITEMS = Zotero.Items.getAll(); 
-		this.changeSet = [];
 		this.resetTags(this.currentCollID);
 
-		// this.tagSet = Zotero.Tags.getAll();
+		var changeList = this.doc.getElementById('list_change');
+		console.log(this.changeSet);
+		if (this.changeSet) {
+			for (var tag of this.changeSet) {
+				console.log(tag.name + tag.id);
+				changeList.appendItem(tag.name, tag.id);
+			}
+		}
+
 	},
 
 	/* Updates the listbox of tags that are in the unchanged list.
 	 * Triggered each time the search box is edited.
 	 */
 	updateTags: function(likeText) {
-		var self = this;
-
 		// Clear listbox
 		var listbox = this.doc.getElementById('list_tags');
 		var count = listbox.itemCount;
 		console.log(count);
 
+		if(!listbox) {
+			return;
+		}
+
 		while (count--) {
 			listbox.removeItemAt(count);
 		}
 
-		if (!likeText || likeText.length == 0) {
-			return;
+		if (likeText) {
+			var newTagSet = this.tagSet.filter(function (tag) {
+				return (Zotero.Utilities.levenshtein(likeText, tag.name) <= ed_threshold);
+			});
+		} else {
+			var newTagSet = this.tagSet;
 		}
 
-		var newTagSet = this.tagSet.filter(function (tag) {
-			return (self.editDistance(likeText, tag.name) <= 3);
+		// Remove tags already staged
+		newTagSet = Zotero.Utilities.arrayDiff(newTagSet, this.changeSet);
+
+		newTagSet.sort(function(a, b) {
+			var titleA = a.name.toLowerCase();
+			var titleB = b.name.toLowerCase();
+			if (titleA < titleB) //sort string ascending
+				return -1;
+			if (titleA > titleB)
+				return 1;
+			return 0; //default return value (no sorting)
 		});
-
-		newTagSet = this.removeDuplicateItems(newTagSet);
-
-		console.log (newTagSet);
-		console.log (this.changeSet);
-		newTagSet = this.diff(newTagSet, this.changeSet);
-		console.log (newTagSet);
 
 		for (var tag of newTagSet) {
 			listbox.appendItem(tag.name, tag.id);
 		}
+
+		this.updateTagHighlights();
 	},
 
+	/* Triggered when the user selects items from either tag list.
+	 * Moves the selected item(s) from the current list to the other
+	 * tag list.
+	 * Currently supports muliselect but is currently unused since
+	 * this triggers each listbox onselect event
+	 */
 	onSelect: function(element) {
 		var eID = element.getAttribute('id');
 		var lstSource = this.doc.getElementById(eID);
@@ -119,16 +184,146 @@ Zotero.BatchEditor = {
 			var label = item.getAttribute('label');
 			var value = item.getAttribute('value');
 
-			lstTarget.appendItem(label, value);
+			if (value == 'USER_ADDED') {
+				continue;
+			}
 
+			// Should we add it in?
+			if (eID == 'list_tags' 
+				|| !this.txtFind
+				|| (Zotero.Utilities.levenshtein(this.txtFind, label)
+					<= ed_threshold)) {
+				// Where do we add it?
+				var index = this.locationOfInListBox(
+					label.toLowerCase(), lstTarget, this.alphaComparator);
+				lstTarget.insertItemAt(index+1, label, value);
+			}
+
+
+			// Update changeSet
 			if (eID == 'list_tags') {
 				this.changeSet.push(Zotero.Tags.get(value));
 			} else {
-				this.changeSet.splice(this.changeSet.indexOf(Zotero.Tags.get(value)), 1);
-				this.changeSet.remove(Zotero.Tags.get(value));
-				lstTarget = this.doc.getElementById('list_tags');
+				var res = this.changeSet.map(function (x) { return x.name} ).indexOf(label);
+				if (res > -1) {
+					this.changeSet.splice(res, 1);
+				}
 			}
 		}
+
+		this.updateTagCount();
+		this.updateTagHighlights();
+
+	},
+
+	updateTagCount: function () {
+		var lblChangeCount = this.doc.getElementById('lbl_change_count')
+		var str = this.changeSet.length + " changes";
+		lblChangeCount.setAttribute('value', str);
+	},
+
+	/* Highlights all tags specified by the selected item in list_items.
+	 * This is the onselect event handler for list_items
+	 */
+	updateTagHighlights: function () {
+		var lstbox = this.doc.getElementById('list_items');
+		var lstSourceTags = this.doc.getElementById('list_tags');
+		var lstChangeTags = this.doc.getElementById('list_change');
+
+		var selected;
+
+		// No item selected
+		if (!(selected = lstbox.selectedItem)) {
+			return;
+		}
+		selected = selected.value;
+
+		var item = this._SCOPEDITEMS.find(function (x) {
+			return x.id == selected; 
+		}); 
+
+		console.log (item);
+
+		var tags = item.getTags();
+
+		console.log (tags);
+
+		var self = this;
+
+		var changeTagNames = self.changeSet.map(y => y.name);
+
+		var indexSourceTags = tags.map(function(x) {
+			return changeTagNames.indexOf(x.name) >= 0 ? -1 : self.locationOfInListBox(
+					x.name.toLowerCase(), lstSourceTags, self.alphaComparator);
+		}).filter(function (x) {
+			return x >= 0;
+		});
+
+		console.log(this.changeSet);
+
+		var indexChangeTags = tags.map(function(x) {
+			return changeTagNames.indexOf(x.name) >= 0 ? self.locationOfInListBox(
+					x.name.toLowerCase(), lstChangeTags, self.alphaComparator) : -1;
+		}).filter(function (x) {
+			return x >= 0;
+		});
+
+
+		console.log(indexSourceTags);
+		console.log(indexChangeTags);
+
+		var count = lstSourceTags.itemCount;
+		for (var i = 0; i < count; i++) {
+			if (indexSourceTags.indexOf(i) >= 0) {
+				lstSourceTags.getItemAtIndex(i).setAttribute('checked', true);
+			} else {
+				lstSourceTags.getItemAtIndex(i).setAttribute('checked', false);
+			}
+		}
+
+		count = lstChangeTags.itemCount;
+		for (var i = 0; i < count; i++) {
+			if (indexChangeTags.indexOf(i) >= 0) {
+				lstChangeTags.getItemAtIndex(i).setAttribute('checked', true);
+			} else {
+				lstChangeTags.getItemAtIndex(i).setAttribute('checked', false);
+			}
+		}
+
+		
+	},
+
+	locationOfInListBox: function (element, lstbox, comparator, start, end) {
+		if (lstbox.itemCount === 0) {
+			return -1;
+		}
+
+		start = start || 0;
+		end = end || lstbox.itemCount;
+		var pivot = (start + end) >> 1;
+
+		var lbl = lstbox.getItemAtIndex(pivot).getAttribute('label').toLowerCase();
+
+		var c = comparator(element, lbl);
+		if (end - start <= 1) {
+			return c == -1 ? pivot - 1 : pivot;
+		}
+
+		switch (c) {
+			case -1: 
+				return this.locationOfInListBox(element, lstbox, comparator, start, pivot);
+			case 0: 
+				return pivot;
+			case 1: 
+				return this.locationOfInListBox(element, lstbox, comparator, pivot, end);
+		};
+	},
+
+	// sample for objects like {lastName: 'Miller', ...}
+	alphaComparator: function (a, b) {
+		if (a < b) return -1;
+		if (a > b) return 1;
+		return 0;
 	},
 
 	onFindChange: function() {
@@ -141,9 +336,7 @@ Zotero.BatchEditor = {
 	 * collection with collection id collectionID.
 	 */
 	resetTags: function(collectionID) {
-		this.tagSet = this.ALLITEMS.filter(function (item) {
-			return collectionID > 0 ? item.inCollection(collectionID) : item;
-		}).map(function (item) {
+		this.tagSet = this._SCOPEDITEMS.map(function (item) {
 			return item.getTags();
 		});
 
@@ -151,315 +344,220 @@ Zotero.BatchEditor = {
 		this.tagSet = [].concat.apply([],this.tagSet);
 
 		// Remove the duplicates
-		this.tagSet = this.removeDuplicateItems(this.tagSet);
+		this.tagSet = Zotero.Zotpie_Helpers.removeDuplicateItems(this.tagSet);
+		// this.tagSet = this.removeDuplicateItems(this.tagSet);
 
+		// Clear staged changes
+		this.changeSet = [];
+
+		this.clearChangeListBox();
 		this.updateTags();
 	},
 
-	// b - a
-	// slow?
-	diff: function(b, a) {
-    	return b.filter(function(i) {return !(i in a); });
-	},
+	clearChangeListBox: function () {
+		var lstbox = this.doc.getElementById('list_change');
+		var count = lstbox.itemCount;
 
-	// http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
-	// slow?
-	removeDuplicateItems: function(items) {
-	    var seen = {};
-	    var out = [];
-	    var len = items.length;
-	    var j = 0;
+		while(count--) {
+			lstbox.removeItemAt(0);
+		}
 
-	    for(var i = 0; i < len; i++) {
-	         var item = items[i];
-	         if(seen[item.id] !== 1) {
-	               seen[item.id] = 1;
-	               out[j++] = item;
-	         }
-	    }
-	    return out;
+		var lblChangeCount = this.doc.getElementById('lbl_change_count')
+		lblChangeCount.setAttribute('value', '0 changes');
+
 	},
 
 	onActionChange: function() {
 		var txtReplace = this.doc.getElementById('txt_replace');
-
+		var lblReplace = this.doc.getElementById('lbl_replace');
+		var lblChangedInfo = this.doc.getElementById('lbl_changed');
 		this.editAction = this.doc.getElementById('combo_action').value;
-
-		if (this.editAction == 'modify') {
-			txtReplace.disabled = false;
-		} else if (this.editAction == 'remove') {
+		
+		if (this.editAction === 'remove') {
 			txtReplace.disabled = true;
+		} else {
+			txtReplace.disabled = false;
 		}
+
+		if (this.editAction === 'add') {
+			lblChangedInfo.value = 'Tags to be Added:';
+			lblReplace.value = "Add: ";
+		} else {
+			lblChangedInfo.value = 'Tags to be Changed:';
+			lblReplace.value = "Replace: ";
+		}
+
+		var excludeOnAddAction = this.doc.getElementsByClassName('add_action_excluded');
+		for (var el of excludeOnAddAction) { 
+			el.setAttribute('hidden', this.editAction === 'add'); 
+		}
+
+		this.resetTags(this.currentCollID);
 	},
 
 	onScopeChange: function() {
 		var cboScope = this.doc.getElementById('combo_scope');
-		var cboColl = this.doc.getElementById('combo_collection')
+		var cboColl = this.doc.getElementById('combo_collection');
 		if (cboScope.value == "all") {
+			this._SCOPEDITEMS = this._ALLITEMS;
 			this.currentCollID = -1;
 			cboColl.disabled = true;
-		} else if (cboScope.value = "collection") {
+		} else if (cboScope.value == "collection") {
 			this.currentCollID = this.doc.getElementById('combo_collection').value;
 			cboColl.disabled = false;
+			this.onCollectionChange();
+		} else if (cboScope.value == "items") {
+			this.currentCollID = -1;
+			cboColl.disabled = true;
+			this.scopeToItems();
 		}
 
 		this.resetTags(this.currentCollID);
 	},
 
-	onCollectionChange: function() {
-		console.log("Change collection");
-		var selected = this.doc.getElementById('combo_collection').value;
-		this.currentCollID = selected;
 
-		this.resetTags(this.currentCollID);
+	onCollectionChange: function() {
+		var selected = this.doc.getElementById('combo_collection').value;
+
+		if (selected >= 0) {
+	        var collection = Zotero.Collections.get(selected);
+	        var itemIds = collection.getChildItems(true, false);
+
+			this._SCOPEDITEMS = this._ALLITEMS.filter(function(x) {
+				return (itemIds.indexOf(x.id) >= 0);
+			});
+
+		}
+
+		this.resetTags(selected);
+		this.currentCollID = selected;
 	},
 
 
 	onApply: function() {
-		var newTag = this.doc.getElementById('txt_replace').value;
-		var srcTags = [];
+ 		var newTag = this.doc.getElementById('txt_replace').value;
+		var srcTags = this.changeSet;
+
 		if (this.editAction == 'modify') {
-			batchTagEdit(srcTags, newTag);
+			this.batchTagEdit(srcTags, newTag);
 		} else if (this.editAction == 'remove') {
-			batchTagRemove(srcTags);
+			this.batchTagEdit(srcTags);
+		} else if (this.editAction == 'add') {
+			this.batchTagAdd(srcTags);
+		}
+
+		this.resetTags();
+	},
+
+	onEnterKey: function (aEvent) {
+		if (this.editAction == 'add') { // Only used during the enter option
+			if (aEvent.keyCode == 13) {
+					var lstbox = this.doc.getElementById('list_change');
+					var label = this.doc.getElementById('txt_replace').value;
+
+				console.log (this.changeSet);
+				console.log (label);
+				if (this.changeSet.indexOf(label) < 0) {
+					var index = this.locationOfInListBox(
+						label.toLowerCase(), lstbox, this.alphaComparator);
+
+					lstbox.insertItemAt(index+1, label, 'USER_ADDED');
+
+					this.changeSet.push(label);
+				}
+			}
 		}
 	},
 
-	batchTagRemove: function (oldTags) {
-		var collStr = "hellos";
-		var items = [];
-		var collections = [];
-		var collectionID;
-		var allItems = [];
-		var oldTagIds = [];
-        var ids = [];
+	onItemDelete: function (aEvent) {
+		if ((aEvent.target.id == 'list_items' 
+				&& aEvent.keyCode === KeyEvent.VK_DELETE)
+			|| aEvent.target.id == 'btn_remove_item') {
+			console.log ('Delete event');
 
-        if (this.currentCollID > 0) {
-        	var coll = Zotero.Collections.get(collectionID);
-			allItems = coll.getChildItems();
-        } else {
-	  		allItems = Zotero.Items.getAll();
-        }
+			var lstbox = this.doc.getElementById('list_items');
+			var item = lstbox.selectedItem;
+			var index = item.value;
 
-        oldTagIDs = oldTags.map(function (tag) { // slow?
-        	return Zotero.Tags.getID(tag, 0);
-        });
+			lstbox.removeItemAt(lstbox.getIndexOfItem(item));
 
-        // Filters the list of all items to a sublist where each element
-        // contains one (or more) old tags
-        items = allItems.filter(function(item) { // slow?
-        	var result = item.hasTags(oldTagIDs);
-        	return result;
-        });
+			console.log(Zotero.batchedItems);
+			var i = Zotero.Zotpie_Helpers.locationOf(index, Zotero.batchedItems, this.integerComparator);
 
-        for (var item of items) {
-        	// Get the tags of the item to edit
-        	var allTags = item.getTags(); 
-
-        	// Swap to lower case
-        	if (!this.matchCase) {
-        		var temp = oldTags.map(tag => tag.toLowerCase());
-        		oldTags = temp;
-        	}
-
-        	for (var tag of allTags) { //Slow?
-        		if (!this.matchCase) {
-				    if (oldTags.indexOf(tag.name) != -1) {
-				    	ids.push(tag.id);
-				    }
-        		} else {
-				    if (oldTags.indexOf(tag.name.toLowerCase()) != -1) {
-				    	ids.push(tag.id);
-				    }
-        		}
+			if (i > -1) {
+			    Zotero.batchedItems.splice(i, 1);
 			}
-			ids.forEach(function(id) {
-            	item.removeTag(id);
-			});
-			ids = [];
+
+			console.log(Zotero.batchedItems);
+
+			if (Zotero.batchedItems) {
+				// Reload _ALLITEMS
+				this._SCOPEDITEMS = this._SCOPEDITEMS.filter(function(item) {
+					return Zotero.batchedItems.indexOf(item.id) >= 0;
+				});
+			} else {
+				this._SCOPEDITEMS = [];
+			}
+
+			this.resetTags();
+
+			if (lstbox.itemCount == 0) {
+				this.doc.getElementById('itm_Items').disabled = true;
+			}
+		}
+	},
+
+
+	batchTagAdd: function(newTags) {
+		console.log(newTags);
+		for (var item of this._SCOPEDITEMS) {
+			var missingTags = Zotero.Utilities.arrayDiff(newTags,
+				item.getTags().map(x => x.name));
+			item.addTags(missingTags, 1);
 		}
 	},
 
 	batchTagEdit: function (oldTags, newTag) {
-		var collStr = "hellos";
 		var items = [];
-		var collections = [];
-		var collectionID;
 		var allItems = [];
 		var oldTagIds = [];
-        var ids = [];
+		var ids = [];
+		var oldTagNames = [];
 
-        if (this.currentCollID > 0) {
-        	var coll = Zotero.Collections.get(collectionID);
-			allItems = coll.getChildItems();
-        } else {
-	  		allItems = Zotero.Items.getAll();
-        }
+		allItems = this._SCOPEDITEMS;
 
-        oldTagIDs = oldTags.map(function (tag) { // slow?
-        	return Zotero.Tags.getID(tag, 0);
-        });
-
-        console.log(oldTagIDs);
-        console.log(allItems);
-
-        // Filters the list of all items to a sublist where each element
-        // contains one (or more) old tags
-        items = allItems.filter(function(item) { // slow?
-        	var result = item.hasTags(oldTagIDs);
-        	return result;
-        });
-
-        console.log(items);
+		// Get ids of the tags to be modified
+		oldTagIDs = oldTags.map(function (tag) { // slow?
+			return tag.id;
+		});
 
 
-        for (var item of items) {
-        	// Get the tags of the item to edit
-        	var allTags = item.getTags(); 
+		// Filters the list of all items to a sublist where each element
+		// contains one (or more) old tags
+		items = allItems.filter(function(item) { // slow?
+			return item.hasTags(oldTagIDs);
+		});
 
-        	// Swap to lower case
-        	if (!this.matchCase) {
-        		var temp = oldTags.map(tag => tag.toLowerCase());
-        		oldTags = temp;
-        	}
+		console.log(items);
 
-        	for (var tag of allTags) { //Slow?
-        		console.log(j);
-        		console.log(tag.id);
-        		if (!this.matchCase) {
-				    if (oldTags.indexOf(tag.name) != -1) {
-				    	ids.push(tag.id);
-				    }
-        		} else {
-				    if (oldTags.indexOf(tag.name.toLowerCase()) != -1) {
-				    	ids.push(tag.id);
-				    }
-        		}
+		for (var item of items) {
+			// Get the tags of the item to edit
+			var allTags = item.getTags(); 
+
+			// Swap to lower case
+			if (!this.matchCase) {
+				var temp = oldTagNames.map(tag => tag.toLowerCase() );
+				oldTagNames = temp;
 			}
-			console.log(ids);
-			ids.forEach(function(id) {
-            	item.removeTag(id);
-			});
-            item.addTag(newTag, 1);
+
+			for (var id of oldTagIDs) {
+				item.removeTag(id);
+			}
+
+			if (newTag) {
+				item.addTag(newTag, 1);
+			}
 			ids = [];
-		}
-	},
-	
-	/*
-	Copyright (c) 2011 Andrei Mackenzie
-	Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-	The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-	*/
-
-	// Compute the edit distance between the two given strings
-	editDistance: function(a, b) {
-	  if(a.length == 0) return b.length; 
-	  if(b.length == 0) return a.length; 
-
-	  var matrix = [];
-
-	  // increment along the first column of each row
-	  var i;
-	  for(i = 0; i <= b.length; i++){
-	    matrix[i] = [i];
-	  }
-
-	  // increment each column in the first row
-	  var j;
-	  for(j = 0; j <= a.length; j++){
-	    matrix[0][j] = j;
-	  }
-
-	  // Fill in the rest of the matrix
-	  for(i = 1; i <= b.length; i++){
-	    for(j = 1; j <= a.length; j++){
-	      if(b.charAt(i-1) == a.charAt(j-1)){
-	        matrix[i][j] = matrix[i-1][j-1];
-	      } else {
-	        matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, // substitution
-	                                Math.min(matrix[i][j-1] + 1, // insertion
-	                                         matrix[i-1][j] + 1)); // deletion
-	      }
-	    }
-	  }
-
-	  return matrix[b.length][a.length];
-	},
-
-
-	insertHello: function() {
-		var data = {
-			title: "Zotero",
-			company: "Center for History and New Media",
-			creators: [
-				['Dan', 'Stillman', 'programmer'],
-				['Simon', 'Kornblith', 'programmer']
-			],
-			version: '1.0.1',
-			company: 'Center for History and New Media',
-			place: 'Fairfax, VA',
-			url: 'http://www.zotero.org'
-		};
-		Zotero.Items.add('computerProgram', data); // returns a Zotero.Item instance
-	},
-	
-	// Callback implementing the notify() method to pass to the Notifier
-	notifierCallback: {
-		notify: function(event, type, ids, extraData) {
-			if (event == 'add' || event == 'modify' || event == 'delete') {
-				// Increment a counter every time an item is changed
-				Zotero.BatchEditor.DB.query("UPDATE changes SET num = num + 1");
-				
-				if (event != 'delete') {
-					// Retrieve the added/modified items as Item objects
-					var items = Zotero.Items.get(ids);
-				}
-				else {
-					var items = extraData;
-				}
-				
-				// Loop through array of items and grab titles
-				var titles = [];
-				for each(var item in items) {
-					// For deleted items, get title from passed data
-					if (event == 'delete') {
-						titles.push(item.old.title ? item.old.title : '[No title]');
-					}
-					else {
-						titles.push(item.getField('title'));
-					}
-				}
-				
-				if (!titles.length) {
-					return;
-				}
-				
-				// Get the localized string for the notification message and
-				// append the titles of the changed items
-				var stringName = 'notification.item' + (titles.length==1 ? '' : 's');
-				switch (event) {
-					case 'add':
-						stringName += "Added";
-						break;
-						
-					case 'modify':
-						stringName += "Modified";
-						break;
-						
-					case 'delete':
-						stringName += "Deleted";
-						break;
-				}
-				
-				var str = document.getElementById('zotpie-zotero-strings').
-					getFormattedString(stringName, [titles.length]) + ":\n\n" +
-					titles.join("\n");
-			}
-			
-			var ps = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-				.getService(Components.interfaces.nsIPromptService);
-			ps.alert(null, "", str);
 		}
 	}
 };

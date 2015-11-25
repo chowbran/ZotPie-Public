@@ -2,3 +2,5 @@
 *.idea
 keys.json
 userdata.cfg
+*.xpi
+*.zip

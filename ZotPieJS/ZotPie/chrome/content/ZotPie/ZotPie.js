@@ -6,9 +6,13 @@ Zotero.ZotPie = {
 		this.ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
 		                   .getService(Components.interfaces.nsIWindowWatcher);
 		this.batchEditorDoc = "";
-		this.coupleDoc = "";
 		this.customFieldsDoc = "";
 		this.addFieldDoc = "";
+        this.coupleDoc = "";
+        this.DBHelper = Zotero.CustomDB;
+        this.DBHelper.init();
+
+        this.clickedItemType;
 	},
 
 
@@ -28,7 +32,8 @@ Zotero.ZotPie = {
             "Create Synced Collection", "chrome,centerscreen", null);
 	},
 	
-	startCustomFieldsEditor : function () {
+	startCustomFieldsEditor: function (itemType) {
+	    this.clickedItemType = itemType;
 		this.customFieldsDoc = this.ww.openWindow(null,"chrome://zotpie/content/customFieldsEditorWindow.xul",
             "Custom Fields Editor", "chrome,centerscreen", null);
 	},

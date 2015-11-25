@@ -1,5 +1,6 @@
-var ZotPieOverlay = new function ()
-{
+Zotero.batchedItems = [];
+
+var ZotPieOverlay = new function () {
     var tab, tabpanels;
 
     var ps = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
@@ -8,7 +9,7 @@ var ZotPieOverlay = new function ()
         .getService(Components.interfaces.nsIWindowMediator)
         .getMostRecentWindow("navigator:browser").ZoteroPane;
     
-    var batchedItems = [];
+    // var batchedItems = [];
 
     this.onLoad = function () {
         /*
@@ -127,13 +128,13 @@ var ZotPieOverlay = new function ()
 	},
 	
     addToBatchEditQueue = function () {
-        var selectedItems = ZoteroPane.getSelectedItems();
+        var selectedItems = Zotero.getActiveZoteroPane().getSelectedItems();
         var item = selectedItems[0];
         var counter = 0;
 
         for (i = 0; i < selectedItems.length; i++) {
-            if (batchedItems.indexOf(selectedItems[i].id) == -1) {
-                batchedItems.push(selectedItems[i].id);
+            if (Zotero.batchedItems.indexOf(selectedItems[i].id) == -1) {
+                Zotero.batchedItems.push(selectedItems[i].id);
                 counter++;
             }
         }
@@ -149,7 +150,7 @@ var ZotPieOverlay = new function ()
                    flags, "Open Batch Editor", "Continue Adding", null, null, {});
         } else {
             button = ps.confirmEx(null, "Success!", "Added " + counter + " items to the tag batch edit queue.\nThere are currently "
-                                + batchedItems.length.toString() + " items in the queue.",
+                                + Zotero.batchedItems.length.toString() + " items in the queue.",
                                flags, "Open Batch Editor", "Continue Adding", null, null, {});
         }
 

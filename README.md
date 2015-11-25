@@ -21,15 +21,22 @@ The build files (with README instructions) are located [here.](./ZotPie UI/ZotPi
 All the documentation (including the updated system diagram) is contained in the Deliverable 4 folder [here](./Deliverable 4).
 The build files (with README instructions) are located [here.](./ZotPie UI/ZotPieApp/ZotPieApp)
 
-## Task Board (Sprint #2)
+## Deliverable 5
 
-Our task board for sprint #2 can be found here: [Sprint #2 Task Board](https://trello.com/b/xbNi70ao/sprint-2-task-board-precision-development).
+All the documentation is contained in the Deliverable 5 folder [here](./Deliverable 5).
+The build files (with README instructions) are located [here.](./ZotPieJS)
+The install instructions are located [here.](http://zotpie.readthedocs.org/en/latest/)
+The lasted build is located [here.](./LatestBuild)
+
+## Task Board (Sprint #3)
+
+Our task board for sprint #2 can be found here: [Sprint #3 Task Board](https://trello.com/b/KeNPWB3W/sprint-3-task-board-precision-development).
 
 On the task board, please read the information on "How to use this board" card under the "INSTRUCTIONS" list.
 
-## Sprint #2 Backlog
+## Sprint #3 Backlog
 
-Our sprint backlog can be found here: [Sprint #2 Backlog](https://docs.google.com/spreadsheets/d/1x4ZO0lsaXktc8lxdIhvAAT5QEFSecOz8eK0PieLRWok/edit?pli=1#gid=1707570274)
+Our sprint backlog can be found here: [Sprint #3 Backlog](https://docs.google.com/spreadsheets/d/1x4ZO0lsaXktc8lxdIhvAAT5QEFSecOz8eK0PieLRWok/edit?pli=1#gid=1883449992&vpid=A1)
 
 ## WEBSITE
 
