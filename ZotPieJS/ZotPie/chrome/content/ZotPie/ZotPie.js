@@ -12,6 +12,7 @@ Zotero.ZotPie = {
         this.DBHelper = Zotero.CustomDB;
         this.DBHelper.init();
 
+
         this.clickedItemType;
 	},
 

@@ -54,7 +54,7 @@ var ZotPieOverlay = new function () {
 		    documentLinker.setAttribute("class", "zotero-tb-button");
 		    documentLinker.setAttribute("tooltiptext", "Document Linker");
 		    documentLinker.setAttribute("image", "chrome://ZotPie/skin/toolbar-documentlinker.png");
-		    documentLinker.setAttribute("oncommand", "window.openDialog('chrome://zotpie/content/coupleDocumentsWindow.xul', 'Link Documents', 'chrome,centerscreen')");
+		    documentLinker.setAttribute("oncommand", "Zotero.ZotPie.startCouple()");
 		    batchEdit.parentNode.insertBefore(documentLinker, batchEdit);
 
 		    var customFieldsEditor = document.createElement("toolbarbutton");
