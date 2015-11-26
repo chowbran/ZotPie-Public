@@ -24,7 +24,7 @@
 
 <vbox flex="1">
 <hbox>
-<label value="Item Type:"/>
+<label value="Record Type:"/>
 <menulist flex="1" id="itemtypes" oncommand="Zotero.CustomFieldsEditor.getCustomFields()">
     <menupopup>
        

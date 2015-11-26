@@ -36,7 +36,7 @@ var ZotPieCustomFields = new function () {
         // Subscribe function to event when item in tree is clicked
         // This will update the custom data depending on the item clicked
         var itemsTree = document.getElementById('zotero-items-tree');
-        itemsTree.addEventListener("click", updateCustomData, true);
+        itemsTree.addEventListener("select", updateCustomData, true);
     },
 
     updateCustomData = function (event) {
