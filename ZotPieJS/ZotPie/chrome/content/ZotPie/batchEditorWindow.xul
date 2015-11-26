@@ -6,6 +6,7 @@
  
 <!-- Include the main extension logic -->
 <script src="chrome://zotero/content/include.js"/>
+<script src="chrome://zotpie/content/Fuse.js" type="application/javascript;version=1.8"/>
 <script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
 
 <hbox>
@@ -26,8 +27,8 @@
 
 <vbox flex="1">
 <hbox>
-<label control="lbl_find" value="Find:"/>
-<textbox id="txt_find" flex="1" oninput="Zotero.BatchEditor.onFindChange()"/>
+<label control="lbl_find" class="add_action_excluded" value="Find:"/>
+<textbox id="txt_find" class="add_action_excluded" flex="1" oninput="Zotero.BatchEditor.onFindChange()"/>
 </hbox>
  
 <hbox>
@@ -77,7 +78,7 @@
                 <menupopup>
                     <menuitem label="Modify" value="modify"/>
                     <menuitem label="Remove" value="remove"/>
-                    <menuitem label="Add" value="add" id="menu_actionAdd" class="item_filter_only"/>
+                    <menuitem label="Add" value="add" id="menu_actionAdd"/>
                 </menupopup>
             </menulist>
         </vbox>
@@ -94,7 +95,7 @@
         </vbox>
         <vbox>
             <label value="Collection:"/>
-            <menulist id="combo_collection" class="item_filter_excluded" width="150px" disabled="true" oncommand="Zotero.BatchEditor.onCollectionChange()">
+            <menulist id="combo_collection" width="150px" disabled="true" oncommand="Zotero.BatchEditor.onCollectionChange()">
                 <menupopup>
                      
                 </menupopup>
@@ -103,7 +104,7 @@
     </hbox>
 </groupbox>
 <hbox style="margin-bottom:10px;margin-left:10px;margin-right:10px">
-<!-- <progressmeter flex="1" mode="{determined | undetermined}" value="{determined value [0 - 100]}"/> -->
+<!-- <progressmeter id="prg_apply" flex="1" mode="determined" value="0"/> -->
 <button id="btn_apply" label="Apply"
     oncommand="Zotero.BatchEditor.onApply()"/>
 </hbox>
