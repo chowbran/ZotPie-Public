@@ -2,6 +2,10 @@
 let loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
 				.getService(Components.interfaces.mozIJSSubScriptLoader);
 
+// if (!Fuse) {
+	loader.loadSubScript("chrome://zotpie/content/Fuse.js");
+// }
+
 if (!Zotero.BatchEditor) {
 	loader.loadSubScript("chrome://zotpie/content/batchEditor.js");
 }
