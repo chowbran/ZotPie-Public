@@ -135,7 +135,6 @@ Zotero.BatchEditor = {
 		// Clear listbox
 		var listbox = this.doc.getElementById('list_tags');
 		var count = listbox.itemCount;
-		console.log(count);
 
 		if(!listbox) {
 			return;
@@ -278,13 +277,16 @@ Zotero.BatchEditor = {
 		var lstSourceTags = this.doc.getElementById('list_tags');
 		var lstChangeTags = this.doc.getElementById('list_change');
 
-		var selected;
+		var selected = lstbox.selectedItem;
 
 		// No item selected
-		if (!(selected = lstbox.selectedItem)) {
+		if (!selected) {
 			return;
 		}
-		selected = selected.value;
+		selected = selected.getAttribute('value');
+
+		console.log(selected);
+		console.log(this._SCOPEDITEMS.map(x => x.id));
 
 		var item = this._SCOPEDITEMS.find(function (x) {
 			return x.id == selected; 
@@ -294,7 +296,6 @@ Zotero.BatchEditor = {
 
 		var tags = item.getTags();
 
-		console.log (tags);
 
 		var self = this;
 
@@ -307,18 +308,12 @@ Zotero.BatchEditor = {
 			return x >= 0;
 		});
 
-		console.log(this.changeSet);
-
 		var indexChangeTags = tags.map(function(x) {
 			return changeTagNames.indexOf(x.name) >= 0 ? self.locationOfInListBox(
 					x.name.toLowerCase(), lstChangeTags, self.alphaComparator) : -1;
 		}).filter(function (x) {
 			return x >= 0;
 		});
-
-
-		console.log(indexSourceTags);
-		console.log(indexChangeTags);
 
 		var count = lstSourceTags.itemCount;
 		for (var i = 0; i < count; i++) {
@@ -525,7 +520,7 @@ Zotero.BatchEditor = {
 
 	onEnterKey: function (aEvent) {
 		if (this.editAction == 'add') { // Only used during the enter option
-			if (aEvent.keyCode == 13) {
+			if (aEvent.keyCode == 13) { // Enter key
 					var lstbox = this.doc.getElementById('list_change');
 					var label = this.doc.getElementById('txt_replace').value;
 
@@ -547,25 +542,30 @@ Zotero.BatchEditor = {
 
 	onItemDelete: function (aEvent) {
 		if ((aEvent.target.id == 'list_items' 
-				&& aEvent.keyCode === KeyEvent.VK_DELETE)
+				&& aEvent.keyCode == 46) // Delete key
 			|| aEvent.target.id == 'btn_remove_item') {
-			console.log ('Delete event');
 
 			var lstbox = this.doc.getElementById('list_items');
 			var item = lstbox.selectedItem;
-			var index = item.value;
+
+			// No item selected
+			if (!item) {
+				return;
+			}
+
+			// The value of the item is the ItemID
+			var index = parseInt(item.value);
+
 
 			lstbox.removeItemAt(lstbox.getIndexOfItem(item));
 
-			console.log(Zotero.batchedItems);
-			var i = Zotero.Zotpie_Helpers.locationOf(index, Zotero.batchedItems, this.alphaComparator);
-
+			// Find location of the ItemID in our batchedItems and delete it
+			var i = Zotero.batchedItems.indexOf(index);
 			if (i > -1) {
 			    Zotero.batchedItems.splice(i, 1);
 			}
 
-			console.log(Zotero.batchedItems);
-
+			// Update scope
 			if (Zotero.batchedItems) {
 				// Reload _ALLITEMS
 				this._SCOPEDITEMS = Zotero.Items.get(Zotero.batchedItems);
@@ -575,7 +575,6 @@ Zotero.BatchEditor = {
 
 			this.resetTags();
 			this.updateTags(this.doc.getElementById('txt_find').value);
-
 
 			if (lstbox.itemCount == 0) {
 				this.doc.getElementById('itm_Items').disabled = true;
