@@ -8,6 +8,7 @@
   
   <script src="chrome://zotero/content/include.js"/>
   <script src="chrome://zotpie/content/include.js" type="application/javascript;version=1.8"/>
+  
     <vbox>
     <label id="confirmquestion" value="What field would you like to add to {itemtype}?"/>
     <spacer style="height:10px"/>
