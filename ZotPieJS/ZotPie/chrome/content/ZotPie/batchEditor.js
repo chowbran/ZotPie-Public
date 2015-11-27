@@ -496,10 +496,10 @@ Zotero.BatchEditor = {
 
 	onApply: function() {
  		var newTag = this.doc.getElementById('txt_replace').value;
-		var progressBar = this.doc.getElementById('prg_apply');
+		// var progressBar = this.doc.getElementById('prg_apply');
 		var srcTags = this.changeSet;
 
-		progressBar.value = 0;
+		// progressBar.value = 0;
 
 		if (this.editAction == 'modify') {
 			this.batchTagEdit(srcTags, newTag);
@@ -509,12 +509,12 @@ Zotero.BatchEditor = {
 			this.batchTagAdd(srcTags);
 		}
 
-		progressBar.value = Math.max(75, progressBar.value+5);
+		// progressBar.value = Math.max(75, progressBar.value+5);
 
 		this.resetTags();
 		this.updateTags(this.doc.getElementById('txt_find').value);
 
-		progressBar.value = 100;
+		// progressBar.value = 100;
 
 	},
 
@@ -585,7 +585,7 @@ Zotero.BatchEditor = {
 
 	batchTagAdd: function(newTags) {
 		console.log(newTags);
-		var progressBar = this.doc.getElementById('prg_apply');
+		// var progressBar = this.doc.getElementById('prg_apply');
 
 		var iter = Math.floor(50 / this._SCOPEDITEMS.length);
 
@@ -595,9 +595,9 @@ Zotero.BatchEditor = {
 
 			
 			item.addTags(newTags, 1);
-			progressBar.value = progressBar.value + iter;
+			// progressBar.value = progressBar.value + iter;
 		}
-		progressBar.value = 50;
+		// progressBar.value = 50;
 	},
 
 	batchTagEdit: function (oldTags, newTag) {
@@ -606,7 +606,7 @@ Zotero.BatchEditor = {
 		var oldTagIDs = [];
 		var ids = [];
 		var oldTagNames = [];
-		var progressBar = this.doc.getElementById('prg_apply');
+		// var progressBar = this.doc.getElementById('prg_apply');
 
 		allItems = this._SCOPEDITEMS;
 
@@ -643,8 +643,8 @@ Zotero.BatchEditor = {
 				item.addTag(newTag, 1);
 			}
 			ids = [];
-			progressBar.value = progressBar.value + iter;
+			// progressBar.value = progressBar.value + iter;
 		}
-		progressBar.value = 50;
+		// progressBar.value = 50;
 	}
 };
