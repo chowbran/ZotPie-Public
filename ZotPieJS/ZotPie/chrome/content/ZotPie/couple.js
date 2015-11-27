@@ -43,13 +43,13 @@ Zotero.Couple = {
 
         var list = this.doc.getElementById('list_original_rem');
         this.clearListBox(list);
-        var originalList = this.DB.query("SELECT original FROM grouplinked");
+        var originalList = this.DB.query("SELECT DISTINCT original FROM grouplinked");
 
         if (originalList !== false){
             for (var i =0; i < originalList.length; i ++){
-                console.log(originalList[i]['original']);
+
                 var original = Zotero.Items.get(originalList[i]['original']);
-                console.log(original);
+
                 list.appendItem(original.getDisplayTitle(), original['_id']);
             }
         }
@@ -65,7 +65,9 @@ Zotero.Couple = {
             tree.removeChild(tree.firstChild);
         }
 
-        var original = Zotero.Items.get(this.doc.getElementById('list_original_rem').value);
+        var original = Zotero.Items.get(this.doc.getElementById('list_original_rem').selectedItem.value);
+
+
         var copyArray = this.DB.query('SELECT id FROM grouplinked WHERE original IN (?)', [original['_id']]);
 
         for (var i = 0; i < copyArray.length; i ++){
@@ -100,7 +102,7 @@ Zotero.Couple = {
      */
     unlinkDocumentManual: function(){
         var tree = this.doc.getElementById('tree_linked');
-        var originalId = this.doc.getElementById('list_original_rem').value;
+        var originalId = this.doc.getElementById('list_original_rem').selectedItem.value;
         var copyId = tree.view.getCellValue(tree.currentIndex, tree.columns.getColumnAt(0));
 
         this.unlinkDocument(copyId, originalId, false);
@@ -125,14 +127,15 @@ Zotero.Couple = {
         if (all){
             for (var i=0; i < copyArray.length; i ++){
                 copyArray.splice(i, 1);
-                this.DB.query('DELETE FROM grouplinked WHERE original=?', [originalId]);
+                this.DB.query('DELETE FROM grouplinked WHERE original=' + originalId);
             }
 
         }else{
             for (var i=0; i < copyArray.length; i ++){
-                if (copyArray[i] === copyId){
+                console.log(copyArray[i]['id']);
+                if (copyArray[i]['id'].toString() === copyId){
                     copyArray.splice(i, 1);
-                    this.DB.query('DELETE FROM grouplinked WHERE id=?', [copyId]);
+                    this.DB.query('DELETE FROM grouplinked WHERE id='+ copyId );
                 }
             }
         }
@@ -227,9 +230,12 @@ Zotero.Couple = {
     clearListBox: function(list){
 
         var count = list.itemCount;
-        while(count-- > 0){
-            list.removeItemAt(0);
+        if (count > 0){
+            while(count-- > 0){
+                list.removeItemAt(0);
+            }
         }
+
     },
 
     /**
