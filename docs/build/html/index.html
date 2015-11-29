@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to ZotPie’s documentation! &mdash; ZotPie 1.0.0.1 documentation</title>
+  <title>Description &mdash; ZotPie 1.0.0.1 documentation</title>
   
 
   
@@ -81,9 +81,45 @@
             
                 <!-- Local TOC -->
                 <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Welcome to ZotPie&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#">Description</a></li>
+<li><a class="reference internal" href="#welcome-to-zotpie-s-documentation">Welcome to ZotPie&#8217;s documentation!</a></li>
 <li><a class="reference internal" href="#getting-started-short-version">Getting Started (short version)</a></li>
-<li><a class="reference internal" href="#installing-testing-usage-longer-version">Installing, Testing, Usage (Longer Version)</a></li>
+<li><a class="reference internal" href="#installing-testing-usage-longer-version">Installing, Testing, Usage (Longer Version)</a><ul>
+<li><a class="reference internal" href="#detailed-installation-instructions">Detailed Installation Instructions</a></li>
+<li><a class="reference internal" href="#installing-development-versions">Installing development versions</a></li>
+<li><a class="reference internal" href="#building-documentation">Building Documentation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#batch-editing-tags">Batch Editing Tags</a><ul>
+<li><a class="reference internal" href="#launching-the-batch-tag-editor">Launching the Batch Tag Editor</a></li>
+<li><a class="reference internal" href="#the-batch-tag-editor-gui">The Batch Tag Editor GUI</a></li>
+<li><a class="reference internal" href="#batch-editing-tags-using-find-replace">Batch Editing Tags using find &amp; replace</a></li>
+<li><a class="reference internal" href="#batch-editing-using-a-batch-editing-queue">Batch Editing using a Batch Editing Queue</a></li>
+<li><a class="reference internal" href="#batch-adding-tags">Batch Adding Tags</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#adding-custom-fields">Adding Custom Fields</a><ul>
+<li><a class="reference internal" href="#launching-the-custom-field-editor">Launching the Custom Field Editor</a></li>
+<li><a class="reference internal" href="#the-custom-field-editor-gui">The Custom Field Editor GUI</a></li>
+<li><a class="reference internal" href="#id1">Adding Custom Fields</a></li>
+<li><a class="reference internal" href="#removing-custom-fields">Removing Custom Fields</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#coupling-linking-documents">Coupling/Linking Documents</a><ul>
+<li><a class="reference internal" href="#launching-the-document-linker">Launching the Document Linker</a></li>
+<li><a class="reference internal" href="#the-document-linker-gui">The Document Linker GUI</a></li>
+<li><a class="reference internal" href="#linking-documents">Linking Documents</a></li>
+<li><a class="reference internal" href="#unlinking-documents">Unlinking Documents</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#citation-csl-editor">Citation (CSL) Editor</a><ul>
+<li><a class="reference internal" href="#launching-the-csl-editor">Launching the CSL Editor</a></li>
+<li><a class="reference internal" href="#the-csl-editor-gui">The CSL Editor GUI</a></li>
+<li><a class="reference internal" href="#creating-a-custom-citation">Creating a Custom Citation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#liscense">Liscense</a></li>
 </ul>
 </div>
             
@@ -114,7 +150,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="#">Docs</a> &raquo;</li>
       
-    <li>Welcome to ZotPie&#8217;s documentation!</li>
+    <li>Description</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -128,9 +164,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-zotpie-s-documentation">
+  <div class="section" id="description">
+<h1>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h1>
+<p>ZotPie is a open source plugin for Zotero (Firefox or Standlone) that was created to give members of the Zotero community several features that have been long overdue.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>This Documentation is still being completed as of November 26, 2015. So downloading and building an offline copy is not recommended as this page is constantly updated; This notice will be removed once the initial documentation is completed, please report any inconsistancies, errors, etc. to &lt;insert email here when set up for fwding&gt;.</p>
+<p>Thanks and Sorry for the inconvenience,</p>
+<p class="last">The ZotPie Development Team.</p>
+</div>
+</div>
+<div class="section" id="welcome-to-zotpie-s-documentation">
 <h1>Welcome to ZotPie&#8217;s documentation!<a class="headerlink" href="#welcome-to-zotpie-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>This is the user documentation for the ZotPie firefox plugin for Zotero. If you are a developer, you may be interested in the developer documentation.</p>
+<p>This is the user documentation for the ZotPie firefox plugin for Zotero. If you are a developer, you may be interested in the <a class="reference external" href="./index_dev.html">developer documentation</a>.</p>
 </div>
 <div class="section" id="getting-started-short-version">
 <h1>Getting Started (short version)<a class="headerlink" href="#getting-started-short-version" title="Permalink to this headline">¶</a></h1>
@@ -138,14 +184,220 @@
 <li>Download the plugin from <a class="reference external" href="http://precision-dev.com/">ZotPie Download Page</a> or <a class="reference external" href="https://github.com/CSCC01-Fall2015/team15-course-project/">GitHub</a> .</li>
 <li>Install Zotero for FireFox</li>
 <li>Open FireFox and Navigate to the Addons Menu</li>
-<li>In settings (the gear icon w/ dropdown) select install addon from file and select the .xpi file you downloaded in step 1</li>
-<li>Restart Firefox and launch Zotero for Firefox.</li>
+<li>In settings (the gear icon w/ dropdown) select install addon from file and select the plugin</li>
+<li>Restart Firefox and launch Zotero for Firefox or Zotero Standalone.</li>
 </ol>
 </div>
 <div class="section" id="installing-testing-usage-longer-version">
 <span id="my-reference-label"></span><h1>Installing, Testing, Usage (Longer Version)<a class="headerlink" href="#installing-testing-usage-longer-version" title="Permalink to this headline">¶</a></h1>
-<p>This is the text of the section.</p>
-<p>It refers to the section itself, see <a class="reference internal" href="#my-reference-label"><span>Installing, Testing, Usage (Longer Version)</span></a>.</p>
+<div class="section" id="detailed-installation-instructions">
+<h2>Detailed Installation Instructions<a class="headerlink" href="#detailed-installation-instructions" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Download the plugin from #downloadpage (idk yet), link to git install instructions if git is installer</li>
+<li>Install Firefox &amp; the Zotero FireFox Plugin</li>
+<li>Open firefox and navigate to the dropdown menu <img alt="Settings" src="_images/settings-icon.png" /> and then click on Add-ons.</li>
+<li>Click on the settings gearbox and then <code class="docutils literal"><span class="pre">install</span> <span class="pre">addon</span> <span class="pre">from</span> <span class="pre">file</span></code></li>
+<li>Navigate to the .xpi file downloaded in the earlier steps and click <strong>OK</strong></li>
+<li>restart Firefox, if not prompted. Zotero should now have the plugin installed for Zotero (Firefox and Standalone).</li>
+</ol>
+</div>
+<div class="section" id="installing-development-versions">
+<h2>Installing development versions<a class="headerlink" href="#installing-development-versions" title="Permalink to this headline">¶</a></h2>
+<p>ZotPie remains in development as of November 2015. Development Versions can be found on the GitHub dev branch. You
+can also clone directly from a git enabled console by pasting: <code class="docutils literal"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">http://github.com/repo</span></code></p>
+</div>
+<div class="section" id="building-documentation">
+<h2>Building Documentation<a class="headerlink" href="#building-documentation" title="Permalink to this headline">¶</a></h2>
+<p>If you wish to build ZotPie&#8217;s documentation for offline use, it can be built from the <code class="docutils literal"><span class="pre">doc</span></code> directory of a local git
+repo by running <code class="docutils literal"><span class="pre">make</span></code> followed by the desired output format(s) (<code class="docutils literal"><span class="pre">html</span></code>, <code class="docutils literal"><span class="pre">epub</span></code>, <code class="docutils literal"><span class="pre">latexpdf</span></code>, etc.)</p>
+</div>
+</div>
+<div class="section" id="batch-editing-tags">
+<h1>Batch Editing Tags<a class="headerlink" href="#batch-editing-tags" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div>This feature allows you to edit tags en masse, there are two ways to do this. The first is to open the batch editor (in Zotero) and then search for the tag you would like to change,delete,modify, or merge and click apply. The second is to manually add items to a batch editing queue and then open the batch editor and apply the changes to items in your queue.</div></blockquote>
+<div class="section" id="launching-the-batch-tag-editor">
+<h2>Launching the Batch Tag Editor<a class="headerlink" href="#launching-the-batch-tag-editor" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Open Zotero (Firefox or Standalone)</li>
+<li>Open the Batch Tag Editor by clicking on the Batch Tag Editor icon (see image below) <img alt="bedit_big" src="_images/btedit_icon_big.png" /></li>
+</ol>
+</div>
+<div class="section" id="the-batch-tag-editor-gui">
+<h2>The Batch Tag Editor GUI<a class="headerlink" href="#the-batch-tag-editor-gui" title="Permalink to this headline">¶</a></h2>
+<p>Upon launching the Batch Tag Editor a window similar to the one below should pop up, see the glossary below the image for a detailed explanation of the functionality of each section in the Batch Tag Editor window. The Batch Adding tags functionality GUI is slightly different see the Batch Adding Tags section for more information.</p>
+<p><img alt="btedit_window" src="_images/btedit_window.png" /></p>
+<dl class="docutils">
+<dt><strong>Legend: (refer to image above)</strong></dt>
+<dd><dl class="first last docutils">
+<dt>Find</dt>
+<dd>The <strong>Find</strong> text-box is where you would type a tag name in order to sort through the tags displayed in the
+<strong>Original Tags</strong> section.</dd>
+<dt>Replace</dt>
+<dd>The <strong>Replace</strong> text-box (applicable only when modifying tags) is where you specify a tag name that would replace all tags in the <strong>Tags to be changed</strong> box. Note that these changes are only applied after you press the <strong>Apply</strong> button.</dd>
+<dt>Original Tags</dt>
+<dd>The <strong>Original Tags</strong> box displays all of the tags that are currently attached to the items in your library, collection, or queue. Clicking an item in this box adds it to the <strong>Tags to be Changed</strong> box to the right.</dd>
+<dt>Tags to be Changed</dt>
+<dd>Items in this box will be modified or removed depending on the mode specified in the <strong>Action</strong> dropdown menu. Changes will only be applied to your library, collection, or queue after pressing <strong>Apply</strong>.</dd>
+<dt>Parameters: Type</dt>
+<dd>The type of field you would like to edit, currently ZotPie only supports tags so dont worry about this.</dd>
+<dt>Parameters: Action</dt>
+<dd><dl class="first last docutils">
+<dt>The action you would like to perform on the tags in the <strong>Tags to be Changed</strong> section.</dt>
+<dd><ol class="first last arabic simple">
+<li>Modify will replace tags in the <strong>Tags to be Changed</strong> section with whatever is specified in the <strong>Replace</strong> section</li>
+<li>Remove will remove all tags in the <em>Tags to be Changed*</em> section from your library, collection, or queue.</li>
+<li>Add - see the Batch Adding Tags section.</li>
+</ol>
+</dd>
+</dl>
+</dd>
+<dt>Parameters: Scope</dt>
+<dd>The scope in which the changes you want will be applied. If set to <strong>All</strong> changes will be applied to your entire library, if you select a <strong>Collection</strong> changes will only be applied to items that collection, if you are using a queue you would select <strong>Items</strong>.</dd>
+<dt>Parameter: Collection</dt>
+<dd>If the scope is set to collection, this will let you select the collection you would like changes to be applied to.</dd>
+<dt>Apply</dt>
+<dd>Applies all changes to items in scope or queue.</dd>
+</dl>
+</dd>
+</dl>
+</div>
+<div class="section" id="batch-editing-tags-using-find-replace">
+<h2>Batch Editing Tags using find &amp; replace<a class="headerlink" href="#batch-editing-tags-using-find-replace" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This section assumes you have gone through the <strong>The Batch Tag Editor GUI</strong> section above. If at anytime you are confused about the functionality of the Batch Tag editor in the below tutorial, please see the above section.</p>
+</div>
+<p>If at any time you are confused about the functionality, please see the above section.</p>
+<ol class="arabic simple">
+<li>Open Zotero and click on the Batch Tag Editor icon (see the <strong>Launching the Batch Tag Editor</strong> section for help)</li>
+<li>Select the <strong>scope</strong> in which you would like to edit.</li>
+<li>If your scope is set to <em>Collection</em>, in the <strong>Collection</strong> dropdown menu select the collection you would like to apply changes to.</li>
+<li>In the <strong>Action</strong> dropdown menu, select the action you would like to perform.</li>
+<li>In the <strong>Original Tags</strong> section click on tags you would like to change/remove and they will be moved to the <strong>Tags to be changed</strong> section. If your library or collection contains a large amount of tags you may want to type individual tag names in the <strong>Find</strong> textbox to easily find the appropriate tags in the <strong>Original Tags</strong> section. If you are <strong>Batch Removing Tags</strong> skip to the last step.</li>
+<li>In the replace text-box type a tag name to replace all items in the <strong>tags to be changed</strong> section.</li>
+<li>Click Apply and you are done.</li>
+</ol>
+</div>
+<div class="section" id="batch-editing-using-a-batch-editing-queue">
+<h2>Batch Editing using a Batch Editing Queue<a class="headerlink" href="#batch-editing-using-a-batch-editing-queue" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This section assumes you have gone through the <strong>The Batch Tag Editor GUI</strong> section above. If at anytime you are confused about the functionality of the Batch Tag editor in the below tutorial, please see the above section.</p>
+</div>
+<ol class="arabic simple">
+<li>Open Zotero</li>
+<li>Right click an and in the dropdown menu click add to batch edit queue. <img alt="btedit_queuetut" src="_images/bedit_queue_1.png" /></li>
+<li>The below Warning will pop-up, click <strong>Continue Adding</strong> to continue adding items to the queue, when you are finished adding items to the queue click <strong>Open Batch Editor</strong>. <img alt="btedit_queuetut2" src="_images/btedit_queue_2.png" /></li>
+<li>(After finishing above step) Set the <strong>scope</strong> to items.</li>
+<li>In the <strong>Action</strong> dropdown menu, select the action you would like to perform.</li>
+<li>In the <strong>Original Tags</strong> section click on tags you would like to change/remove and they will be moved to the <strong>Tags to be changed</strong> section. If your library or collection contains a large amount of tags you may want to type individual tag names in the <strong>Find</strong> textbox to easily find the appropriate tags in the <strong>Original Tags</strong> section. If you are <strong>Batch Removing Tags</strong> skip to the last step.</li>
+<li>In the replace text-box type a tag name to replace all items in the <strong>tags to be changed</strong> section.</li>
+<li>Click Apply and you are done.</li>
+</ol>
+</div>
+<div class="section" id="batch-adding-tags">
+<h2>Batch Adding Tags<a class="headerlink" href="#batch-adding-tags" title="Permalink to this headline">¶</a></h2>
+<p>todo</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<dl class="last docutils">
+<dt>The batch editor does not backup any data before making changes, the only way to undo changes to your library made by the batch editor are:</dt>
+<dd><ol class="first last loweralpha simple">
+<li>backup your library before using the batch editor</li>
+<li>use the batch editor again, with the tag parameters switch</li>
+</ol>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="section" id="adding-custom-fields">
+<h1>Adding Custom Fields<a class="headerlink" href="#adding-custom-fields" title="Permalink to this headline">¶</a></h1>
+<p>The <strong>Custom Field Editor</strong> adds a new item field to a given item type in Zotero. For example, if you wanted to add the item field &#8220;gregorian date&#8221; to the item type &#8220;book&#8221;, then the Custom Field Editor is a tool that could add &#8220;gregorian dates&#8221; in the custom field section of all  books in your library.</p>
+<div class="section" id="launching-the-custom-field-editor">
+<h2>Launching the Custom Field Editor<a class="headerlink" href="#launching-the-custom-field-editor" title="Permalink to this headline">¶</a></h2>
+<p>There are two methods for launching the Custom Field Editor:</p>
+<dl class="docutils">
+<dt><strong>Method #1: Launch via. the Icon</strong></dt>
+<dd><ol class="first arabic simple">
+<li>Open Zotero (Firefox or Standalone)</li>
+<li>Click the Custom Field Editor icon (see image below)</li>
+</ol>
+<p class="last"><img alt="cficotaskbar" src="_images/cficotaskbar.png" /></p>
+</dd>
+<dt><strong>Method #2: Launch via. an Item</strong></dt>
+<dd><ol class="first arabic simple">
+<li>Open Zotero</li>
+<li>Select any item in your library</li>
+<li>Click on the <em>Custom Fields</em> tab in the item&#8217;s info pane</li>
+<li>Click Add</li>
+</ol>
+<p class="last"><img alt="cficoitem" src="_images/cficoitem.png" /></p>
+</dd>
+</dl>
+</div>
+<div class="section" id="the-custom-field-editor-gui">
+<h2>The Custom Field Editor GUI<a class="headerlink" href="#the-custom-field-editor-gui" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="id1">
+<h2>Adding Custom Fields<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="removing-custom-fields">
+<h2>Removing Custom Fields<a class="headerlink" href="#removing-custom-fields" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Custom Data does not currently sync to your online Zotero Database, this functionality is still under development.</p>
+</div>
+</div>
+</div>
+<div class="section" id="coupling-linking-documents">
+<h1>Coupling/Linking Documents<a class="headerlink" href="#coupling-linking-documents" title="Permalink to this headline">¶</a></h1>
+<p>&#64;description of feature</p>
+<div class="section" id="launching-the-document-linker">
+<h2>Launching the Document Linker<a class="headerlink" href="#launching-the-document-linker" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="the-document-linker-gui">
+<h2>The Document Linker GUI<a class="headerlink" href="#the-document-linker-gui" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="linking-documents">
+<h2>Linking Documents<a class="headerlink" href="#linking-documents" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="unlinking-documents">
+<h2>Unlinking Documents<a class="headerlink" href="#unlinking-documents" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+</div>
+<div class="section" id="citation-csl-editor">
+<h1>Citation (CSL) Editor<a class="headerlink" href="#citation-csl-editor" title="Permalink to this headline">¶</a></h1>
+<p>&#64;drescription of feature</p>
+<div class="section" id="launching-the-csl-editor">
+<h2>Launching the CSL Editor<a class="headerlink" href="#launching-the-csl-editor" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="the-csl-editor-gui">
+<h2>The CSL Editor GUI<a class="headerlink" href="#the-csl-editor-gui" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="creating-a-custom-citation">
+<h2>Creating a Custom Citation<a class="headerlink" href="#creating-a-custom-citation" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+</div>
+<div class="section" id="notes">
+<h1>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h1>
+<p>The ZotPie plugin applies all changes to your <strong>local</strong> Zotero library, If you do not have automatic syncing enabled you
+will have to sync before changes to your library are applied on the Zotero servers.</p>
+</div>
+<div class="section" id="liscense">
+<h1>Liscense<a class="headerlink" href="#liscense" title="Permalink to this headline">¶</a></h1>
+<p>ZotPie is liscensed under the <a class="reference external" href="http://opensource.org/licenses/MIT">MIT Liscense</a>.</p>
 </div>
 
 
